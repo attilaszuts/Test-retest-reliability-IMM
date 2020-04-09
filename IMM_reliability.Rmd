@@ -1,0 +1,96 @@
+---
+title: "IMM reliability"
+author: "Attila"
+date: '2020 április 9 '
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+#Data input and opening libraries
+```{r}
+library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr)
+setwd("D:\Documents\Dropbox\Implicit Mindset Measure\Data")
+round1 <- read_csv("D:/Documents/Dropbox/Implicit Mindset Measure/Data/Round 1/Source/data.csv")
+round2 <- read_csv("D:/Documents/Dropbox/Implicit Mindset Measure/Data/Round 2/Source/data.csv")
+```
+
+##Responses that have not been completed
+Extracting responses based on missing completion time ('TIME_end')
+```{r}
+missing1 <- round1[is.na(round1$TIME_end),]
+missing2 <- round2[is.na(round2$TIME_end),]
+```
+
+##Preparing data to be united
+Cleaning variable names, and dropping missing cases. Changing Neptun codes to upper case. Filtering out duplicate answers.
+```{r}
+time1 <- round1 %>% 
+  select(c("participant", "Neptun:1", "TIME_start", "TIME_end")) %>% 
+  rename(TIME_start_first = "TIME_start", TIME_end_first = "TIME_end", participant_first = "participant") %>% 
+  drop_na()
+time2 <- round2 %>% 
+  select(c("participant", "Neptun:1", "TIME_start", "TIME_end")) %>% 
+  rename(TIME_start_second = "TIME_start", TIME_end_second = "TIME_end", participant_second = "participant") %>% 
+  drop_na()
+
+#neptun codes to upper case
+time1$`Neptun:1` <- toupper(time1$`Neptun:1`)
+time2$`Neptun:1` <- toupper(time2$`Neptun:1`)
+
+#neptun codes more than once in data
+neptun_duplicate_time1 <- time1 %>% 
+  count(`Neptun:1`) %>% 
+  filter(n > 1)
+neptun_duplicate_time2 <- time2 %>% 
+  count(`Neptun:1`) %>% 
+  filter(n > 1)
+```
+
+#Creating groups
+The 2 week group is coded as group 0, the 4 week group is coded as group 1.
+##Joining separate rounds
+Cases missing first round means, they either did not complete round 1 or they made a typo in their Neptun code and therefore it can't be automatically matched to it.
+```{r}
+joined <- left_join(time2, time1, by = "Neptun:1")
+missing_joined_first_round <- joined[is.na(joined$TIME_end_first),]
+#number of times Neptun codes appear
+neptun_duplicate_joined <- joined %>% 
+  count(`Neptun:1`) %>% 
+  filter(n > 1)
+```
+
+##Converting to date
+```{r}
+joined$TIME_end_first <- as.Date(joined$TIME_end_first)
+joined$TIME_end_second <- as.Date(joined$TIME_end_second)
+joined$TIME_start_first <- as.Date(joined$TIME_start_first)
+joined$TIME_start_second <- as.Date(joined$TIME_start_second)
+```
+
+##Adding days between data collection column and filtering missing values
+```{r}
+joined <- joined %>% 
+  mutate(
+    TIME_between_end = TIME_end_second - TIME_end_first
+  ) 
+missing_joined_TIME_between <- joined %>% 
+  dplyr::filter(is.na("TIME_end_between"))
+joined <- joined %>% 
+  drop_na(TIME_between_end)
+```
+
+##Counting number of participants in groups
+```{r}
+joined$group <- ifelse(joined$TIME_between_end > 20, 1, 0)
+
+joined %>% 
+  count(group)
+```
+
+##Plotting frequency of number of days between data collections
+```{r}
+joined$TIME_between_end <- as.numeric(joined$TIME_between_end)
+plot <- ggplot(joined, aes(TIME_between_end))
+plot + geom_bar()
+```
