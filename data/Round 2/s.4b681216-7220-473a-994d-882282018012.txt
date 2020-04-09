@@ -1,0 +1,14 @@
+version: 2.6.1
+server-time: 2020-03-23-15-37
+user_agent: mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/76.0.3809.100 safari/537.36
+screen_width: 1366
+screen_height: 768
+html_width: 1349
+html_height: 2653
+user_time: Mon, 23 Mar 2020 14:39:01 GMT
+T: 20326
+l: Neptun
+stime: 2020-03-23-15-37
+T: 9501
+t: textline
+a: wk7i8m

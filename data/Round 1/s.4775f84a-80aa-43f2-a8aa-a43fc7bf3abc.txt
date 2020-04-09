@@ -1,0 +1,17 @@
+version: 2.6.1
+server-time: 2020-04-08-00-06
+ip: 212.40.64.110
+country: HU, Hungary
+hostname: 
+user_agent: mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/80.0.3987.163 safari/537.36
+screen_width: 1280
+screen_height: 720
+html_width: 1249
+html_height: 2721
+user_time: Tue, 07 Apr 2020 22:06:32 GMT
+T: 48955
+l: Neptun
+stime: 2020-04-08-00-06
+T: 6587
+t: textline
+a: DLRVVP
