@@ -10,9 +10,9 @@ editor_options:
 #Data input and opening libraries
 ```{r}
 library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr)
-setwd("D:\Documents\Dropbox\Implicit Mindset Measure\Data")
-round1 <- read_csv("D:/Documents/Dropbox/Implicit Mindset Measure/Data/Round 1/Source/data.csv")
-round2 <- read_csv("D:/Documents/Dropbox/Implicit Mindset Measure/Data/Round 2/Source/data.csv")
+setwd("D:/Documents/Dropbox/Implicit Mindset Measure")
+round1 <- read_csv("D:/Documents/Dropbox/Implicit Mindset Measure/Data/Source/Round 1/data.csv")
+round2 <- read_csv("D:/Documents/Dropbox/Implicit Mindset Measure/Data/Source/Round 2/data.csv")
 ```
 
 ##Responses that have not been completed
@@ -80,6 +80,15 @@ joined <- joined %>%
   drop_na(TIME_between_end)
 ```
 
+## Exporting missing values and checking manually
+```{r}
+#write_csv2(neptun_duplicate_joined, "D:/Documents/Dropbox/Implicit Mindset Measure/Data/Raw/Temp/neptun_duplicate_joined.csv")
+#write_csv2(neptun_duplicate_time1, "D:/Documents/Dropbox/Implicit Mindset Measure/Data/Temp/neptun_duplicate_time1.csv")
+#write_csv2(neptun_duplicate_time2, "D:/Documents/Dropbox/Implicit Mindset Measure/Data/Temp/neptun_duplicate_time2.csv")
+```
+
+
+
 ##Counting number of participants in groups
 ```{r}
 joined$group <- ifelse(joined$TIME_between_end > 20, 1, 0)
@@ -94,3 +103,10 @@ joined$TIME_between_end <- as.numeric(joined$TIME_between_end)
 plot <- ggplot(joined, aes(TIME_between_end))
 plot + geom_bar()
 ```
+#Analysis
+
+##Importing data
+```{r}
+
+```
+
