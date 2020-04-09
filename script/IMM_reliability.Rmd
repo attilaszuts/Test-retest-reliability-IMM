@@ -9,10 +9,10 @@ editor_options:
 
 #Data input and opening libraries
 ```{r}
-library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr)
-setwd("D:/Documents/Dropbox/Implicit Mindset Measure")
-round1 <- read_csv("D:/Documents/Dropbox/Implicit Mindset Measure/Data/Source/Round 1/data.csv")
-round2 <- read_csv("D:/Documents/Dropbox/Implicit Mindset Measure/Data/Source/Round 2/data.csv")
+library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr); library(vroom); library(janitor); library(widyr)
+setwd("D:/Documents/Egyebek/Thesis")
+round1 <- read_csv("D:/Documents/Egyebek/Thesis/data/Round 1/data.csv")
+round2 <- read_csv("D:/Documents/Egyebek/Thesis/data/Round 2/data.csv")
 ```
 
 ##Responses that have not been completed
@@ -82,9 +82,9 @@ joined <- joined %>%
 
 ## Exporting missing values and checking manually
 ```{r}
-#write_csv2(neptun_duplicate_joined, "D:/Documents/Dropbox/Implicit Mindset Measure/Data/Raw/Temp/neptun_duplicate_joined.csv")
-#write_csv2(neptun_duplicate_time1, "D:/Documents/Dropbox/Implicit Mindset Measure/Data/Temp/neptun_duplicate_time1.csv")
-#write_csv2(neptun_duplicate_time2, "D:/Documents/Dropbox/Implicit Mindset Measure/Data/Temp/neptun_duplicate_time2.csv")
+#write_csv2(neptun_duplicate_joined, "D:/Documents/Egyebek/Thesis/data/Temp/neptun_duplicate_joined.csv")
+#write_csv2(neptun_duplicate_time1, "D:/Documents/Egyebek/Thesis/data/Temp/neptun_duplicate_time1.csv")
+#write_csv2(neptun_duplicate_time2, "D:/Documents/Egyebek/Thesis/data/Temp/neptun_duplicate_time2.csv")
 ```
 
 
@@ -105,7 +105,36 @@ plot + geom_bar()
 ```
 #Analysis
 
+##defining important blocks
+```{r}
+important_targets <- c("chall_pos", "chall_neg", "crit_pos", "crit_neg")
+```
+
+
 ##Importing data
+```{r}
+#defining path
+files1 <- list.files(path = "D:/Documents/Egyebek/Thesis/data/Round 1", pattern = "immtest.*.txt$", full.names = TRUE)
+files2 <- list.files(path = "D:/Documents/Egyebek/Thesis/data/Round 2", pattern = "immtest.*.txt$", full.names = TRUE)
+
+#importing data files
+gnat_raw1 <- 
+  vroom::vroom(file = files1, 
+        id = "id", 
+        col_names = c("block", "block_id", "word", "max_rt", "trial_type", "word_category", "rt", "error", "target")) %>% 
+  extract(col = id, 
+          into = c(NA, "id", NA), 
+          regex = "^(.*data.)(.*)(.txt)$")
+gnat_raw2 <- 
+  vroom::vroom(file = files2, 
+        id = "id", 
+        col_names = c("block", "block_id", "word", "max_rt", "trial_type", "word_category", "rt", "error", "target")) %>% 
+  extract(col = id, 
+          into = c(NA, "id", NA), 
+          regex = "^(.*data.)(.*)(.txt)$")
+```
+
+##Keeping only important blocks
 ```{r}
 
 ```
