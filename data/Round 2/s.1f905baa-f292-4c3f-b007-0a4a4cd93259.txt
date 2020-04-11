@@ -1,9 +1,0 @@
-version: 2.6.1
-server-time: 2020-04-07-17-57
-user_agent: mozilla/5.0 (windows nt 6.1) applewebkit/537.36 (khtml, like gecko) chrome/80.0.3987.149 safari/537.36
-screen_width: 1440
-screen_height: 900
-html_width: 1423
-html_height: 2653
-user_time: Tue, 07 Apr 2020 15:57:26 GMT
-T: 40686
