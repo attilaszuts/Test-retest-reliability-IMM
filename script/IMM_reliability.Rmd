@@ -183,13 +183,26 @@ final_gnat1 <-
   left_join(correct_block_rate1, by = c("id", "target")) %>% 
   left_join(correct_all_rate1, by = c("id")) %>% 
   filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
-  filter(rt > 300 & rt < 1399)
+  filter(rt > 300 & rt < 1161)
 #must delete these observations due to high block error rate from round2
 final_gnat2 <-
   gnat_important2 %>% 
   left_join(correct_block_rate2, by = c("id", "target")) %>% 
   left_join(correct_all_rate2, by = c("id")) %>% 
   filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
-  filter(rt > 300 & rt < 1399)
+  filter(rt > 300 & rt < 1153)
+```
+
+```{r}
+#deleting rows with too quick and too slow response windows for round1 (too quick is 300 and too slow is 3 SD above averagert ==663+166*3)
+final_gnat1 %>% 
+  summarise(pers_a = mean(rt))
+final_gnat1 %>% 
+  summarise(pers_sd = sd(rt))
+#deleting rows with too quick and too slow response windows for round2 (too quick is 300 and too slow is 3 SD above averagert ==655+166*3)
+final_gnat2 %>% 
+  summarise(pers_a = mean(rt))
+final_gnat2 %>% 
+  summarise(pers_sd = sd(rt))
 ```
 
