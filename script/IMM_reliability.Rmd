@@ -161,3 +161,18 @@ correct_block_rate2 <-
   summarise(correct_block = 1 - mean(error))
 ```
 
+```{r}
+#no more removal needed for round 1
+correct_all_rate1 <-
+  gnat_important1 %>% 
+  filter(target %in% important_targets) %>%
+  group_by(id) %>% 
+  summarise(correct_all = 1 - mean(error))
+#no more removal needed for round 2
+correct_all_rate2 <-
+  gnat_important2 %>% 
+  filter(target %in% important_targets) %>%
+  group_by(id) %>% 
+  summarise(correct_all = 1 - mean(error))
+```
+
