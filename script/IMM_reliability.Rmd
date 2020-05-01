@@ -149,9 +149,14 @@ gnat_important2 <-
 ```
 
 ```{r}
-#checking for block error rate above 40%
-correct_block_rate <- 
-  gnat_important %>% 
+#checking for block error rate above 40% for first round
+correct_block_rate1 <- 
+  gnat_important1 %>% 
+  group_by(id, target) %>% 
+  summarise(correct_block = 1 - mean(error))
+#checking for block error rate above 40% for second round
+correct_block_rate2 <- 
+  gnat_important2 %>% 
   group_by(id, target) %>% 
   summarise(correct_block = 1 - mean(error))
 ```
