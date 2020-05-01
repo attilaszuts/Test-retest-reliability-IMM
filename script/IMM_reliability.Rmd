@@ -92,7 +92,7 @@ joined <- joined %>%
 ##Counting number of participants in groups
 ```{r}
 joined$group <- ifelse(joined$TIME_between_end > 20, 1, 0)
-
+# if there are more than 20 days between administration it is assigned 1, else 0
 joined %>% 
   count(group)
 ```
@@ -136,6 +136,10 @@ gnat_raw2 <-
 
 ##Keeping only important blocks
 ```{r}
-
+#filter only important trials and only go_trials
+gnat_important <- 
+  gnat_raw %>% 
+  filter(target %in%important_targets) %>% 
+  filter(trial_type == 'go_trial')
 ```
 
