@@ -136,10 +136,23 @@ gnat_raw2 <-
 
 ##Keeping only important blocks
 ```{r}
-#filter only important trials and only go_trials
-gnat_important <- 
-  gnat_raw %>% 
+#filter only important trials and only go_trials for first round
+gnat_important1 <- 
+  gnat_raw1 %>% 
   filter(target %in%important_targets) %>% 
   filter(trial_type == 'go_trial')
+#filter only important trials and only go_trials for second round
+gnat_important2 <- 
+  gnat_raw2 %>% 
+  filter(target %in%important_targets) %>% 
+  filter(trial_type == 'go_trial')
+```
+
+```{r}
+#checking for block error rate above 40%
+correct_block_rate <- 
+  gnat_important %>% 
+  group_by(id, target) %>% 
+  summarise(correct_block = 1 - mean(error))
 ```
 
