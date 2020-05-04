@@ -2,7 +2,11 @@
 title: "IMM reliability"
 author: "Attila"
 date: '2020 április 9 '
-output: html_document
+output:
+  html_document:
+    toc: true
+    theme: united
+    number_sections: true
 editor_options: 
   chunk_output_type: console
 ---
@@ -59,7 +63,7 @@ neptun_duplicate_time2 <- time2 %>%
   filter(n > 1)
 ```
 
-### Creating groups
+### 1. Creating groups
 The 2 week group is coded as group 0, the 4 week group is coded as group 1.
 
 ### Joining separate rounds
