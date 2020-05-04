@@ -7,22 +7,34 @@ editor_options:
   chunk_output_type: console
 ---
 
-#Data input and opening libraries
-```{r}
-library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr); library(vroom); library(janitor); library(widyr)
+```{r include=FALSE}
 setwd("D:/Documents/Egyebek/Thesis")
+```
+
+
+# Data input and opening libraries
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr); library(vroom); library(janitor); library(widyr)
+```
+
+# Explicit Measures
+
+Reading in data files
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 round1 <- read_csv("D:/Documents/Egyebek/Thesis/data/Round 1/data.csv")
 round2 <- read_csv("D:/Documents/Egyebek/Thesis/data/Round 2/data.csv")
 ```
 
-##Responses that have not been completed
+
+## Responses that have not been completed
 Extracting responses based on missing completion time ('TIME_end')
 ```{r}
 missing1 <- round1[is.na(round1$TIME_end),]
 missing2 <- round2[is.na(round2$TIME_end),]
 ```
 
-##Preparing data to be united
+## Uniting round1 and round2 explicit measures
 Cleaning variable names, and dropping missing cases. Changing Neptun codes to upper case. Filtering out duplicate answers.
 ```{r}
 time1 <- round1 %>% 
@@ -47,9 +59,10 @@ neptun_duplicate_time2 <- time2 %>%
   filter(n > 1)
 ```
 
-#Creating groups
+### Creating groups
 The 2 week group is coded as group 0, the 4 week group is coded as group 1.
-##Joining separate rounds
+
+### Joining separate rounds
 Cases missing first round means, they either did not complete round 1 or they made a typo in their Neptun code and therefore it can't be automatically matched to it.
 ```{r}
 joined <- left_join(time2, time1, by = "Neptun:1")
@@ -60,7 +73,7 @@ neptun_duplicate_joined <- joined %>%
   filter(n > 1)
 ```
 
-##Converting to date
+### Converting to date
 ```{r}
 joined$TIME_end_first <- as.Date(joined$TIME_end_first)
 joined$TIME_end_second <- as.Date(joined$TIME_end_second)
@@ -68,7 +81,7 @@ joined$TIME_start_first <- as.Date(joined$TIME_start_first)
 joined$TIME_start_second <- as.Date(joined$TIME_start_second)
 ```
 
-##Adding days between data collection column and filtering missing values
+### Adding days between data collection column and filtering missing values
 ```{r}
 joined <- joined %>% 
   mutate(
@@ -80,7 +93,7 @@ joined <- joined %>%
   drop_na(TIME_between_end)
 ```
 
-## Exporting missing values and checking manually
+### Exporting missing values and checking manually
 ```{r}
 #write_csv2(neptun_duplicate_joined, "D:/Documents/Egyebek/Thesis/data/Temp/neptun_duplicate_joined.csv")
 #write_csv2(neptun_duplicate_time1, "D:/Documents/Egyebek/Thesis/data/Temp/neptun_duplicate_time1.csv")
@@ -89,7 +102,7 @@ joined <- joined %>%
 
 
 
-##Counting number of participants in groups
+## Counting number of participants in groups
 ```{r}
 joined$group <- ifelse(joined$TIME_between_end > 20, 1, 0)
 # if there are more than 20 days between administration it is assigned 1, else 0
@@ -97,21 +110,21 @@ joined %>%
   count(group)
 ```
 
-##Plotting frequency of number of days between data collections
+## Plotting frequency of number of days between data collections
 ```{r}
 joined$TIME_between_end <- as.numeric(joined$TIME_between_end)
 plot <- ggplot(joined, aes(TIME_between_end))
 plot + geom_bar()
 ```
-#Analysis
+# Analysis
 
-##defining important blocks
+## defining important blocks
 ```{r}
 important_targets <- c("chall_pos", "chall_neg", "crit_pos", "crit_neg")
 ```
 
 
-##Importing data
+## Importing data
 ```{r}
 #defining path
 files1 <- list.files(path = "D:/Documents/Egyebek/Thesis/data/Round 1", pattern = "immtest.*.txt$", full.names = TRUE)
@@ -134,7 +147,7 @@ gnat_raw2 <-
           regex = "^(.*data.)(.*)(.txt)$")
 ```
 
-##Keeping only important blocks
+## Keeping only important blocks
 ```{r}
 #filter only important trials and only go_trials for first round
 gnat_important1 <- 
