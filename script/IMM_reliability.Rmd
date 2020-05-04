@@ -233,3 +233,9 @@ final_gnat2 %>%
   summarise(pers_sd = sd(rt))
 ```
 
+## Rows that have been removed
+```{r}
+final_filtered1 <- 
+  setdiff(final_gnat1, gnat_important1)
+```
+
