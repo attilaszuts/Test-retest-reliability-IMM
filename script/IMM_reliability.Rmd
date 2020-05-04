@@ -10,12 +10,9 @@ output:
 editor_options: 
   chunk_output_type: console
 ---
-
 ```{r include=FALSE}
 setwd("D:/Documents/Egyebek/Thesis")
 ```
-
-
 # Data input and opening libraries
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
@@ -63,21 +60,20 @@ neptun_duplicate_time2 <- time2 %>%
   filter(n > 1)
 ```
 
-### 1. Creating groups
-The 2 week group is coded as group 0, the 4 week group is coded as group 1.
-
 ### Joining separate rounds
 Cases missing first round means, they either did not complete round 1 or they made a typo in their Neptun code and therefore it can't be automatically matched to it.
 ```{r}
 joined <- left_join(time2, time1, by = "Neptun:1")
 missing_joined_first_round <- joined[is.na(joined$TIME_end_first),]
-#number of times Neptun codes appear
+#Neptun codes that appear more than once
 neptun_duplicate_joined <- joined %>% 
   count(`Neptun:1`) %>% 
   filter(n > 1)
 ```
 
-### Converting to date
+## Creating groups (2 week and 4 week)
+
+### Converting times to date format
 ```{r}
 joined$TIME_end_first <- as.Date(joined$TIME_end_first)
 joined$TIME_end_second <- as.Date(joined$TIME_end_second)
@@ -85,7 +81,7 @@ joined$TIME_start_first <- as.Date(joined$TIME_start_first)
 joined$TIME_start_second <- as.Date(joined$TIME_start_second)
 ```
 
-### Adding days between data collection column and filtering missing values
+### Adding 'days between data collections' column and filtering missing values
 ```{r}
 joined <- joined %>% 
   mutate(
@@ -106,7 +102,8 @@ joined <- joined %>%
 
 
 
-## Counting number of participants in groups
+### Counting number of participants in groups
+The 2 week group is coded as group 0, the 4 week group is coded as group 1.
 ```{r}
 joined$group <- ifelse(joined$TIME_between_end > 20, 1, 0)
 # if there are more than 20 days between administration it is assigned 1, else 0
@@ -120,13 +117,8 @@ joined$TIME_between_end <- as.numeric(joined$TIME_between_end)
 plot <- ggplot(joined, aes(TIME_between_end))
 plot + geom_bar()
 ```
-# Analysis
 
-## defining important blocks
-```{r}
-important_targets <- c("chall_pos", "chall_neg", "crit_pos", "crit_neg")
-```
-
+# Implicit measure
 
 ## Importing data
 ```{r}
@@ -153,6 +145,8 @@ gnat_raw2 <-
 
 ## Keeping only important blocks
 ```{r}
+important_targets <- c("chall_pos", "chall_neg", "crit_pos", "crit_neg")
+
 #filter only important trials and only go_trials for first round
 gnat_important1 <- 
   gnat_raw1 %>% 
