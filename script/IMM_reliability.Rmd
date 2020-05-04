@@ -121,7 +121,7 @@ plot + geom_bar()
 # Implicit measure
 
 ## Importing data
-```{r}
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 #defining path
 files1 <- list.files(path = "D:/Documents/Egyebek/Thesis/data/Round 1", pattern = "immtest.*.txt$", full.names = TRUE)
 files2 <- list.files(path = "D:/Documents/Egyebek/Thesis/data/Round 2", pattern = "immtest.*.txt$", full.names = TRUE)
@@ -143,7 +143,8 @@ gnat_raw2 <-
           regex = "^(.*data.)(.*)(.txt)$")
 ```
 
-## Keeping only important blocks
+## Data cleaning
+### Keeping only important blocks
 ```{r}
 important_targets <- c("chall_pos", "chall_neg", "crit_pos", "crit_neg")
 
@@ -159,6 +160,8 @@ gnat_important2 <-
   filter(trial_type == 'go_trial')
 ```
 
+### Establishing block error rate per participant
+
 ```{r}
 #checking for block error rate above 40% for first round
 correct_block_rate1 <- 
@@ -171,6 +174,8 @@ correct_block_rate2 <-
   group_by(id, target) %>% 
   summarise(correct_block = 1 - mean(error))
 ```
+
+### Establishing overall error rate per participant
 
 ```{r}
 #no more removal needed for round 1
@@ -186,6 +191,16 @@ correct_all_rate2 <-
   group_by(id) %>% 
   summarise(correct_all = 1 - mean(error))
 ```
+
+### Filtering observations based on error rate 
+
+Criteria: 
+
+* Block error rate below 60%
+* Overall error rate below 80%
+* Erroneous association
+* Response latency under 300 ms
+* Response latency $3*SD$ above average RT
 
 ```{r}
 #must delete these observations due to high block error rate from round1
@@ -204,6 +219,7 @@ final_gnat2 <-
   filter(rt > 300 & rt < 1153)
 ```
 
+Determining average RT and SD for previous filter
 ```{r}
 #deleting rows with too quick and too slow response windows for round1 (too quick is 300 and too slow is 3 SD above averagert ==663+166*3)
 final_gnat1 %>% 

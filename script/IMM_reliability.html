@@ -383,7 +383,7 @@ summary {
 <li><a href="#joining-separate-rounds"><span class="toc-section-number">2.2.1</span> Joining separate rounds</a></li>
 </ul></li>
 <li><a href="#creating-groups-2-week-and-4-week"><span class="toc-section-number">2.3</span> Creating groups (2 week and 4 week)</a><ul>
-<li><a href="#converting-to-times-to-date-format"><span class="toc-section-number">2.3.1</span> Converting to times to date format</a></li>
+<li><a href="#converting-times-to-date-format"><span class="toc-section-number">2.3.1</span> Converting times to date format</a></li>
 <li><a href="#adding-days-between-data-collections-column-and-filtering-missing-values"><span class="toc-section-number">2.3.2</span> Adding ‘days between data collections’ column and filtering missing values</a></li>
 <li><a href="#exporting-missing-values-and-checking-manually"><span class="toc-section-number">2.3.3</span> Exporting missing values and checking manually</a></li>
 <li><a href="#counting-number-of-participants-in-groups"><span class="toc-section-number">2.3.4</span> Counting number of participants in groups</a></li>
@@ -391,9 +391,13 @@ summary {
 <li><a href="#plotting-frequency-of-number-of-days-between-data-collections"><span class="toc-section-number">2.4</span> Plotting frequency of number of days between data collections</a></li>
 </ul></li>
 <li><a href="#implicit-measure"><span class="toc-section-number">3</span> Implicit measure</a><ul>
-<li><a href="#defining-important-blocks"><span class="toc-section-number">3.1</span> defining important blocks</a></li>
-<li><a href="#importing-data"><span class="toc-section-number">3.2</span> Importing data</a></li>
-<li><a href="#keeping-only-important-blocks"><span class="toc-section-number">3.3</span> Keeping only important blocks</a></li>
+<li><a href="#importing-data"><span class="toc-section-number">3.1</span> Importing data</a></li>
+<li><a href="#data-cleaning"><span class="toc-section-number">3.2</span> Data cleaning</a><ul>
+<li><a href="#keeping-only-important-blocks"><span class="toc-section-number">3.2.1</span> Keeping only important blocks</a></li>
+<li><a href="#establishing-block-error-rate-per-participant"><span class="toc-section-number">3.2.2</span> Establishing block error rate per participant</a></li>
+<li><a href="#establishing-overall-error-rate-per-participant"><span class="toc-section-number">3.2.3</span> Establishing overall error rate per participant</a></li>
+<li><a href="#filtering-observations-based-on-error-rate"><span class="toc-section-number">3.2.4</span> Filtering observations based on error rate</a></li>
+</ul></li>
 </ul></li>
 </ul>
 </div>
@@ -449,8 +453,8 @@ neptun_duplicate_joined &lt;- joined %&gt;%
 </div>
 <div id="creating-groups-2-week-and-4-week" class="section level2">
 <h2><span class="header-section-number">2.3</span> Creating groups (2 week and 4 week)</h2>
-<div id="converting-to-times-to-date-format" class="section level3">
-<h3><span class="header-section-number">2.3.1</span> Converting to times to date format</h3>
+<div id="converting-times-to-date-format" class="section level3">
+<h3><span class="header-section-number">2.3.1</span> Converting times to date format</h3>
 <pre class="r"><code>joined$TIME_end_first &lt;- as.Date(joined$TIME_end_first)
 joined$TIME_end_second &lt;- as.Date(joined$TIME_end_second)
 joined$TIME_start_first &lt;- as.Date(joined$TIME_start_first)
@@ -497,12 +501,8 @@ plot + geom_bar()</code></pre>
 </div>
 <div id="implicit-measure" class="section level1">
 <h1><span class="header-section-number">3</span> Implicit measure</h1>
-<div id="defining-important-blocks" class="section level2">
-<h2><span class="header-section-number">3.1</span> defining important blocks</h2>
-<pre class="r"><code>important_targets &lt;- c(&quot;chall_pos&quot;, &quot;chall_neg&quot;, &quot;crit_pos&quot;, &quot;crit_neg&quot;)</code></pre>
-</div>
 <div id="importing-data" class="section level2">
-<h2><span class="header-section-number">3.2</span> Importing data</h2>
+<h2><span class="header-section-number">3.1</span> Importing data</h2>
 <pre class="r"><code>#defining path
 files1 &lt;- list.files(path = &quot;D:/Documents/Egyebek/Thesis/data/Round 1&quot;, pattern = &quot;immtest.*.txt$&quot;, full.names = TRUE)
 files2 &lt;- list.files(path = &quot;D:/Documents/Egyebek/Thesis/data/Round 2&quot;, pattern = &quot;immtest.*.txt$&quot;, full.names = TRUE)
@@ -514,34 +514,22 @@ gnat_raw1 &lt;-
         col_names = c(&quot;block&quot;, &quot;block_id&quot;, &quot;word&quot;, &quot;max_rt&quot;, &quot;trial_type&quot;, &quot;word_category&quot;, &quot;rt&quot;, &quot;error&quot;, &quot;target&quot;)) %&gt;% 
   extract(col = id, 
           into = c(NA, &quot;id&quot;, NA), 
-          regex = &quot;^(.*data.)(.*)(.txt)$&quot;)</code></pre>
-<pre><code>## Rows: 72,132
-## Columns: 10
-## Delimiter: &quot; &quot;
-## chr [5]: block, word, trial_type, word_category, target
-## dbl [4]: block_id, max_rt, rt, error
-## 
-## Use `spec()` to retrieve the guessed column specification
-## Pass a specification to the `col_types` argument to quiet this message</code></pre>
-<pre class="r"><code>gnat_raw2 &lt;- 
+          regex = &quot;^(.*data.)(.*)(.txt)$&quot;)
+gnat_raw2 &lt;- 
   vroom::vroom(file = files2, 
         id = &quot;id&quot;, 
         col_names = c(&quot;block&quot;, &quot;block_id&quot;, &quot;word&quot;, &quot;max_rt&quot;, &quot;trial_type&quot;, &quot;word_category&quot;, &quot;rt&quot;, &quot;error&quot;, &quot;target&quot;)) %&gt;% 
   extract(col = id, 
           into = c(NA, &quot;id&quot;, NA), 
           regex = &quot;^(.*data.)(.*)(.txt)$&quot;)</code></pre>
-<pre><code>## Rows: 32,064
-## Columns: 10
-## Delimiter: &quot; &quot;
-## chr [5]: block, word, trial_type, word_category, target
-## dbl [4]: block_id, max_rt, rt, error
-## 
-## Use `spec()` to retrieve the guessed column specification
-## Pass a specification to the `col_types` argument to quiet this message</code></pre>
 </div>
-<div id="keeping-only-important-blocks" class="section level2">
-<h2><span class="header-section-number">3.3</span> Keeping only important blocks</h2>
-<pre class="r"><code>#filter only important trials and only go_trials for first round
+<div id="data-cleaning" class="section level2">
+<h2><span class="header-section-number">3.2</span> Data cleaning</h2>
+<div id="keeping-only-important-blocks" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> Keeping only important blocks</h3>
+<pre class="r"><code>important_targets &lt;- c(&quot;chall_pos&quot;, &quot;chall_neg&quot;, &quot;crit_pos&quot;, &quot;crit_neg&quot;)
+
+#filter only important trials and only go_trials for first round
 gnat_important1 &lt;- 
   gnat_raw1 %&gt;% 
   filter(target %in%important_targets) %&gt;% 
@@ -551,6 +539,9 @@ gnat_important2 &lt;-
   gnat_raw2 %&gt;% 
   filter(target %in%important_targets) %&gt;% 
   filter(trial_type == &#39;go_trial&#39;)</code></pre>
+</div>
+<div id="establishing-block-error-rate-per-participant" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> Establishing block error rate per participant</h3>
 <pre class="r"><code>#checking for block error rate above 40% for first round
 correct_block_rate1 &lt;- 
   gnat_important1 %&gt;% 
@@ -561,6 +552,9 @@ correct_block_rate2 &lt;-
   gnat_important2 %&gt;% 
   group_by(id, target) %&gt;% 
   summarise(correct_block = 1 - mean(error))</code></pre>
+</div>
+<div id="establishing-overall-error-rate-per-participant" class="section level3">
+<h3><span class="header-section-number">3.2.3</span> Establishing overall error rate per participant</h3>
 <pre class="r"><code>#no more removal needed for round 1
 correct_all_rate1 &lt;-
   gnat_important1 %&gt;% 
@@ -573,6 +567,17 @@ correct_all_rate2 &lt;-
   filter(target %in% important_targets) %&gt;%
   group_by(id) %&gt;% 
   summarise(correct_all = 1 - mean(error))</code></pre>
+</div>
+<div id="filtering-observations-based-on-error-rate" class="section level3">
+<h3><span class="header-section-number">3.2.4</span> Filtering observations based on error rate</h3>
+<p>Criteria:</p>
+<ul>
+<li>Block error rate below 60%</li>
+<li>Overall error rate below 80%</li>
+<li>Erroneous association</li>
+<li>Response latency under 300 ms</li>
+<li>Response latency <span class="math inline">\(3*SD\)</span> above average RT</li>
+</ul>
 <pre class="r"><code>#must delete these observations due to high block error rate from round1
 final_gnat1 &lt;-
   gnat_important1 %&gt;% 
@@ -587,6 +592,7 @@ final_gnat2 &lt;-
   left_join(correct_all_rate2, by = c(&quot;id&quot;)) %&gt;% 
   filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
   filter(rt &gt; 300 &amp; rt &lt; 1153)</code></pre>
+<p>Determining average RT and SD for previous filter</p>
 <pre class="r"><code>#deleting rows with too quick and too slow response windows for round1 (too quick is 300 and too slow is 3 SD above averagert ==663+166*3)
 final_gnat1 %&gt;% 
   summarise(pers_a = mean(rt))</code></pre>
@@ -613,6 +619,7 @@ final_gnat2 %&gt;%
 ##   pers_sd
 ##     &lt;dbl&gt;
 ## 1    145.</code></pre>
+</div>
 </div>
 </div>
 
