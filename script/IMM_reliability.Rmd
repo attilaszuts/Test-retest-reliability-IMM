@@ -11,7 +11,7 @@ editor_options:
   chunk_output_type: console
 ---
 ```{r include=FALSE}
-setwd("D:/Documents/Egyebek/Thesis")
+knitr::opts_knit$set(root.dir = "D:/Documents/Egyebek/Thesis")
 ```
 # Data input and opening libraries
 
@@ -109,6 +109,8 @@ joined$group <- ifelse(joined$TIME_between_end > 20, 1, 0)
 # if there are more than 20 days between administration it is assigned 1, else 0
 joined %>% 
   count(group)
+joined <- joined %>% 
+  rename(neptun = `Neptun:1`)
 ```
 
 ## Plotting frequency of number of days between data collections
@@ -117,6 +119,7 @@ joined$TIME_between_end <- as.numeric(joined$TIME_between_end)
 plot <- ggplot(joined, aes(TIME_between_end))
 plot + geom_bar()
 ```
+
 ## Data cleaning
 
 import data
@@ -135,7 +138,7 @@ explicit_raw2 <-
   clean_names()
 ```
 
-
+round 1
 ```{r}
 #reversing items
 explicit_reversed1 <- 
@@ -181,9 +184,10 @@ explicit_coded1 <- explicit_coded1 %>%
 #final explicit data
 explicit1 <-
   explicit_coded1 %>% 
-  select(id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)
+  select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)
 ```
 
+round 2
 ```{r}
 #reversing items
 explicit_reversed2 <- 
@@ -229,7 +233,7 @@ explicit_coded2 <- explicit_coded2 %>%
 #final explicit data
 explicit2 <-
   explicit_coded2 %>% 
-  select(id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)
+  select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)
 ```
 
 
@@ -436,17 +440,16 @@ renaming columns respectively
 ```{r}
 old_names1 <- colnames(final_data1)
 old_names2 <- colnames(final_data2)
-round1_names <- c("id1", "chall_neg1", "chall_pos1", "crit_neg1", "crit_pos1", "challenge_d1", "crit_d1", "gender_1", "age_1", "iqms_avg1", "crms_avg1", "chms_avg1", "fms_avg1", "fsc_avg1", "crsc_avg1", "challengescenario_1")
-round2_names <- c("id2", "chall_neg2", "chall_pos2", "crit_neg2", "crit_pos2", "challenge_d2", "crit_d2", "gender_2", "age_2", "iqms_avg2", "crms_avg2", "chms_avg2", "fms_avg2", "fsc_avg2", "crsc_avg2", "challengescenario_2")
+round1_names <- c("id1", "chall_neg1", "chall_pos1", "crit_neg1", "crit_pos1", "challenge_d1", "crit_d1", "neptun", "gender_1", "age_1", "iqms_avg1", "crms_avg1", "chms_avg1", "fms_avg1", "fsc_avg1", "crsc_avg1", "challengescenario_1")
+round2_names <- c("id2", "chall_neg2", "chall_pos2", "crit_neg2", "crit_pos2", "challenge_d2", "crit_d2", "neptun", "gender_2", "age_2", "iqms_avg2", "crms_avg2", "chms_avg2", "fms_avg2", "fsc_avg2", "crsc_avg2", "challengescenario_2")
 
 setnames(final_data1, old = old_names1, new = round1_names)
 setnames(final_data2, old = old_names2, new = round2_names)
 ```
 
 
-
 joining round 1 and round 2 data
 ```{r}
-
+round12 <- left_join(final_data2, final_data1, by = "neptun")
 ```
 
