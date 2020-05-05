@@ -234,8 +234,31 @@ final_gnat2 %>%
 ```
 
 ## Rows that have been removed
+Every row that has been removed from further analysis.
 ```{r}
-final_filtered1 <- 
-  setdiff(final_gnat1, gnat_important1)
+final_diff1 <- 
+  setdiff(gnat_important1, final_gnat1[, -c(11,12)])
+
+temp_df <- 
+    intersect(gnat_important1, final_gnat1[, -c(11,12)])
+
+final_diff1 <- 
+  setdiff(gnat_important1, kaka)
+```
+
+Participants that have been excluded due to high overall error rate.
+```{r}
+#participants from round 1 that had exceeded 80% error rate
+participants_removed1 <- 
+  gnat_important1 %>% 
+  left_join(correct_all_rate1, by = c("id")) %>%
+  filter(correct_all <= 0.8)
+p_rem_id1 <- unique(participants_removed1$id)
+#participants from round 2 that had exceeded 80% error rate
+participants_removed2 <- 
+  gnat_important2 %>% 
+  left_join(correct_all_rate2, by = c("id")) %>%
+  filter(correct_all <= 0.8)
+p_rem_id2 <- unique(participants_removed2$id)
 ```
 
