@@ -238,12 +238,12 @@ Every row that has been removed from further analysis.
 ```{r}
 final_diff1 <- 
   setdiff(gnat_important1, final_gnat1[, -c(11,12)])
-
-temp_df <- 
-    intersect(gnat_important1, final_gnat1[, -c(11,12)])
-
-final_diff1 <- 
-  setdiff(gnat_important1, kaka)
+final_diff2 <- 
+  setdiff(gnat_important2, final_gnat2[, -c(11,12)])
+common1 <- 
+  inner_join(gnat_important1, final_gnat1)
+common2 <- 
+  inner_join(gnat_important2, final_gnat2)
 ```
 
 Participants that have been excluded due to high overall error rate.
