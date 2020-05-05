@@ -16,7 +16,7 @@ setwd("D:/Documents/Egyebek/Thesis")
 # Data input and opening libraries
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
-library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr); library(vroom); library(janitor); library(widyr)
+library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr); library(vroom); library(janitor); library(widyr); library(data.table)
 ```
 
 # Explicit Measures
@@ -119,10 +119,27 @@ plot + geom_bar()
 ```
 ## Data cleaning
 
+import data
+```{r}
+explicit_raw1 <- 
+  read_excel("data/Round 1/data.xlsx", 1) %>%
+  extract(col = participant, 
+          into = c(NA, "id", NA), 
+          regex = "^(.*s.)(.*)(.txt)$") %>% 
+  clean_names()
+explicit_raw2 <- 
+  read_excel("data/Round 2/data.xlsx", 1) %>%
+  extract(col = participant, 
+          into = c(NA, "id", NA), 
+          regex = "^(.*s.)(.*)(.txt)$") %>% 
+  clean_names()
+```
+
+
 ```{r}
 #reversing items
-explicit_reversed <- 
-  explicit_raw %>% 
+explicit_reversed1 <- 
+  explicit_raw1 %>% 
   mutate_at(vars(iq1_1, iq2_1, fms3_1, fms4_1, cr_ms3_1, cr_ms4_1, ch_ms3_1, ch_ms4_1), 
             ~recode(., `1` = 6,
                     `2` = 5,
@@ -132,8 +149,8 @@ explicit_reversed <-
                     `6` = 1,
             ))
 
-explicit_reversed <- 
-  explicit_reversed %>% 
+explicit_reversed1 <- 
+  explicit_reversed1 %>% 
   mutate_at(vars(failurescenario_1, criticismscenario_1), 
             ~recode(., `1` = 5,
                     `2` = 4,
@@ -142,28 +159,76 @@ explicit_reversed <-
             ))
 
 #creating means of explicit measures
-explicit_coded <-
-  explicit_reversed %>%
+explicit_coded1 <-
+  explicit_reversed1 %>%
   mutate(iqms_avg = rowMeans(x = select(.data = ., starts_with(match = "iq"))))
 
-explicit_coded <- explicit_coded %>%
+explicit_coded1 <- explicit_coded1 %>%
   mutate(crms_avg = rowMeans(x = select(.data = ., starts_with(match = "cr_ms"))))
 
-explicit_coded <- explicit_coded %>%
+explicit_coded1 <- explicit_coded1 %>%
   mutate(chms_avg = rowMeans(x = select(.data = ., starts_with(match = "ch_ms"))))
 
-explicit_coded <- explicit_coded %>%
+explicit_coded1 <- explicit_coded1 %>%
   mutate(fms_avg = rowMeans(x = select(.data = ., starts_with(match = "fms"))))
 
-explicit_coded <- explicit_coded %>%
+explicit_coded1 <- explicit_coded1 %>%
   mutate(fsc_avg = rowMeans(x = select(.data = ., starts_with(match = "failure"))))
 
-explicit_coded <- explicit_coded %>%
+explicit_coded1 <- explicit_coded1 %>%
   mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = "criticism"))))
 
 #final explicit data
-explicit <-
-  explicit_coded %>% 
+explicit1 <-
+  explicit_coded1 %>% 
+  select(id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)
+```
+
+```{r}
+#reversing items
+explicit_reversed2 <- 
+  explicit_raw2 %>% 
+  mutate_at(vars(iq1_1, iq2_1, fms3_1, fms4_1, cr_ms3_1, cr_ms4_1, ch_ms3_1, ch_ms4_1), 
+            ~recode(., `1` = 6,
+                    `2` = 5,
+                    `3` = 4,
+                    `4` = 3,
+                    `5` = 2,
+                    `6` = 1,
+            ))
+
+explicit_reversed2 <- 
+  explicit_reversed2 %>% 
+  mutate_at(vars(failurescenario_1, criticismscenario_1), 
+            ~recode(., `1` = 5,
+                    `2` = 4,
+                    `4` = 2,
+                    `5` = 1,
+            ))
+
+#creating means of explicit measures
+explicit_coded2 <-
+  explicit_reversed2 %>%
+  mutate(iqms_avg = rowMeans(x = select(.data = ., starts_with(match = "iq"))))
+
+explicit_coded2 <- explicit_coded2 %>%
+  mutate(crms_avg = rowMeans(x = select(.data = ., starts_with(match = "cr_ms"))))
+
+explicit_coded2 <- explicit_coded2 %>%
+  mutate(chms_avg = rowMeans(x = select(.data = ., starts_with(match = "ch_ms"))))
+
+explicit_coded2 <- explicit_coded2 %>%
+  mutate(fms_avg = rowMeans(x = select(.data = ., starts_with(match = "fms"))))
+
+explicit_coded2 <- explicit_coded2 %>%
+  mutate(fsc_avg = rowMeans(x = select(.data = ., starts_with(match = "failure"))))
+
+explicit_coded2 <- explicit_coded2 %>%
+  mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = "criticism"))))
+
+#final explicit data
+explicit2 <-
+  explicit_coded2 %>% 
   select(id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)
 ```
 
@@ -354,15 +419,34 @@ dscores2 <-
          crit_d = crit_neg - crit_pos)
 ```
 
-collecting all data in one dataframe
+### Collecting all data in one dataframe
+joining implicit data with respective explicit data
 ```{r}
-#joining d-scores with round 1
+#joining implicit with round 1 explicit measures
 final_data1 <- 
   dscores1 %>% 
-  left_join(explicit, by = "id")
-#joining d-scores with round 2
+  left_join(explicit1, by = "id") 
+#joining implicit with round 2 explicit measures
 final_data2 <- 
   dscores2 %>% 
-  left_join(explicit, by = "id")
+  left_join(explicit2, by = "id")
+```
+
+renaming columns respectively
+```{r}
+old_names1 <- colnames(final_data1)
+old_names2 <- colnames(final_data2)
+round1_names <- c("id1", "chall_neg1", "chall_pos1", "crit_neg1", "crit_pos1", "challenge_d1", "crit_d1", "gender_1", "age_1", "iqms_avg1", "crms_avg1", "chms_avg1", "fms_avg1", "fsc_avg1", "crsc_avg1", "challengescenario_1")
+round2_names <- c("id2", "chall_neg2", "chall_pos2", "crit_neg2", "crit_pos2", "challenge_d2", "crit_d2", "gender_2", "age_2", "iqms_avg2", "crms_avg2", "chms_avg2", "fms_avg2", "fsc_avg2", "crsc_avg2", "challengescenario_2")
+
+setnames(final_data1, old = old_names1, new = round1_names)
+setnames(final_data2, old = old_names2, new = round2_names)
+```
+
+
+
+joining round 1 and round 2 data
+```{r}
+
 ```
 
