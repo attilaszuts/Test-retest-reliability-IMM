@@ -117,6 +117,56 @@ joined$TIME_between_end <- as.numeric(joined$TIME_between_end)
 plot <- ggplot(joined, aes(TIME_between_end))
 plot + geom_bar()
 ```
+## Data cleaning
+
+```{r}
+#reversing items
+explicit_reversed <- 
+  explicit_raw %>% 
+  mutate_at(vars(iq1_1, iq2_1, fms3_1, fms4_1, cr_ms3_1, cr_ms4_1, ch_ms3_1, ch_ms4_1), 
+            ~recode(., `1` = 6,
+                    `2` = 5,
+                    `3` = 4,
+                    `4` = 3,
+                    `5` = 2,
+                    `6` = 1,
+            ))
+
+explicit_reversed <- 
+  explicit_reversed %>% 
+  mutate_at(vars(failurescenario_1, criticismscenario_1), 
+            ~recode(., `1` = 5,
+                    `2` = 4,
+                    `4` = 2,
+                    `5` = 1,
+            ))
+
+#creating means of explicit measures
+explicit_coded <-
+  explicit_reversed %>%
+  mutate(iqms_avg = rowMeans(x = select(.data = ., starts_with(match = "iq"))))
+
+explicit_coded <- explicit_coded %>%
+  mutate(crms_avg = rowMeans(x = select(.data = ., starts_with(match = "cr_ms"))))
+
+explicit_coded <- explicit_coded %>%
+  mutate(chms_avg = rowMeans(x = select(.data = ., starts_with(match = "ch_ms"))))
+
+explicit_coded <- explicit_coded %>%
+  mutate(fms_avg = rowMeans(x = select(.data = ., starts_with(match = "fms"))))
+
+explicit_coded <- explicit_coded %>%
+  mutate(fsc_avg = rowMeans(x = select(.data = ., starts_with(match = "failure"))))
+
+explicit_coded <- explicit_coded %>%
+  mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = "criticism"))))
+
+#final explicit data
+explicit <-
+  explicit_coded %>% 
+  select(id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)
+```
+
 
 # Implicit measure
 
@@ -233,7 +283,7 @@ final_gnat2 %>%
   summarise(pers_sd = sd(rt))
 ```
 
-## Rows that have been removed
+### Rows that have been removed
 Every row that has been removed from further analysis.
 ```{r}
 final_diff1 <- 
@@ -254,16 +304,65 @@ participants_removed1 <-
   left_join(correct_all_rate1, by = c("id")) %>%
   filter(correct_all <= 0.8)
 p_rem_id1 <- unique(participants_removed1$id)
-#number of participants removed from first round
-length(p_rem_id1)
 #participants from round 2 that had exceeded 80% error rate
 participants_removed2 <- 
   gnat_important2 %>% 
   left_join(correct_all_rate2, by = c("id")) %>%
   filter(correct_all <= 0.8)
 p_rem_id2 <- unique(participants_removed2$id)
-#number of participants removed from second round
+
+```
+number of participants removed from first round:
+```{r}
+length(p_rem_id1)
+```
+number of participants removed from second round
+```{r}
 length(p_rem_id2)
-#participants removed from the first round that have also been removed from the second round -> no participants from both
+```
+participants removed from the first round that have also been removed from the second round -> no participants from both
+```{r}
 p_rem_id1[(p_rem_id1 %in% p_rem_id2)]
 ```
+### Calculating d-scores
+```{r}
+#d-scores for round 1
+dscores1 <-
+  final_gnat1 %>% 
+  group_by(id) %>% 
+  mutate(pers_sd = sd(rt)) %>% 
+  group_by(id, target, pers_sd) %>% 
+  summarise(pers_block_avg = mean(rt)) %>% 
+  mutate(d = pers_block_avg/pers_sd) %>% 
+  ungroup() %>% 
+  select(-pers_block_avg, -pers_sd) %>%
+  spread(target, d) %>% 
+  mutate(challange_d = chall_neg - chall_pos,
+         crit_d = crit_neg - crit_pos)
+#d-scores for round 2
+dscores2 <-
+  final_gnat2 %>% 
+  group_by(id) %>% 
+  mutate(pers_sd = sd(rt)) %>% 
+  group_by(id, target, pers_sd) %>% 
+  summarise(pers_block_avg = mean(rt)) %>% 
+  mutate(d = pers_block_avg/pers_sd) %>% 
+  ungroup() %>% 
+  select(-pers_block_avg, -pers_sd) %>%
+  spread(target, d) %>% 
+  mutate(challange_d = chall_neg - chall_pos,
+         crit_d = crit_neg - crit_pos)
+```
+
+collecting all data in one dataframe
+```{r}
+#joining d-scores with round 1
+final_data1 <- 
+  dscores1 %>% 
+  left_join(explicit, by = "id")
+#joining d-scores with round 2
+final_data2 <- 
+  dscores2 %>% 
+  left_join(explicit, by = "id")
+```
+

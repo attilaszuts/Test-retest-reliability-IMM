@@ -398,6 +398,7 @@ summary {
 <li><a href="#establishing-overall-error-rate-per-participant"><span class="toc-section-number">3.2.3</span> Establishing overall error rate per participant</a></li>
 <li><a href="#filtering-observations-based-on-error-rate"><span class="toc-section-number">3.2.4</span> Filtering observations based on error rate</a></li>
 </ul></li>
+<li><a href="#rows-that-have-been-removed"><span class="toc-section-number">3.3</span> Rows that have been removed</a></li>
 </ul></li>
 </ul>
 </div>
@@ -620,6 +621,42 @@ final_gnat2 %&gt;%
 ##     &lt;dbl&gt;
 ## 1    145.</code></pre>
 </div>
+</div>
+<div id="rows-that-have-been-removed" class="section level2">
+<h2><span class="header-section-number">3.3</span> Rows that have been removed</h2>
+<p>Every row that has been removed from further analysis.</p>
+<pre class="r"><code>final_diff1 &lt;- 
+  setdiff(gnat_important1, final_gnat1[, -c(11,12)])
+final_diff2 &lt;- 
+  setdiff(gnat_important2, final_gnat2[, -c(11,12)])
+common1 &lt;- 
+  inner_join(gnat_important1, final_gnat1)</code></pre>
+<pre><code>## Joining, by = c(&quot;id&quot;, &quot;block&quot;, &quot;block_id&quot;, &quot;word&quot;, &quot;max_rt&quot;, &quot;trial_type&quot;, &quot;word_category&quot;, &quot;rt&quot;, &quot;error&quot;, &quot;target&quot;)</code></pre>
+<pre class="r"><code>common2 &lt;- 
+  inner_join(gnat_important2, final_gnat2)</code></pre>
+<pre><code>## Joining, by = c(&quot;id&quot;, &quot;block&quot;, &quot;block_id&quot;, &quot;word&quot;, &quot;max_rt&quot;, &quot;trial_type&quot;, &quot;word_category&quot;, &quot;rt&quot;, &quot;error&quot;, &quot;target&quot;)</code></pre>
+<p>Participants that have been excluded due to high overall error rate.</p>
+<pre class="r"><code>#participants from round 1 that had exceeded 80% error rate
+participants_removed1 &lt;- 
+  gnat_important1 %&gt;% 
+  left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;%
+  filter(correct_all &lt;= 0.8)
+p_rem_id1 &lt;- unique(participants_removed1$id)
+#participants from round 2 that had exceeded 80% error rate
+participants_removed2 &lt;- 
+  gnat_important2 %&gt;% 
+  left_join(correct_all_rate2, by = c(&quot;id&quot;)) %&gt;%
+  filter(correct_all &lt;= 0.8)
+p_rem_id2 &lt;- unique(participants_removed2$id)</code></pre>
+<p>number of participants removed from first round:</p>
+<pre class="r"><code>length(p_rem_id1)</code></pre>
+<pre><code>## [1] 4</code></pre>
+<p>number of participants removed from second round</p>
+<pre class="r"><code>length(p_rem_id2)</code></pre>
+<pre><code>## [1] 2</code></pre>
+<p>participants removed from the first round that have also been removed from the second round -&gt; no participants from both</p>
+<pre class="r"><code>p_rem_id1[(p_rem_id1 %in% p_rem_id2)]</code></pre>
+<pre><code>## character(0)</code></pre>
 </div>
 </div>
 
