@@ -377,7 +377,7 @@ summary {
 <div id="TOC">
 <ul>
 <li><a href="#data-input-and-opening-libraries"><span class="toc-section-number">1</span> Data input and opening libraries</a></li>
-<li><a href="#explicit-measures"><span class="toc-section-number">2</span> Explicit Measures</a><ul>
+<li><a href="#creating-groups"><span class="toc-section-number">2</span> Creating groups</a><ul>
 <li><a href="#responses-that-have-not-been-completed"><span class="toc-section-number">2.1</span> Responses that have not been completed</a></li>
 <li><a href="#uniting-round1-and-round2-explicit-measures"><span class="toc-section-number">2.2</span> Uniting round1 and round2 explicit measures</a><ul>
 <li><a href="#joining-separate-rounds"><span class="toc-section-number">2.2.1</span> Joining separate rounds</a></li>
@@ -389,24 +389,28 @@ summary {
 <li><a href="#counting-number-of-participants-in-groups"><span class="toc-section-number">2.3.4</span> Counting number of participants in groups</a></li>
 </ul></li>
 <li><a href="#plotting-frequency-of-number-of-days-between-data-collections"><span class="toc-section-number">2.4</span> Plotting frequency of number of days between data collections</a></li>
-<li><a href="#data-cleaning"><span class="toc-section-number">2.5</span> Data cleaning</a></li>
 </ul></li>
-<li><a href="#implicit-measure"><span class="toc-section-number">3</span> Implicit measure</a><ul>
-<li><a href="#importing-data"><span class="toc-section-number">3.1</span> Importing data</a></li>
-<li><a href="#data-cleaning-1"><span class="toc-section-number">3.2</span> Data cleaning</a><ul>
-<li><a href="#keeping-only-important-blocks"><span class="toc-section-number">3.2.1</span> Keeping only important blocks</a></li>
-<li><a href="#establishing-block-error-rate-per-participant"><span class="toc-section-number">3.2.2</span> Establishing block error rate per participant</a></li>
-<li><a href="#establishing-overall-error-rate-per-participant"><span class="toc-section-number">3.2.3</span> Establishing overall error rate per participant</a></li>
-<li><a href="#filtering-observations-based-on-error-rate"><span class="toc-section-number">3.2.4</span> Filtering observations based on error rate</a></li>
-<li><a href="#rows-that-have-been-removed"><span class="toc-section-number">3.2.5</span> Rows that have been removed</a></li>
-<li><a href="#calculating-d-scores"><span class="toc-section-number">3.2.6</span> Calculating d-scores</a></li>
-<li><a href="#collecting-all-data-in-one-dataframe"><span class="toc-section-number">3.2.7</span> Collecting all data in one dataframe</a></li>
+<li><a href="#round-1-data"><span class="toc-section-number">3</span> Round 1 data</a><ul>
+<li><a href="#explicit-measure"><span class="toc-section-number">3.1</span> Explicit measure</a><ul>
+<li><a href="#data-cleaning"><span class="toc-section-number">3.1.1</span> Data cleaning</a></li>
 </ul></li>
-<li><a href="#analysis"><span class="toc-section-number">3.3</span> Analysis</a><ul>
-<li><a href="#assumption-checks"><span class="toc-section-number">3.3.1</span> Assumption checks</a></li>
-<li><a href="#hypothesis-testing"><span class="toc-section-number">3.3.2</span> Hypothesis testing</a></li>
-<li><a href="#plots-and-figures"><span class="toc-section-number">3.3.3</span> Plots and figures</a></li>
+<li><a href="#implicit-measure"><span class="toc-section-number">3.2</span> Implicit measure</a><ul>
+<li><a href="#data-cleaning-1"><span class="toc-section-number">3.2.1</span> Data cleaning</a></li>
 </ul></li>
+</ul></li>
+<li><a href="#round-2-data"><span class="toc-section-number">4</span> Round 2 data</a><ul>
+<li><a href="#explicit-measure-1"><span class="toc-section-number">4.1</span> Explicit measure</a><ul>
+<li><a href="#data-cleaning-2"><span class="toc-section-number">4.1.1</span> Data cleaning</a></li>
+</ul></li>
+<li><a href="#implicit-measure-1"><span class="toc-section-number">4.2</span> Implicit measure</a><ul>
+<li><a href="#data-cleaning-3"><span class="toc-section-number">4.2.1</span> Data cleaning</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#collecting-all-data-in-one-dataframe"><span class="toc-section-number">5</span> Collecting all data in one dataframe</a></li>
+<li><a href="#analysis"><span class="toc-section-number">6</span> Analysis</a><ul>
+<li><a href="#assumption-checks"><span class="toc-section-number">6.1</span> Assumption checks</a></li>
+<li><a href="#hypothesis-testing"><span class="toc-section-number">6.2</span> Hypothesis testing</a></li>
+<li><a href="#plots-and-figures"><span class="toc-section-number">6.3</span> Plots and figures</a></li>
 </ul></li>
 </ul>
 </div>
@@ -415,8 +419,8 @@ summary {
 <h1><span class="header-section-number">1</span> Data input and opening libraries</h1>
 <pre class="r"><code>library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr); library(vroom); library(janitor); library(widyr); library(data.table)</code></pre>
 </div>
-<div id="explicit-measures" class="section level1">
-<h1><span class="header-section-number">2</span> Explicit Measures</h1>
+<div id="creating-groups" class="section level1">
+<h1><span class="header-section-number">2</span> Creating groups</h1>
 <p>Reading in data files</p>
 <pre class="r"><code>round1 &lt;- read_csv(&quot;D:/Documents/Egyebek/Thesis/data/Round 1/data.csv&quot;)
 round2 &lt;- read_csv(&quot;D:/Documents/Egyebek/Thesis/data/Round 2/data.csv&quot;)</code></pre>
@@ -510,17 +514,16 @@ plot &lt;- ggplot(joined, aes(TIME_between_end))
 plot + geom_bar() + xlab(&#39;Days between measures&#39;) + ylab(&#39;Number of particpants&#39;) + theme_classic()</code></pre>
 <p><img src="data:image/png;base64,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" width="672" /></p>
 </div>
-<div id="data-cleaning" class="section level2">
-<h2><span class="header-section-number">2.5</span> Data cleaning</h2>
+</div>
+<div id="round-1-data" class="section level1">
+<h1><span class="header-section-number">3</span> Round 1 data</h1>
+<div id="explicit-measure" class="section level2">
+<h2><span class="header-section-number">3.1</span> Explicit measure</h2>
+<div id="data-cleaning" class="section level3">
+<h3><span class="header-section-number">3.1.1</span> Data cleaning</h3>
 <p>import data</p>
 <pre class="r"><code>explicit_raw1 &lt;- 
   read_excel(&quot;D:/Documents/Egyebek/Thesis/data/Round 1/data.xlsx&quot;, 1) %&gt;%
-  extract(col = participant, 
-          into = c(NA, &quot;id&quot;, NA), 
-          regex = &quot;^(.*s.)(.*)(.txt)$&quot;) %&gt;% 
-  clean_names()
-explicit_raw2 &lt;- 
-  read_excel(&quot;D:/Documents/Egyebek/Thesis/data/Round 2/data.xlsx&quot;, 1) %&gt;%
   extract(col = participant, 
           into = c(NA, &quot;id&quot;, NA), 
           regex = &quot;^(.*s.)(.*)(.txt)$&quot;) %&gt;% 
@@ -571,6 +574,121 @@ explicit_coded1 &lt;- explicit_coded1 %&gt;%
 explicit1 &lt;-
   explicit_coded1 %&gt;% 
   select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)</code></pre>
+</div>
+</div>
+<div id="implicit-measure" class="section level2">
+<h2><span class="header-section-number">3.2</span> Implicit measure</h2>
+<div id="data-cleaning-1" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> Data cleaning</h3>
+<p>Importing data</p>
+<pre class="r"><code>#defining path
+files1 &lt;- list.files(path = &quot;D:/Documents/Egyebek/Thesis/data/Round 1&quot;, pattern = &quot;immtest.*.txt$&quot;, full.names = TRUE)
+
+#importing data files
+gnat_raw1 &lt;- 
+  vroom::vroom(file = files1, 
+        id = &quot;id&quot;, 
+        col_names = c(&quot;block&quot;, &quot;block_id&quot;, &quot;word&quot;, &quot;max_rt&quot;, &quot;trial_type&quot;, &quot;word_category&quot;, &quot;rt&quot;, &quot;error&quot;, &quot;target&quot;)) %&gt;% 
+  extract(col = id, 
+          into = c(NA, &quot;id&quot;, NA), 
+          regex = &quot;^(.*data.)(.*)(.txt)$&quot;)</code></pre>
+<p>Keeping only important blocks</p>
+<pre class="r"><code>important_targets &lt;- c(&quot;chall_pos&quot;, &quot;chall_neg&quot;, &quot;crit_pos&quot;, &quot;crit_neg&quot;)
+
+#filter only important trials and only go_trials for first round
+gnat_important1 &lt;- 
+  gnat_raw1 %&gt;% 
+  filter(target %in%important_targets) %&gt;% 
+  filter(trial_type == &#39;go_trial&#39;)</code></pre>
+<p>Establishing block error rate per participant</p>
+<pre class="r"><code>#checking for block error rate above 40% for first round
+correct_block_rate1 &lt;- 
+  gnat_important1 %&gt;% 
+  group_by(id, target) %&gt;% 
+  summarise(correct_block = 1 - mean(error))</code></pre>
+<p>Establishing overall error rate per participant</p>
+<pre class="r"><code>#no more removal needed for round 1
+correct_all_rate1 &lt;-
+  gnat_important1 %&gt;% 
+  filter(target %in% important_targets) %&gt;%
+  group_by(id) %&gt;% 
+  summarise(correct_all = 1 - mean(error))</code></pre>
+<p>Filtering observations based on error rate</p>
+<p>Criteria:</p>
+<ul>
+<li>Block error rate below 60%</li>
+<li>Overall error rate below 80%</li>
+<li>Erroneous association</li>
+<li>Response latency under 300 ms</li>
+<li>Response latency <span class="math inline">\(3*SD\)</span> above average RT</li>
+</ul>
+<p>Determining average RT and SD for previous filter</p>
+<pre class="r"><code>#deleting rows with too quick and too slow response windows for round1 (too quick is 300 and too slow is 3 SD above average rt)
+rt_mean1 &lt;- as.integer(gnat_important1 %&gt;% 
+                         left_join(correct_block_rate1, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
+                         left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;% 
+                         filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
+                         summarise(pers_a = mean(rt)))
+
+rt_sd1 &lt;- as.integer(gnat_important1 %&gt;% 
+                       left_join(correct_block_rate1, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
+                       left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;% 
+                       filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
+                       summarise(pers_sd = sd(rt)))
+
+rt_filter1 &lt;- (rt_sd1 * 3) + rt_mean1</code></pre>
+<p>Deleting rows based on exclusion criteria</p>
+<pre class="r"><code>#must delete these observations due to high block error rate from round1
+final_gnat1 &lt;-
+  gnat_important1 %&gt;% 
+  left_join(correct_block_rate1, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
+  left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;% 
+  filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
+  filter(rt &gt; 300 &amp; rt &lt; rt_filter1)</code></pre>
+<p>Rows that have been removed</p>
+<p>Every row that has been removed from further analysis.</p>
+<pre class="r"><code>final_diff1 &lt;- 
+  dplyr::setdiff(gnat_important1, final_gnat1[, -c(11,12)])</code></pre>
+<p>Participants that have been excluded due to high overall error rate.</p>
+<pre class="r"><code>#participants from round 1 that had exceeded 80% error rate
+participants_removed1 &lt;- 
+  gnat_important1 %&gt;% 
+  left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;%
+  filter(correct_all &lt;= 0.8)
+p_rem_id1 &lt;- unique(participants_removed1$id)</code></pre>
+<p>number of participants removed from first round:</p>
+<pre class="r"><code>length(p_rem_id1)</code></pre>
+<pre><code>## [1] 4</code></pre>
+<p>Calculating d-scores</p>
+<pre class="r"><code>#d-scores for round 1
+dscores1 &lt;-
+  final_gnat1 %&gt;% 
+  group_by(id) %&gt;% 
+  mutate(pers_sd = sd(rt)) %&gt;% 
+  group_by(id, target, pers_sd) %&gt;% 
+  summarise(pers_block_avg = mean(rt)) %&gt;% 
+  mutate(d = pers_block_avg/pers_sd) %&gt;% 
+  ungroup() %&gt;% 
+  select(-pers_block_avg, -pers_sd) %&gt;%
+  spread(target, d) %&gt;% 
+  mutate(challange_d = chall_neg - chall_pos,
+         crit_d = crit_neg - crit_pos)</code></pre>
+</div>
+</div>
+</div>
+<div id="round-2-data" class="section level1">
+<h1><span class="header-section-number">4</span> Round 2 data</h1>
+<div id="explicit-measure-1" class="section level2">
+<h2><span class="header-section-number">4.1</span> Explicit measure</h2>
+<div id="data-cleaning-2" class="section level3">
+<h3><span class="header-section-number">4.1.1</span> Data cleaning</h3>
+<p>import data</p>
+<pre class="r"><code>explicit_raw2 &lt;- 
+  read_excel(&quot;D:/Documents/Egyebek/Thesis/data/Round 2/data.xlsx&quot;, 1) %&gt;%
+  extract(col = participant, 
+          into = c(NA, &quot;id&quot;, NA), 
+          regex = &quot;^(.*s.)(.*)(.txt)$&quot;) %&gt;% 
+  clean_names()</code></pre>
 <p>round 2</p>
 <pre class="r"><code>#reversing items
 explicit_reversed2 &lt;- 
@@ -619,22 +737,15 @@ explicit2 &lt;-
   select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)</code></pre>
 </div>
 </div>
-<div id="implicit-measure" class="section level1">
-<h1><span class="header-section-number">3</span> Implicit measure</h1>
-<div id="importing-data" class="section level2">
-<h2><span class="header-section-number">3.1</span> Importing data</h2>
+<div id="implicit-measure-1" class="section level2">
+<h2><span class="header-section-number">4.2</span> Implicit measure</h2>
+<div id="data-cleaning-3" class="section level3">
+<h3><span class="header-section-number">4.2.1</span> Data cleaning</h3>
+<p>Importing data</p>
 <pre class="r"><code>#defining path
-files1 &lt;- list.files(path = &quot;D:/Documents/Egyebek/Thesis/data/Round 1&quot;, pattern = &quot;immtest.*.txt$&quot;, full.names = TRUE)
 files2 &lt;- list.files(path = &quot;D:/Documents/Egyebek/Thesis/data/Round 2&quot;, pattern = &quot;immtest.*.txt$&quot;, full.names = TRUE)
 
 #importing data files
-gnat_raw1 &lt;- 
-  vroom::vroom(file = files1, 
-        id = &quot;id&quot;, 
-        col_names = c(&quot;block&quot;, &quot;block_id&quot;, &quot;word&quot;, &quot;max_rt&quot;, &quot;trial_type&quot;, &quot;word_category&quot;, &quot;rt&quot;, &quot;error&quot;, &quot;target&quot;)) %&gt;% 
-  extract(col = id, 
-          into = c(NA, &quot;id&quot;, NA), 
-          regex = &quot;^(.*data.)(.*)(.txt)$&quot;)
 gnat_raw2 &lt;- 
   vroom::vroom(file = files2, 
         id = &quot;id&quot;, 
@@ -642,54 +753,26 @@ gnat_raw2 &lt;-
   extract(col = id, 
           into = c(NA, &quot;id&quot;, NA), 
           regex = &quot;^(.*data.)(.*)(.txt)$&quot;)</code></pre>
-</div>
-<div id="data-cleaning-1" class="section level2">
-<h2><span class="header-section-number">3.2</span> Data cleaning</h2>
-<div id="keeping-only-important-blocks" class="section level3">
-<h3><span class="header-section-number">3.2.1</span> Keeping only important blocks</h3>
-<pre class="r"><code>important_targets &lt;- c(&quot;chall_pos&quot;, &quot;chall_neg&quot;, &quot;crit_pos&quot;, &quot;crit_neg&quot;)
-
-#filter only important trials and only go_trials for first round
-gnat_important1 &lt;- 
-  gnat_raw1 %&gt;% 
-  filter(target %in%important_targets) %&gt;% 
-  filter(trial_type == &#39;go_trial&#39;)
-#filter only important trials and only go_trials for second round
+<p>Keeping only important blocks</p>
+<pre class="r"><code>#filter only important trials and only go_trials for second round
 gnat_important2 &lt;- 
   gnat_raw2 %&gt;% 
   filter(target %in%important_targets) %&gt;% 
   filter(trial_type == &#39;go_trial&#39;)</code></pre>
-</div>
-<div id="establishing-block-error-rate-per-participant" class="section level3">
-<h3><span class="header-section-number">3.2.2</span> Establishing block error rate per participant</h3>
-<pre class="r"><code>#checking for block error rate above 40% for first round
-correct_block_rate1 &lt;- 
-  gnat_important1 %&gt;% 
-  group_by(id, target) %&gt;% 
-  summarise(correct_block = 1 - mean(error))
-#checking for block error rate above 40% for second round
+<p>Establishing block error rate per participant</p>
+<pre class="r"><code>#checking for block error rate above 40% for second round
 correct_block_rate2 &lt;- 
   gnat_important2 %&gt;% 
   group_by(id, target) %&gt;% 
   summarise(correct_block = 1 - mean(error))</code></pre>
-</div>
-<div id="establishing-overall-error-rate-per-participant" class="section level3">
-<h3><span class="header-section-number">3.2.3</span> Establishing overall error rate per participant</h3>
-<pre class="r"><code>#no more removal needed for round 1
-correct_all_rate1 &lt;-
-  gnat_important1 %&gt;% 
-  filter(target %in% important_targets) %&gt;%
-  group_by(id) %&gt;% 
-  summarise(correct_all = 1 - mean(error))
-#no more removal needed for round 2
+<p>Establishing overall error rate per participant</p>
+<pre class="r"><code>#no more removal needed for round 2
 correct_all_rate2 &lt;-
   gnat_important2 %&gt;% 
   filter(target %in% important_targets) %&gt;%
   group_by(id) %&gt;% 
   summarise(correct_all = 1 - mean(error))</code></pre>
-</div>
-<div id="filtering-observations-based-on-error-rate" class="section level3">
-<h3><span class="header-section-number">3.2.4</span> Filtering observations based on error rate</h3>
+<p>Filtering observations based on error rate</p>
 <p>Criteria:</p>
 <ul>
 <li>Block error rate below 60%</li>
@@ -699,18 +782,7 @@ correct_all_rate2 &lt;-
 <li>Response latency <span class="math inline">\(3*SD\)</span> above average RT</li>
 </ul>
 <p>Determining average RT and SD for previous filter</p>
-<pre class="r"><code>#deleting rows with too quick and too slow response windows for round1 (too quick is 300 and too slow is 3 SD above average rt)
-rt_mean1 &lt;- as.integer(gnat_important1 %&gt;% 
-                         left_join(correct_block_rate1, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
-                         left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;% 
-                         filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
-                         summarise(pers_a = mean(rt)))
-rt_sd1 &lt;- as.integer(gnat_important1 %&gt;% 
-                       left_join(correct_block_rate1, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
-                       left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;% 
-                       filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
-                       summarise(pers_sd = sd(rt)))
-#deleting rows with too quick and too slow response windows for round2 (too quick is 300 and too slow is 3 SD above average rt)
+<pre class="r"><code>#deleting rows with too quick and too slow response windows for round2 (too quick is 300 and too slow is 3 SD above average rt)
 rt_mean2 &lt;- as.integer(gnat_important2 %&gt;% 
                          left_join(correct_block_rate2, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
                          left_join(correct_all_rate2, by = c(&quot;id&quot;)) %&gt;% 
@@ -722,70 +794,35 @@ rt_sd2 &lt;- as.integer(gnat_important2 %&gt;%
                        left_join(correct_all_rate2, by = c(&quot;id&quot;)) %&gt;% 
                        filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
                        summarise(pers_sd = sd(rt)))
-                       
-rt_filter1 &lt;- (rt_sd1 * 3) + rt_mean1
+
 rt_filter2 &lt;- (rt_sd2 * 3) + rt_mean2</code></pre>
-<pre class="r"><code>#must delete these observations due to high block error rate from round1
-final_gnat1 &lt;-
-  gnat_important1 %&gt;% 
-  left_join(correct_block_rate1, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
-  left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;% 
-  filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
-  filter(rt &gt; 300 &amp; rt &lt; rt_filter1)
-#must delete these observations due to high block error rate from round2
+<p>Deleting rows based on exclusion criteria</p>
+<pre class="r"><code>#must delete these observations due to high block error rate from round2
 final_gnat2 &lt;-
   gnat_important2 %&gt;% 
   left_join(correct_block_rate2, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
   left_join(correct_all_rate2, by = c(&quot;id&quot;)) %&gt;% 
   filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
   filter(rt &gt; 300 &amp; rt &lt; rt_filter2)</code></pre>
-</div>
-<div id="rows-that-have-been-removed" class="section level3">
-<h3><span class="header-section-number">3.2.5</span> Rows that have been removed</h3>
+<p>Rows that have been removed</p>
 <p>Every row that has been removed from further analysis.</p>
-<pre class="r"><code>final_diff1 &lt;- 
-  dplyr::setdiff(gnat_important1, final_gnat1[, -c(11,12)])
-final_diff2 &lt;- 
+<pre class="r"><code>final_diff2 &lt;- 
   dplyr::setdiff(gnat_important2, final_gnat2[, -c(11,12)])</code></pre>
 <p>Participants that have been excluded due to high overall error rate.</p>
-<pre class="r"><code>#participants from round 1 that had exceeded 80% error rate
-participants_removed1 &lt;- 
-  gnat_important1 %&gt;% 
-  left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;%
-  filter(correct_all &lt;= 0.8)
-p_rem_id1 &lt;- unique(participants_removed1$id)
-#participants from round 2 that had exceeded 80% error rate
+<pre class="r"><code>#participants from round 2 that had exceeded 80% error rate
 participants_removed2 &lt;- 
   gnat_important2 %&gt;% 
   left_join(correct_all_rate2, by = c(&quot;id&quot;)) %&gt;%
   filter(correct_all &lt;= 0.8)
 p_rem_id2 &lt;- unique(participants_removed2$id)</code></pre>
-<p>number of participants removed from first round:</p>
-<pre class="r"><code>length(p_rem_id1)</code></pre>
-<pre><code>## [1] 4</code></pre>
 <p>number of participants removed from second round</p>
 <pre class="r"><code>length(p_rem_id2)</code></pre>
 <pre><code>## [1] 2</code></pre>
 <p>participants removed from the first round that have also been removed from the second round -&gt; no participants from both</p>
 <pre class="r"><code>p_rem_id1[(p_rem_id1 %in% p_rem_id2)]</code></pre>
 <pre><code>## character(0)</code></pre>
-</div>
-<div id="calculating-d-scores" class="section level3">
-<h3><span class="header-section-number">3.2.6</span> Calculating d-scores</h3>
-<pre class="r"><code>#d-scores for round 1
-dscores1 &lt;-
-  final_gnat1 %&gt;% 
-  group_by(id) %&gt;% 
-  mutate(pers_sd = sd(rt)) %&gt;% 
-  group_by(id, target, pers_sd) %&gt;% 
-  summarise(pers_block_avg = mean(rt)) %&gt;% 
-  mutate(d = pers_block_avg/pers_sd) %&gt;% 
-  ungroup() %&gt;% 
-  select(-pers_block_avg, -pers_sd) %&gt;%
-  spread(target, d) %&gt;% 
-  mutate(challange_d = chall_neg - chall_pos,
-         crit_d = crit_neg - crit_pos)
-#d-scores for round 2
+<p>Calculating d-scores</p>
+<pre class="r"><code>#d-scores for round 2
 dscores2 &lt;-
   final_gnat2 %&gt;% 
   group_by(id) %&gt;% 
@@ -799,8 +836,10 @@ dscores2 &lt;-
   mutate(challange_d = chall_neg - chall_pos,
          crit_d = crit_neg - crit_pos)</code></pre>
 </div>
-<div id="collecting-all-data-in-one-dataframe" class="section level3">
-<h3><span class="header-section-number">3.2.7</span> Collecting all data in one dataframe</h3>
+</div>
+</div>
+<div id="collecting-all-data-in-one-dataframe" class="section level1">
+<h1><span class="header-section-number">5</span> Collecting all data in one dataframe</h1>
 <p>joining implicit data with respective explicit data</p>
 <pre class="r"><code>#joining implicit with round 1 explicit measures
 final_data1 &lt;- 
@@ -825,18 +864,16 @@ setnames(final_data2, old = old_names2, new = round2_names)</code></pre>
   select(neptun, group) %&gt;% 
   right_join(round12, by = &quot;neptun&quot;)</code></pre>
 </div>
+<div id="analysis" class="section level1">
+<h1><span class="header-section-number">6</span> Analysis</h1>
+<div id="assumption-checks" class="section level2">
+<h2><span class="header-section-number">6.1</span> Assumption checks</h2>
 </div>
-<div id="analysis" class="section level2">
-<h2><span class="header-section-number">3.3</span> Analysis</h2>
-<div id="assumption-checks" class="section level3">
-<h3><span class="header-section-number">3.3.1</span> Assumption checks</h3>
+<div id="hypothesis-testing" class="section level2">
+<h2><span class="header-section-number">6.2</span> Hypothesis testing</h2>
 </div>
-<div id="hypothesis-testing" class="section level3">
-<h3><span class="header-section-number">3.3.2</span> Hypothesis testing</h3>
-</div>
-<div id="plots-and-figures" class="section level3">
-<h3><span class="header-section-number">3.3.3</span> Plots and figures</h3>
-</div>
+<div id="plots-and-figures" class="section level2">
+<h2><span class="header-section-number">6.3</span> Plots and figures</h2>
 </div>
 </div>
 
