@@ -1,6 +1,6 @@
 ---
 title: "IMM reliability"
-author: "Attila"
+author: "Attila Szuts"
 date: '2020 április 9 '
 output:
   html_document:
@@ -125,13 +125,13 @@ plot + geom_bar()
 import data
 ```{r}
 explicit_raw1 <- 
-  read_excel("data/Round 1/data.xlsx", 1) %>%
+  read_excel("D:/Documents/Egyebek/Thesis/data/Round 1/data.xlsx", 1) %>%
   extract(col = participant, 
           into = c(NA, "id", NA), 
           regex = "^(.*s.)(.*)(.txt)$") %>% 
   clean_names()
 explicit_raw2 <- 
-  read_excel("data/Round 2/data.xlsx", 1) %>%
+  read_excel("D:/Documents/Egyebek/Thesis/data/Round 2/data.xlsx", 1) %>%
   extract(col = participant, 
           into = c(NA, "id", NA), 
           regex = "^(.*s.)(.*)(.txt)$") %>% 
@@ -447,9 +447,15 @@ setnames(final_data1, old = old_names1, new = round1_names)
 setnames(final_data2, old = old_names2, new = round2_names)
 ```
 
-
 joining round 1 and round 2 data
 ```{r}
 round12 <- left_join(final_data2, final_data1, by = "neptun")
+```
+
+adding grouping variable
+```{r}
+round12 <- joined %>% 
+  select(neptun, group) %>% 
+  right_join(round12, by = "neptun")
 ```
 
