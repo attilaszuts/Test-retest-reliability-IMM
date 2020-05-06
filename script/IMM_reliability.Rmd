@@ -527,3 +527,10 @@ round12 <- joined %>%
   right_join(round12, by = "neptun")
 ```
 
+# Analysis
+
+## Assumption checks
+
+## Hypothesis testing
+
+## Plots and figures
