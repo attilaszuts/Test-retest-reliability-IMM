@@ -117,7 +117,7 @@ joined <- joined %>%
 ```{r}
 joined$TIME_between_end <- as.numeric(joined$TIME_between_end)
 plot <- ggplot(joined, aes(TIME_between_end))
-plot + geom_bar() + theme_minimal()
+plot + geom_bar() + xlab('Days between measures') + ylab('Number of particpants') + theme_classic()
 ```
 
 ## Data cleaning
@@ -323,7 +323,7 @@ Criteria:
 
 Determining average RT and SD for previous filter
 ```{r}
-#deleting rows with too quick and too slow response windows for round1 (too quick is 300 and too slow is 3 SD above averagert ==663+166*3)
+#deleting rows with too quick and too slow response windows for round1 (too quick is 300 and too slow is 3 SD above average rt)
 rt_mean1 <- as.integer(gnat_important1 %>% 
                          left_join(correct_block_rate1, by = c("id", "target")) %>% 
                          left_join(correct_all_rate1, by = c("id")) %>% 
@@ -334,7 +334,7 @@ rt_sd1 <- as.integer(gnat_important1 %>%
                        left_join(correct_all_rate1, by = c("id")) %>% 
                        filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
                        summarise(pers_sd = sd(rt)))
-#deleting rows with too quick and too slow response windows for round2 (too quick is 300 and too slow is 3 SD above averagert ==655+166*3)
+#deleting rows with too quick and too slow response windows for round2 (too quick is 300 and too slow is 3 SD above average rt)
 rt_mean2 <- as.integer(gnat_important2 %>% 
                          left_join(correct_block_rate2, by = c("id", "target")) %>% 
                          left_join(correct_all_rate2, by = c("id")) %>% 
@@ -373,7 +373,7 @@ final_gnat2 <-
 Every row that has been removed from further analysis.
 ```{r}
 final_diff1 <- 
-  setdiff(gnat_important1, final_gnat1[, -c(11,12)])
+  dplyr::setdiff(gnat_important1, final_gnat1[, -c(11,12)])
 final_diff2 <- 
   setdiff(gnat_important2, final_gnat2[, -c(11,12)])
 common1 <- 
