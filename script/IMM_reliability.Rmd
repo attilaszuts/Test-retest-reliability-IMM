@@ -16,7 +16,7 @@ knitr::opts_knit$set(root.dir = "D:/Documents/Egyebek/Thesis")
 # Data input and opening libraries
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
-library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr); library(vroom); library(janitor); library(widyr); library(data.table)
+library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr); library(vroom); library(janitor); library(widyr); library(data.table); library(ggpubr)
 ```
 
 # Creating groups
@@ -534,3 +534,19 @@ round12 <- joined %>%
 ## Hypothesis testing
 
 ## Plots and figures
+
+Correlation between criticism d score and explicit criticism measure
+```{r}
+ggscatter(final_data1, x = "crit_pos1", y = "crsc_avg1", 
+          add = "reg.line", conf.int = TRUE,
+          cor.coef = TRUE, cor.method = "spearman",
+          xlab = "Criticism Positive D Score", ylab = "Criticism Scenario",
+          add.params = list(color = "coral3",
+                            fill = "gray27"))
+ggscatter(final_data2, x = "crit_pos2", y = "crsc_avg2", 
+          add = "reg.line", conf.int = TRUE,
+          cor.coef = TRUE, cor.method = "spearman",
+          xlab = "Criticism Positive D Score", ylab = "Criticism Scenario",
+          add.params = list(color = "coral3",
+                            fill = "gray27"))
+```
