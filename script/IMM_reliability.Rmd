@@ -87,6 +87,7 @@ joined <- joined %>%
   mutate(
     TIME_between_end = TIME_end_second - TIME_end_first
   ) 
+#this should be empty
 missing_joined_TIME_between <- joined %>% 
   dplyr::filter(is.na("TIME_end_between"))
 joined <- joined %>% 
@@ -375,11 +376,7 @@ Every row that has been removed from further analysis.
 final_diff1 <- 
   dplyr::setdiff(gnat_important1, final_gnat1[, -c(11,12)])
 final_diff2 <- 
-  setdiff(gnat_important2, final_gnat2[, -c(11,12)])
-common1 <- 
-  inner_join(gnat_important1, final_gnat1)
-common2 <- 
-  inner_join(gnat_important2, final_gnat2)
+  dplyr::setdiff(gnat_important2, final_gnat2[, -c(11,12)])
 ```
 
 Participants that have been excluded due to high overall error rate.
@@ -476,3 +473,10 @@ round12 <- joined %>%
   right_join(round12, by = "neptun")
 ```
 
+## Analysis
+
+### Assumption checks
+
+### Hypothesis testing
+
+### Plots and figures
