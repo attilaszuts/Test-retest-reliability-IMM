@@ -117,7 +117,7 @@ joined <- joined %>%
 ```{r}
 joined$TIME_between_end <- as.numeric(joined$TIME_between_end)
 plot <- ggplot(joined, aes(TIME_between_end))
-plot + geom_bar()
+plot + geom_bar() + theme_minimal()
 ```
 
 ## Data cleaning
@@ -321,6 +321,37 @@ Criteria:
 * Response latency under 300 ms
 * Response latency $3*SD$ above average RT
 
+Determining average RT and SD for previous filter
+```{r}
+#deleting rows with too quick and too slow response windows for round1 (too quick is 300 and too slow is 3 SD above averagert ==663+166*3)
+rt_mean1 <- as.integer(gnat_important1 %>% 
+                         left_join(correct_block_rate1, by = c("id", "target")) %>% 
+                         left_join(correct_all_rate1, by = c("id")) %>% 
+                         filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
+                         summarise(pers_a = mean(rt)))
+rt_sd1 <- as.integer(gnat_important1 %>% 
+                       left_join(correct_block_rate1, by = c("id", "target")) %>% 
+                       left_join(correct_all_rate1, by = c("id")) %>% 
+                       filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
+                       summarise(pers_sd = sd(rt)))
+#deleting rows with too quick and too slow response windows for round2 (too quick is 300 and too slow is 3 SD above averagert ==655+166*3)
+rt_mean2 <- as.integer(gnat_important2 %>% 
+                         left_join(correct_block_rate2, by = c("id", "target")) %>% 
+                         left_join(correct_all_rate2, by = c("id")) %>% 
+                         filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
+                         summarise(pers_a = mean(rt)))
+
+rt_sd2 <- as.integer(gnat_important2 %>% 
+                       left_join(correct_block_rate2, by = c("id", "target")) %>% 
+                       left_join(correct_all_rate2, by = c("id")) %>% 
+                       filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
+                       summarise(pers_sd = sd(rt)))
+                       
+rt_filter1 <- (rt_sd1 * 3) + rt_mean1
+rt_filter2 <- (rt_sd2 * 3) + rt_mean2
+```
+
+
 ```{r}
 #must delete these observations due to high block error rate from round1
 final_gnat1 <-
@@ -328,28 +359,14 @@ final_gnat1 <-
   left_join(correct_block_rate1, by = c("id", "target")) %>% 
   left_join(correct_all_rate1, by = c("id")) %>% 
   filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
-  filter(rt > 300 & rt < 1161)
+  filter(rt > 300 & rt < rt_filter1)
 #must delete these observations due to high block error rate from round2
 final_gnat2 <-
   gnat_important2 %>% 
   left_join(correct_block_rate2, by = c("id", "target")) %>% 
   left_join(correct_all_rate2, by = c("id")) %>% 
   filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
-  filter(rt > 300 & rt < 1153)
-```
-
-Determining average RT and SD for previous filter
-```{r}
-#deleting rows with too quick and too slow response windows for round1 (too quick is 300 and too slow is 3 SD above averagert ==663+166*3)
-final_gnat1 %>% 
-  summarise(pers_a = mean(rt))
-final_gnat1 %>% 
-  summarise(pers_sd = sd(rt))
-#deleting rows with too quick and too slow response windows for round2 (too quick is 300 and too slow is 3 SD above averagert ==655+166*3)
-final_gnat2 %>% 
-  summarise(pers_a = mean(rt))
-final_gnat2 %>% 
-  summarise(pers_sd = sd(rt))
+  filter(rt > 300 & rt < rt_filter2)
 ```
 
 ### Rows that have been removed
