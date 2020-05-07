@@ -1,0 +1,17 @@
+version: 2.6.1
+server-time: 2020-03-20-18-17
+ip: 195.38.104.248
+country: HU, Hungary
+hostname: 
+user_agent: mozilla/5.0 (windows nt 10.0; win64; x64) applewebkit/537.36 (khtml, like gecko) chrome/80.0.3987.149 safari/537.36
+screen_width: 1280
+screen_height: 720
+html_width: 1263
+html_height: 2721
+user_time: Fri, 20 Mar 2020 17:17:06 GMT
+T: 6141
+l: Neptun
+stime: 2020-03-20-18-17
+T: 4970
+t: textline
+a: X4DRAU
