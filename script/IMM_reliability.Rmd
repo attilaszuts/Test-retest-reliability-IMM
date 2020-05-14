@@ -10,28 +10,51 @@ output:
 editor_options: 
   chunk_output_type: console
 ---
-```{r include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/Documents/Egyebek/Thesis")
-```
-# Data input and opening libraries
+ Data input and opening libraries
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
-library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr); library(vroom); library(janitor); library(widyr); library(data.table); library(ggpubr)
+library(readr)
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(ggplot2)
+library(stringr)
+library(vroom)
+library(janitor)
+library(widyr)
+# library(data.table)
+library(ggpubr)
+library(vroom)
+library(lubridate)
 ```
 
 # Creating groups
 
 Reading in data files
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
-round1 <- read_csv("D:/Documents/Egyebek/Thesis/data/Round 1/data.csv")
-round2 <- read_csv("D:/Documents/Egyebek/Thesis/data/Round 2/data.csv")
+
+explicit_raw <-
+  bind_rows(
+    read_csv("data/Round 1/data.csv") %>% mutate(measurement = 1),
+    read_csv("data/Round 2/data.csv") %>% mutate(measurement = 2)
+  )
+
+explicit_raw %>% 
+  clean_names() %>% 
+  drop_na(time_end) %>% 
+  mutate(neptun_1 = str_to_lower(neptun_1)) %>% 
+  mutate_at(c("time_start", "time_end"), ymd_hm) %>% 
+  group_by(measurement) %>% 
+  distinct(neptun_1, .keep_all = TRUE) %>% 
+  ungroup()
+
 ```
 
 ## Responses that have not been completed
 Extracting responses based on missing completion time ('TIME_end')
 ```{r}
-missing1 <- round1[is.na(round1$TIME_end),]
-missing2 <- round2[is.na(round2$TIME_end),]
+missing1 <- filter(round1, is.na(TIME_end))
+missing2 <- filter(round2, is.na(TIME_end))
 ```
 
 ## Uniting round1 and round2 explicit measures
@@ -47,6 +70,7 @@ time2 <- round2 %>%
   drop_na()
 
 #neptun codes to upper case
+
 time1$`Neptun:1` <- toupper(time1$`Neptun:1`)
 time2$`Neptun:1` <- toupper(time2$`Neptun:1`)
 
@@ -116,8 +140,11 @@ joined <- joined %>%
 ## Plotting frequency of number of days between data collections
 ```{r}
 joined$TIME_between_end <- as.numeric(joined$TIME_between_end)
-plot <- ggplot(joined, aes(TIME_between_end))
-plot + geom_bar() + xlab('Days between measures') + ylab('Number of particpants') + theme_classic()
+ggplot(joined, aes(TIME_between_end)) +
+  geom_bar() + 
+  xlab('Days between measures') + 
+  ylab('Number of particpants') + 
+  theme_classic()
 ```
 
 # Round 1 data
