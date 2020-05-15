@@ -1,0 +1,17 @@
+version: 2.6.1
+server-time: 2020-03-01-19-22
+ip: 84.236.11.108
+country: HU, Hungary
+hostname: 
+user_agent: mozilla/5.0 (windows nt 10.0; win64; x64; rv:73.0) gecko/20100101 firefox/73.0
+screen_width: 1600
+screen_height: 900
+html_width: 1583
+html_height: 2652
+user_time: Sun, 01 Mar 2020 18:22:48 GMT
+T: 24420
+l: Neptun
+stime: 2020-03-01-19-22
+T: 6450
+t: textline
+a: o1xw8u
