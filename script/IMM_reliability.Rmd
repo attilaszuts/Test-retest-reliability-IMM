@@ -10,7 +10,11 @@ output:
 editor_options: 
   chunk_output_type: console
 ---
- Data input and opening libraries
+```{r include=FALSE}
+knitr::opts_knit$set(root.dir = "D:/Documents/Egyebek/Thesis")
+```
+
+# Data input and opening libraries
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 library(readr)
@@ -37,72 +41,50 @@ explicit_raw <-
   bind_rows(
     read_csv("data/Round 1/data.csv") %>% mutate(measurement = 1),
     read_csv("data/Round 2/data.csv") %>% mutate(measurement = 2)
-  )
+  ) 
 
-explicit_raw %>% 
+explicit <- 
+  explicit_raw %>% 
+  tidyr::extract(col = participant, 
+          into = c(NA, "id", NA), 
+          regex = "^(.*s.)(.*)(.txt)$") %>% 
   clean_names() %>% 
   drop_na(time_end) %>% 
   mutate(neptun_1 = str_to_lower(neptun_1)) %>% 
   mutate_at(c("time_start", "time_end"), ymd_hm) %>% 
+  mutate_at(c("time_start", "time_end"), as_date) %>% 
   group_by(measurement) %>% 
   distinct(neptun_1, .keep_all = TRUE) %>% 
-  ungroup()
+  ungroup() %>% 
+#creating 2-week and 4-week group    
 
-```
+#reversing items
+  mutate_at(vars(iq1_1, iq2_1, fms3_1, fms4_1, cr_ms3_1, cr_ms4_1, ch_ms3_1, ch_ms4_1), 
+            ~recode(., `1` = 6,
+                    `2` = 5,
+                    `3` = 4,
+                    `4` = 3,
+                    `5` = 2,
+                    `6` = 1,
+            )) %>% 
+  mutate_at(vars(failurescenario_1, criticismscenario_1), 
+            ~recode(., `1` = 5,
+                    `2` = 4,
+                    `4` = 2,
+                    `5` = 1,
+            )) %>% 
+#creating means of explicit measures
+  mutate(iqms_avg = rowMeans(x = select(.data = ., starts_with(match = "iq")))) %>% 
+  mutate(crms_avg = rowMeans(x = select(.data = ., starts_with(match = "cr_ms")))) %>% 
+  mutate(chms_avg = rowMeans(x = select(.data = ., starts_with(match = "ch_ms")))) %>% 
+  mutate(fms_avg = rowMeans(x = select(.data = ., starts_with(match = "fms")))) %>% 
+  mutate(fsc_avg = rowMeans(x = select(.data = ., starts_with(match = "failure")))) %>% 
+  mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = "criticism")))) %>% 
+  select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1, measurement)
 
-## Responses that have not been completed
-Extracting responses based on missing completion time ('TIME_end')
-```{r}
-missing1 <- filter(round1, is.na(TIME_end))
-missing2 <- filter(round2, is.na(TIME_end))
-```
-
-## Uniting round1 and round2 explicit measures
-Cleaning variable names, and dropping missing cases. Changing Neptun codes to upper case. Filtering out duplicate answers.
-```{r}
-time1 <- round1 %>% 
-  select(c("participant", "Neptun:1", "TIME_start", "TIME_end")) %>% 
-  rename(TIME_start_first = "TIME_start", TIME_end_first = "TIME_end", participant_first = "participant") %>% 
-  drop_na()
-time2 <- round2 %>% 
-  select(c("participant", "Neptun:1", "TIME_start", "TIME_end")) %>% 
-  rename(TIME_start_second = "TIME_start", TIME_end_second = "TIME_end", participant_second = "participant") %>% 
-  drop_na()
-
-#neptun codes to upper case
-
-time1$`Neptun:1` <- toupper(time1$`Neptun:1`)
-time2$`Neptun:1` <- toupper(time2$`Neptun:1`)
-
-#neptun codes more than once in data
-neptun_duplicate_time1 <- time1 %>% 
-  count(`Neptun:1`) %>% 
-  filter(n > 1)
-neptun_duplicate_time2 <- time2 %>% 
-  count(`Neptun:1`) %>% 
-  filter(n > 1)
-```
-
-### Joining separate rounds
-Cases missing first round means, they either did not complete round 1 or they made a typo in their Neptun code and therefore it can't be automatically matched to it.
-```{r}
-joined <- left_join(time2, time1, by = "Neptun:1")
-missing_joined_first_round <- joined[is.na(joined$TIME_end_first),]
-#Neptun codes that appear more than once
-neptun_duplicate_joined <- joined %>% 
-  count(`Neptun:1`) %>% 
-  filter(n > 1)
 ```
 
 ## Creating groups (2 week and 4 week)
-
-### Converting times to date format
-```{r}
-joined$TIME_end_first <- as.Date(joined$TIME_end_first)
-joined$TIME_end_second <- as.Date(joined$TIME_end_second)
-joined$TIME_start_first <- as.Date(joined$TIME_start_first)
-joined$TIME_start_second <- as.Date(joined$TIME_start_second)
-```
 
 ### Adding 'days between data collections' column and filtering missing values
 ```{r}
@@ -116,15 +98,6 @@ missing_joined_TIME_between <- joined %>%
 joined <- joined %>% 
   drop_na(TIME_between_end)
 ```
-
-### Exporting missing values and checking manually
-```{r}
-#write_csv2(neptun_duplicate_joined, "D:/Documents/Egyebek/Thesis/data/Temp/neptun_duplicate_joined.csv")
-#write_csv2(neptun_duplicate_time1, "D:/Documents/Egyebek/Thesis/data/Temp/neptun_duplicate_time1.csv")
-#write_csv2(neptun_duplicate_time2, "D:/Documents/Egyebek/Thesis/data/Temp/neptun_duplicate_time2.csv")
-```
-
-
 
 ### Counting number of participants in groups
 The 2 week group is coded as group 0, the 4 week group is coded as group 1.
@@ -148,69 +121,6 @@ ggplot(joined, aes(TIME_between_end)) +
 ```
 
 # Round 1 data
-
-## Explicit measure
-
-### Data cleaning
-
-import data
-```{r}
-explicit_raw1 <- 
-  read_excel("D:/Documents/Egyebek/Thesis/data/Round 1/data.xlsx", 1) %>%
-  extract(col = participant, 
-          into = c(NA, "id", NA), 
-          regex = "^(.*s.)(.*)(.txt)$") %>% 
-  clean_names()
-```
-
-round 1
-```{r}
-#reversing items
-explicit_reversed1 <- 
-  explicit_raw1 %>% 
-  mutate_at(vars(iq1_1, iq2_1, fms3_1, fms4_1, cr_ms3_1, cr_ms4_1, ch_ms3_1, ch_ms4_1), 
-            ~recode(., `1` = 6,
-                    `2` = 5,
-                    `3` = 4,
-                    `4` = 3,
-                    `5` = 2,
-                    `6` = 1,
-            ))
-
-explicit_reversed1 <- 
-  explicit_reversed1 %>% 
-  mutate_at(vars(failurescenario_1, criticismscenario_1), 
-            ~recode(., `1` = 5,
-                    `2` = 4,
-                    `4` = 2,
-                    `5` = 1,
-            ))
-
-#creating means of explicit measures
-explicit_coded1 <-
-  explicit_reversed1 %>%
-  mutate(iqms_avg = rowMeans(x = select(.data = ., starts_with(match = "iq"))))
-
-explicit_coded1 <- explicit_coded1 %>%
-  mutate(crms_avg = rowMeans(x = select(.data = ., starts_with(match = "cr_ms"))))
-
-explicit_coded1 <- explicit_coded1 %>%
-  mutate(chms_avg = rowMeans(x = select(.data = ., starts_with(match = "ch_ms"))))
-
-explicit_coded1 <- explicit_coded1 %>%
-  mutate(fms_avg = rowMeans(x = select(.data = ., starts_with(match = "fms"))))
-
-explicit_coded1 <- explicit_coded1 %>%
-  mutate(fsc_avg = rowMeans(x = select(.data = ., starts_with(match = "failure"))))
-
-explicit_coded1 <- explicit_coded1 %>%
-  mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = "criticism"))))
-
-#final explicit data
-explicit1 <-
-  explicit_coded1 %>% 
-  select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)
-```
 
 ## Implicit measure
 ### Data cleaning
@@ -329,251 +239,4 @@ dscores1 <-
   spread(target, d) %>% 
   mutate(challange_d = chall_neg - chall_pos,
          crit_d = crit_neg - crit_pos)
-```
-
-# Round 2 data
-
-## Explicit measure
-
-### Data cleaning
-
-import data
-```{r}
-explicit_raw2 <- 
-  read_excel("D:/Documents/Egyebek/Thesis/data/Round 2/data.xlsx", 1) %>%
-  extract(col = participant, 
-          into = c(NA, "id", NA), 
-          regex = "^(.*s.)(.*)(.txt)$") %>% 
-  clean_names()
-```
-
-round 2
-```{r}
-#reversing items
-explicit_reversed2 <- 
-  explicit_raw2 %>% 
-  mutate_at(vars(iq1_1, iq2_1, fms3_1, fms4_1, cr_ms3_1, cr_ms4_1, ch_ms3_1, ch_ms4_1), 
-            ~recode(., `1` = 6,
-                    `2` = 5,
-                    `3` = 4,
-                    `4` = 3,
-                    `5` = 2,
-                    `6` = 1,
-            ))
-
-explicit_reversed2 <- 
-  explicit_reversed2 %>% 
-  mutate_at(vars(failurescenario_1, criticismscenario_1), 
-            ~recode(., `1` = 5,
-                    `2` = 4,
-                    `4` = 2,
-                    `5` = 1,
-            ))
-
-#creating means of explicit measures
-explicit_coded2 <-
-  explicit_reversed2 %>%
-  mutate(iqms_avg = rowMeans(x = select(.data = ., starts_with(match = "iq"))))
-
-explicit_coded2 <- explicit_coded2 %>%
-  mutate(crms_avg = rowMeans(x = select(.data = ., starts_with(match = "cr_ms"))))
-
-explicit_coded2 <- explicit_coded2 %>%
-  mutate(chms_avg = rowMeans(x = select(.data = ., starts_with(match = "ch_ms"))))
-
-explicit_coded2 <- explicit_coded2 %>%
-  mutate(fms_avg = rowMeans(x = select(.data = ., starts_with(match = "fms"))))
-
-explicit_coded2 <- explicit_coded2 %>%
-  mutate(fsc_avg = rowMeans(x = select(.data = ., starts_with(match = "failure"))))
-
-explicit_coded2 <- explicit_coded2 %>%
-  mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = "criticism"))))
-
-#final explicit data
-explicit2 <-
-  explicit_coded2 %>% 
-  select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)
-```
-
-## Implicit measure
-### Data cleaning
-Importing data
-```{r message=FALSE, warning=FALSE, paged.print=FALSE}
-#defining path
-files2 <- list.files(path = "D:/Documents/Egyebek/Thesis/data/Round 2", pattern = "immtest.*.txt$", full.names = TRUE)
-
-#importing data files
-gnat_raw2 <- 
-  vroom::vroom(file = files2, 
-        id = "id", 
-        col_names = c("block", "block_id", "word", "max_rt", "trial_type", "word_category", "rt", "error", "target")) %>% 
-  extract(col = id, 
-          into = c(NA, "id", NA), 
-          regex = "^(.*data.)(.*)(.txt)$")
-```
-Keeping only important blocks
-```{r}
-#filter only important trials and only go_trials for second round
-gnat_important2 <- 
-  gnat_raw2 %>% 
-  filter(target %in%important_targets) %>% 
-  filter(trial_type == 'go_trial')
-```
-Establishing block error rate per participant
-```{r}
-#checking for block error rate above 40% for second round
-correct_block_rate2 <- 
-  gnat_important2 %>% 
-  group_by(id, target) %>% 
-  summarise(correct_block = 1 - mean(error))
-```
-Establishing overall error rate per participant
-```{r}
-#no more removal needed for round 2
-correct_all_rate2 <-
-  gnat_important2 %>% 
-  filter(target %in% important_targets) %>%
-  group_by(id) %>% 
-  summarise(correct_all = 1 - mean(error))
-```
-Filtering observations based on error rate 
-
-Criteria: 
-
-* Block error rate below 60%
-* Overall error rate below 80%
-* Erroneous association
-* Response latency under 300 ms
-* Response latency $3*SD$ above average RT
-
-Determining average RT and SD for previous filter
-```{r}
-#deleting rows with too quick and too slow response windows for round2 (too quick is 300 and too slow is 3 SD above average rt)
-rt_mean2 <- as.integer(gnat_important2 %>% 
-                         left_join(correct_block_rate2, by = c("id", "target")) %>% 
-                         left_join(correct_all_rate2, by = c("id")) %>% 
-                         filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
-                         summarise(pers_a = mean(rt)))
-
-rt_sd2 <- as.integer(gnat_important2 %>% 
-                       left_join(correct_block_rate2, by = c("id", "target")) %>% 
-                       left_join(correct_all_rate2, by = c("id")) %>% 
-                       filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
-                       summarise(pers_sd = sd(rt)))
-
-rt_filter2 <- (rt_sd2 * 3) + rt_mean2
-```
-
-Deleting rows based on exclusion criteria
-```{r}
-#must delete these observations due to high block error rate from round2
-final_gnat2 <-
-  gnat_important2 %>% 
-  left_join(correct_block_rate2, by = c("id", "target")) %>% 
-  left_join(correct_all_rate2, by = c("id")) %>% 
-  filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
-  filter(rt > 300 & rt < rt_filter2)
-```
-Rows that have been removed
-
-Every row that has been removed from further analysis.
-```{r}
-final_diff2 <- 
-  dplyr::setdiff(gnat_important2, final_gnat2[, -c(11,12)])
-```
-
-Participants that have been excluded due to high overall error rate.
-```{r}
-#participants from round 2 that had exceeded 80% error rate
-participants_removed2 <- 
-  gnat_important2 %>% 
-  left_join(correct_all_rate2, by = c("id")) %>%
-  filter(correct_all <= 0.8)
-p_rem_id2 <- unique(participants_removed2$id)
-
-```
-number of participants removed from second round
-```{r}
-length(p_rem_id2)
-```
-participants removed from the first round that have also been removed from the second round -> no participants from both
-```{r}
-p_rem_id1[(p_rem_id1 %in% p_rem_id2)]
-```
-Calculating d-scores
-```{r}
-#d-scores for round 2
-dscores2 <-
-  final_gnat2 %>% 
-  group_by(id) %>% 
-  mutate(pers_sd = sd(rt)) %>% 
-  group_by(id, target, pers_sd) %>% 
-  summarise(pers_block_avg = mean(rt)) %>% 
-  mutate(d = pers_block_avg/pers_sd) %>% 
-  ungroup() %>% 
-  select(-pers_block_avg, -pers_sd) %>%
-  spread(target, d) %>% 
-  mutate(challange_d = chall_neg - chall_pos,
-         crit_d = crit_neg - crit_pos)
-```
-
-# Collecting all data in one dataframe
-joining implicit data with respective explicit data
-```{r}
-#joining implicit with round 1 explicit measures
-final_data1 <- 
-  dscores1 %>% 
-  left_join(explicit1, by = "id") 
-#joining implicit with round 2 explicit measures
-final_data2 <- 
-  dscores2 %>% 
-  left_join(explicit2, by = "id")
-```
-
-renaming columns respectively
-```{r}
-old_names1 <- colnames(final_data1)
-old_names2 <- colnames(final_data2)
-round1_names <- c("id1", "chall_neg1", "chall_pos1", "crit_neg1", "crit_pos1", "challenge_d1", "crit_d1", "neptun", "gender_1", "age_1", "iqms_avg1", "crms_avg1", "chms_avg1", "fms_avg1", "fsc_avg1", "crsc_avg1", "challengescenario_1")
-round2_names <- c("id2", "chall_neg2", "chall_pos2", "crit_neg2", "crit_pos2", "challenge_d2", "crit_d2", "neptun", "gender_2", "age_2", "iqms_avg2", "crms_avg2", "chms_avg2", "fms_avg2", "fsc_avg2", "crsc_avg2", "challengescenario_2")
-
-setnames(final_data1, old = old_names1, new = round1_names)
-setnames(final_data2, old = old_names2, new = round2_names)
-```
-
-joining round 1 and round 2 data
-```{r}
-round12 <- left_join(final_data2, final_data1, by = "neptun")
-```
-
-adding grouping variable
-```{r}
-round12 <- joined %>% 
-  select(neptun, group) %>% 
-  right_join(round12, by = "neptun")
-```
-
-# Analysis
-
-## Assumption checks
-
-## Hypothesis testing
-
-## Plots and figures
-
-Correlation between criticism d score and explicit criticism measure
-```{r}
-ggscatter(final_data1, x = "crit_pos1", y = "crsc_avg1", 
-          add = "reg.line", conf.int = TRUE,
-          cor.coef = TRUE, cor.method = "spearman",
-          xlab = "Criticism Positive D Score", ylab = "Criticism Scenario",
-          add.params = list(color = "coral3",
-                            fill = "gray27"))
-ggscatter(final_data2, x = "crit_pos2", y = "crsc_avg2", 
-          add = "reg.line", conf.int = TRUE,
-          cor.coef = TRUE, cor.method = "spearman",
-          xlab = "Criticism Positive D Score", ylab = "Criticism Scenario",
-          add.params = list(color = "coral3",
-                            fill = "gray27"))
 ```
