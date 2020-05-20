@@ -32,9 +32,10 @@ library(vroom)
 library(lubridate)
 ```
 
-# Creating groups
+# Explicit
 
-Reading in data files
+## Importing data
+
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 
 explicit_raw <-
@@ -42,7 +43,11 @@ explicit_raw <-
     read_csv("data/Round 1/data.csv") %>% mutate(measurement = 1),
     read_csv("data/Round 2/data.csv") %>% mutate(measurement = 2)
   ) 
+```
 
+## Reversing items, creating groups, creating means of explicit measures
+
+```{r}
 explicit <- 
   explicit_raw %>% 
   tidyr::extract(col = participant, 
@@ -81,12 +86,13 @@ explicit <-
   mutate(fsc_avg = rowMeans(x = select(.data = ., starts_with(match = "failure")))) %>% 
   mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = "criticism")))) %>% 
   select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1, measurement)
-
 ```
 
-## Creating groups (2 week and 4 week)
 
-### Adding 'days between data collections' column and filtering missing values
+
+Creating groups (2 week and 4 week)
+
+Adding 'days between data collections' column and filtering missing values
 ```{r}
 joined <- joined %>% 
   mutate(
@@ -99,7 +105,7 @@ joined <- joined %>%
   drop_na(TIME_between_end)
 ```
 
-### Counting number of participants in groups
+Counting number of participants in groups
 The 2 week group is coded as group 0, the 4 week group is coded as group 1.
 ```{r}
 joined$group <- ifelse(joined$TIME_between_end > 20, 1, 0)
@@ -110,7 +116,7 @@ joined <- joined %>%
   rename(neptun = `Neptun:1`)
 ```
 
-## Plotting frequency of number of days between data collections
+Plotting frequency of number of days between data collections
 ```{r}
 joined$TIME_between_end <- as.numeric(joined$TIME_between_end)
 ggplot(joined, aes(TIME_between_end)) +
@@ -120,52 +126,28 @@ ggplot(joined, aes(TIME_between_end)) +
   theme_classic()
 ```
 
-# Round 1 data
+# Implicit
 
-## Implicit measure
-### Data cleaning
-Importing data
+## Importing data
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 #defining path
 files1 <- list.files(path = "D:/Documents/Egyebek/Thesis/data/Round 1", pattern = "immtest.*.txt$", full.names = TRUE)
+files2 <- list.files(path = "D:/Documents/Egyebek/Thesis/data/Round 2", pattern = "immtest.*.txt$", full.names = TRUE)
 
 #importing data files
-gnat_raw1 <- 
+gnat_raw <- 
+  bind_rows(
   vroom::vroom(file = files1, 
         id = "id", 
-        col_names = c("block", "block_id", "word", "max_rt", "trial_type", "word_category", "rt", "error", "target")) %>% 
+        col_names = c("block", "block_id", "word", "max_rt", "trial_type", "word_category", "rt", "error", "target")) %>% mutate(measurement = 1),
+  vroom::vroom(file = files2, 
+        id = "id", 
+        col_names = c("block", "block_id", "word", "max_rt", "trial_type", "word_category", "rt", "error", "target")) %>% mutate(measurement = 2)) %>% 
   extract(col = id, 
           into = c(NA, "id", NA), 
           regex = "^(.*data.)(.*)(.txt)$")
 ```
-Keeping only important blocks
-```{r}
-important_targets <- c("chall_pos", "chall_neg", "crit_pos", "crit_neg")
-
-#filter only important trials and only go_trials for first round
-gnat_important1 <- 
-  gnat_raw1 %>% 
-  filter(target %in%important_targets) %>% 
-  filter(trial_type == 'go_trial')
-```
-Establishing block error rate per participant
-```{r}
-#checking for block error rate above 40% for first round
-correct_block_rate1 <- 
-  gnat_important1 %>% 
-  group_by(id, target) %>% 
-  summarise(correct_block = 1 - mean(error))
-```
-Establishing overall error rate per participant
-```{r}
-#no more removal needed for round 1
-correct_all_rate1 <-
-  gnat_important1 %>% 
-  filter(target %in% important_targets) %>%
-  group_by(id) %>% 
-  summarise(correct_all = 1 - mean(error))
-```
-Filtering observations based on error rate 
+## Filtering observations based on error rate 
 
 Criteria: 
 
@@ -175,61 +157,80 @@ Criteria:
 * Response latency under 300 ms
 * Response latency $3*SD$ above average RT
 
-Determining average RT and SD for previous filter
+Determining average RT and SD for filter
 ```{r}
-#deleting rows with too quick and too slow response windows for round1 (too quick is 300 and too slow is 3 SD above average rt)
-rt_mean1 <- as.integer(gnat_important1 %>% 
-                         left_join(correct_block_rate1, by = c("id", "target")) %>% 
-                         left_join(correct_all_rate1, by = c("id")) %>% 
-                         filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
-                         summarise(pers_a = mean(rt)))
-
-rt_sd1 <- as.integer(gnat_important1 %>% 
-                       left_join(correct_block_rate1, by = c("id", "target")) %>% 
-                       left_join(correct_all_rate1, by = c("id")) %>% 
-                       filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
-                       summarise(pers_sd = sd(rt)))
-
-rt_filter1 <- (rt_sd1 * 3) + rt_mean1
-```
-
-Deleting rows based on exclusion criteria
-```{r}
-#must delete these observations due to high block error rate from round1
-final_gnat1 <-
-  gnat_important1 %>% 
-  left_join(correct_block_rate1, by = c("id", "target")) %>% 
-  left_join(correct_all_rate1, by = c("id")) %>% 
-  filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
-  filter(rt > 300 & rt < rt_filter1)
-```
-Rows that have been removed
-
-Every row that has been removed from further analysis.
-```{r}
-final_diff1 <- 
-  dplyr::setdiff(gnat_important1, final_gnat1[, -c(11,12)])
-```
-
-Participants that have been excluded due to high overall error rate.
-```{r}
-#participants from round 1 that had exceeded 80% error rate
-participants_removed1 <- 
-  gnat_important1 %>% 
-  left_join(correct_all_rate1, by = c("id")) %>%
-  filter(correct_all <= 0.8)
-p_rem_id1 <- unique(participants_removed1$id)
-```
-number of participants removed from first round:
-```{r}
-length(p_rem_id1)
-```
-Calculating d-scores
-```{r}
-#d-scores for round 1
-dscores1 <-
-  final_gnat1 %>% 
+#deleting rows with too quick and too slow response windows (too quick is 300 and too slow is 3 SD above average rt)
+gnat_filter1 <- 
+  gnat_raw %>% 
+  filter(target %in% important_targets,
+         trial_type == 'go_trial',
+         measurement == 1) %>% 
+  # checking for block error rate per participant
+  group_by(id, target) %>% 
+  mutate(correct_block = 1 - mean(error)) %>% 
+  ungroup() %>% 
+  # checking for overall error rate per participant
   group_by(id) %>% 
+  mutate(correct_all = 1 - mean(error)) %>% 
+  ungroup() %>% 
+  filter(correct_block > 0.6 & correct_all > 0.8 & error == 0)
+gnat_filter2 <- 
+  gnat_raw %>% 
+  filter(target %in% important_targets,
+         trial_type == 'go_trial',
+         measurement == 2) %>% 
+  # checking for block error rate per participant
+  group_by(id, target) %>% 
+  mutate(correct_block = 1 - mean(error)) %>% 
+  ungroup() %>% 
+  # checking for overall error rate per participant
+  group_by(id) %>% 
+  mutate(correct_all = 1 - mean(error)) %>% 
+  ungroup() %>% 
+  filter(correct_block > 0.6 & correct_all > 0.8 & error == 0)
+
+rt_mean1 <- as.integer(gnat_filter1 %>% 
+                         summarise(pers_a = mean(rt)))
+rt_sd1 <- as.integer(gnat_filter1 %>% 
+                       summarise(pers_sd = sd(rt)))
+rt_filter1 <- (rt_sd1 * 3) + rt_mean1
+
+rt_mean2 <- as.integer(gnat_filter2 %>% 
+                         summarise(pers_a = mean(rt)))
+rt_sd2 <- as.integer(gnat_filter2 %>% 
+                       summarise(pers_sd = sd(rt)))
+rt_filter2 <- (rt_sd2 * 3) + rt_mean2
+
+#important targets
+important_targets <- c("chall_pos", "chall_neg", "crit_pos", "crit_neg")
+```
+
+filtering observations and creating d-scores
+```{r}
+implicit <- 
+  gnat_raw %>% 
+  #filter only important trials and only go_trials 
+  filter(target %in%important_targets,
+         trial_type == 'go_trial') %>% 
+  #checking for block error rate per participant
+  group_by(id, target) %>% 
+  mutate(correct_block = 1 - mean(error)) %>% 
+  ungroup() %>% 
+  # checking for overall error rate per participant
+  group_by(id) %>% 
+  mutate(correct_all = 1 - mean(error)) %>% 
+  ungroup() %>% 
+  # filter overall and block error rates, filter too quick and too slow responses
+  filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
+  group_by(measurement) %>% 
+  filter(measurement == 1,
+         rt > 300 & rt < rt_filter1) %>% 
+  filter(measurement == 2,
+         rt > 300 & rt < rt_filter2) %>%
+  ungroup() %>% 
+  #calculating d-scores for round 1
+  group_by(id) %>% 
+  filter(measurement == 1)
   mutate(pers_sd = sd(rt)) %>% 
   group_by(id, target, pers_sd) %>% 
   summarise(pers_block_avg = mean(rt)) %>% 
