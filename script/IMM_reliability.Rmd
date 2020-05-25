@@ -10,10 +10,6 @@ output:
 editor_options: 
   chunk_output_type: console
 ---
-```{r include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/Documents/Egyebek/Thesis")
-```
-
 # Data input and opening libraries
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
@@ -37,7 +33,6 @@ library(lubridate)
 ## Importing data
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
-
 explicit_raw <-
   bind_rows(
     read_csv("data/Round 1/data.csv") %>% mutate(measurement = 1),
@@ -85,7 +80,7 @@ explicit <-
   mutate(fms_avg = rowMeans(x = select(.data = ., starts_with(match = "fms")))) %>% 
   mutate(fsc_avg = rowMeans(x = select(.data = ., starts_with(match = "failure")))) %>% 
   mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = "criticism")))) %>% 
-  select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1, measurement)
+  select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1, measurement, time_end)
 ```
 
 
@@ -155,7 +150,7 @@ Criteria:
 * Overall error rate below 80%
 * Erroneous association
 * Response latency under 300 ms
-* Response latency $3*SD$ above average RT
+* Response latency above 1399 ms
 
 Determining average RT and SD for filter
 ```{r}
@@ -189,18 +184,6 @@ gnat_filter2 <-
   ungroup() %>% 
   filter(correct_block > 0.6 & correct_all > 0.8 & error == 0)
 
-rt_mean1 <- as.integer(gnat_filter1 %>% 
-                         summarise(pers_a = mean(rt)))
-rt_sd1 <- as.integer(gnat_filter1 %>% 
-                       summarise(pers_sd = sd(rt)))
-rt_filter1 <- (rt_sd1 * 3) + rt_mean1
-
-rt_mean2 <- as.integer(gnat_filter2 %>% 
-                         summarise(pers_a = mean(rt)))
-rt_sd2 <- as.integer(gnat_filter2 %>% 
-                       summarise(pers_sd = sd(rt)))
-rt_filter2 <- (rt_sd2 * 3) + rt_mean2
-
 #important targets
 important_targets <- c("chall_pos", "chall_neg", "crit_pos", "crit_neg")
 ```
@@ -221,18 +204,13 @@ implicit <-
   mutate(correct_all = 1 - mean(error)) %>% 
   ungroup() %>% 
   # filter overall and block error rates, filter too quick and too slow responses
-  filter(correct_block > 0.6 & correct_all > 0.8 & error == 0) %>% 
-  group_by(measurement) %>% 
-  filter(measurement == 1,
-         rt > 300 & rt < rt_filter1) %>% 
-  filter(measurement == 2,
-         rt > 300 & rt < rt_filter2) %>%
-  ungroup() %>% 
-  #calculating d-scores for round 1
-  group_by(id) %>% 
-  filter(measurement == 1)
+  filter(correct_block > 0.6 & correct_all > 0.8 & error == 0,
+         rt > 300 & rt < 1399) %>%
+  #calculating d-scores
+  group_by(measurement, id) %>% 
   mutate(pers_sd = sd(rt)) %>% 
-  group_by(id, target, pers_sd) %>% 
+  ungroup() %>% 
+  group_by(measurement, id, target, pers_sd) %>% 
   summarise(pers_block_avg = mean(rt)) %>% 
   mutate(d = pers_block_avg/pers_sd) %>% 
   ungroup() %>% 
