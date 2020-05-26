@@ -95,8 +95,8 @@ explicit <-
 
 Neptun codes that were removed from second round
 ```{r}
-setdiff(explicit_raw %>% filter(measurement == 2) %>% mutate(neptun_1 = tolower(`Neptun:1`)) %$% neptun_1, 
-        explicit %>% filter(measurement == 2) %$% neptun_1)
+excluded <- setdiff(explicit_raw %>% filter(measurement == 2) %>% mutate(neptun_1 = tolower(`Neptun:1`)) %$% neptun_1,
+                    explicit %>% filter(measurement == 2) %$% neptun_1)
 ```
 
 Counting number of participants in groups
@@ -132,7 +132,7 @@ gnat_raw <-
   vroom::vroom(file = files2, 
         id = "id", 
         col_names = c("block", "block_id", "word", "max_rt", "trial_type", "word_category", "rt", "error", "target")) %>% mutate(measurement = 2)) %>% 
-  extract(col = id, 
+  tidyr::extract(col = id, 
           into = c(NA, "id", NA), 
           regex = "^(.*data.)(.*)(.txt)$")
 ```
@@ -180,6 +180,11 @@ gnat_filter2 <-
   mutate(correct_all = 1 - mean(error)) %>% 
   ungroup() %>% 
   filter(correct_block > 0.6 & correct_all > 0.8 & error == 0)
+
+
+excluded_id <- explicit_raw %>% filter(`Neptun:1` %in% excluded) %$% participant
+
+implicit %>% filter(!id %in% excluded_id) %>% view()
 ```
 
 filtering observations and creating d-scores
@@ -213,3 +218,25 @@ implicit <-
   mutate(challange_d = chall_neg - chall_pos,
          crit_d = crit_neg - crit_pos)
 ```
+
+# Unite implicit with explicit
+
+```{r}
+final <- left_join(explicit, implicit, by = c("id", "measurement"))
+```
+
+
+# Analysis
+
+## Assumption checks
+
+* implicit - implicit 
+* 
+```{r}
+
+```
+
+
+## Hypothesis testing
+
+## Plots and figures
