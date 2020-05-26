@@ -59,8 +59,15 @@ explicit <-
 #creating 2-week and 4-week group    
   group_by(neptun_1) %>% 
   arrange(neptun_1, time_end) %>% 
-  mutate(time_end_diff = time_end - dplyr::lag(time_end),
-         group = ifelse(time_end_diff > 20, 1, 0)) %>% 
+  mutate(time_end_lag = time_end - dplyr::lag(time_end),
+         time_end_lead = dplyr::lead(time_end)- time_end,
+         time_end_lag = replace_na(time_end_lag, 0),
+         time_end_lead = replace_na(time_end_lead, 0),
+         time_end_diff = time_end_lag + time_end_lead) %>% 
+  filter(time_end_diff > 0) %>% 
+  mutate(group = ifelse(time_end_diff > 20, 1, 0)) %>% 
+  select(-c(time_end_lag, time_end_lead, time_end)) %>% 
+  ungroup()
 #reversing items
   mutate_at(vars(iq1_1, iq2_1, fms3_1, fms4_1, cr_ms3_1, cr_ms4_1, ch_ms3_1, ch_ms4_1), 
             ~recode(., `1` = 6,
