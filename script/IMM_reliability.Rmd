@@ -97,6 +97,8 @@ Neptun codes that were removed from second round
 ```{r}
 excluded <- setdiff(explicit_raw %>% filter(measurement == 2) %>% mutate(neptun_1 = tolower(`Neptun:1`)) %$% neptun_1,
                     explicit %>% filter(measurement == 2) %$% neptun_1)
+#participant ids that were removed from explicit because they didn't complete second round
+excluded_id <- explicit_raw %>% filter(`Neptun:1` %in% excluded) %$% participant
 ```
 
 Counting number of participants in groups
@@ -180,9 +182,6 @@ gnat_filter2 <-
   mutate(correct_all = 1 - mean(error)) %>% 
   ungroup() %>% 
   filter(correct_block > 0.6 & correct_all > 0.8 & error == 0)
-
-#participants that were removed from explicit because they didn't complete second round
-excluded_id <- explicit_raw %>% filter(`Neptun:1` %in% excluded) %$% participant
 ```
 
 filtering observations and creating d-scores
@@ -215,7 +214,7 @@ implicit <-
   ungroup() %>% 
   select(-pers_block_avg, -pers_sd) %>%
   spread(target, d) %>% 
-  mutate(challange_d = chall_neg - chall_pos,
+  mutate(challenge_d = chall_neg - chall_pos,
          crit_d = crit_neg - crit_pos)
 ```
 
@@ -231,12 +230,48 @@ final <- left_join(explicit, implicit, by = c("id", "measurement"))
 ## Assumption checks
 
 * implicit - implicit 
-* 
-```{r}
+* split - half
+* explicit - explicit
+* words RT 
+* implicit - explicit at the separate times
 
+D-score normality test
+```{r}
+# normal
+final %>% 
+  filter(measurement == 1) %$%
+  challenge_d %>% 
+  shapiro.test()
+final %>% 
+  filter(measurement == 2) %$%
+  challenge_d %>% 
+  shapiro.test()
+
+# not normal
+final %>% 
+  filter(measurement == 1) %$%
+  crit_d %>% 
+  shapiro.test()
+final %>% 
+  filter(measurement == 2) %$%
+  crit_d %>% 
+  shapiro.test()
 ```
 
 
 ## Hypothesis testing
+
+```{r}
+final1 <- final %>% 
+  filter(measurement == 1) %>% 
+  arrange(neptun_1)
+final2 <- final %>% 
+  filter(measurement == 2) %>% 
+  arrange(neptun_1) 
+
+cor.test(final1$challenge_d, final2$challenge_d, method = "pearson")
+cor.test(final1$crit_d, final2$crit_d, method = "pearson")
+```
+
 
 ## Plots and figures
