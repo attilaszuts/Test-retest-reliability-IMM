@@ -56,7 +56,7 @@ explicit <-
   group_by(measurement) %>% 
   distinct(neptun_1, .keep_all = TRUE) %>% 
   ungroup() %>% 
-#creating 2-week and 4-week group    
+#creating 2-week and 4-week group, filtering participants that were only in one part  
   group_by(neptun_1) %>% 
   arrange(neptun_1, time_end) %>% 
   mutate(time_end_lag = time_end - dplyr::lag(time_end),
@@ -67,7 +67,7 @@ explicit <-
   filter(time_end_diff > 0) %>% 
   mutate(group = ifelse(time_end_diff > 20, 1, 0)) %>% 
   select(-c(time_end_lag, time_end_lead, time_end)) %>% 
-  ungroup()
+  ungroup() %>% 
 #reversing items
   mutate_at(vars(iq1_1, iq2_1, fms3_1, fms4_1, cr_ms3_1, cr_ms4_1, ch_ms3_1, ch_ms4_1), 
             ~recode(., `1` = 6,
@@ -90,41 +90,25 @@ explicit <-
   mutate(fms_avg = rowMeans(x = select(.data = ., starts_with(match = "fms")))) %>% 
   mutate(fsc_avg = rowMeans(x = select(.data = ., starts_with(match = "failure")))) %>% 
   mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = "criticism")))) %>% 
-  select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1, measurement, time_end)
+  dplyr::select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1, measurement, group, time_end_diff)
 ```
 
-
-
-Creating groups (2 week and 4 week)
-
-Adding 'days between data collections' column and filtering missing values
+Neptun codes that were removed from second round
 ```{r}
-joined <- joined %>% 
-  mutate(
-    TIME_between_end = TIME_end_second - TIME_end_first
-  ) 
-#this should be empty
-missing_joined_TIME_between <- joined %>% 
-  dplyr::filter(is.na("TIME_end_between"))
-joined <- joined %>% 
-  drop_na(TIME_between_end)
+setdiff(explicit_raw %>% filter(measurement == 2) %>% mutate(neptun_1 = tolower(`Neptun:1`)) %$% neptun_1, 
+        explicit %>% filter(measurement == 2) %$% neptun_1)
 ```
 
 Counting number of participants in groups
 The 2 week group is coded as group 0, the 4 week group is coded as group 1.
 ```{r}
-joined$group <- ifelse(joined$TIME_between_end > 20, 1, 0)
-# if there are more than 20 days between administration it is assigned 1, else 0
-joined %>% 
+explicit %>% 
   count(group)
-joined <- joined %>% 
-  rename(neptun = `Neptun:1`)
 ```
 
 Plotting frequency of number of days between data collections
 ```{r}
-joined$TIME_between_end <- as.numeric(joined$TIME_between_end)
-ggplot(joined, aes(TIME_between_end)) +
+ggplot(explicit, aes(time_end_diff)) +
   geom_bar() + 
   xlab('Days between measures') + 
   ylab('Number of particpants') + 
