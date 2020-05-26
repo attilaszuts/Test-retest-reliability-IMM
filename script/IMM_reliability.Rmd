@@ -220,8 +220,11 @@ implicit <-
 
 # Unite implicit with explicit
 
+Excluded participants that had too high error rate
 ```{r}
-final <- left_join(explicit, implicit, by = c("id", "measurement"))
+final <- left_join(explicit, implicit, by = c("id", "measurement")) %>% 
+  filter(neptun_1 != "q69vn2",
+         neptun_1 != "bm0vx1")
 ```
 
 
