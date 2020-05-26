@@ -181,10 +181,8 @@ gnat_filter2 <-
   ungroup() %>% 
   filter(correct_block > 0.6 & correct_all > 0.8 & error == 0)
 
-
+#participants that were removed from explicit because they didn't complete second round
 excluded_id <- explicit_raw %>% filter(`Neptun:1` %in% excluded) %$% participant
-
-implicit %>% filter(!id %in% excluded_id) %>% view()
 ```
 
 filtering observations and creating d-scores
@@ -194,6 +192,8 @@ implicit <-
   #filter only important trials and only go_trials 
   filter(target %in%important_targets,
          trial_type == 'go_trial') %>% 
+  #filtering out participants that didnt complete the second round
+  filter(!id %in% excluded_id) %>%
   #checking for block error rate per participant
   group_by(id, target) %>% 
   mutate(correct_block = 1 - mean(error)) %>% 

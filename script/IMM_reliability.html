@@ -385,6 +385,12 @@ summary {
 <li><a href="#importing-data-1"><span class="toc-section-number">3.1</span> Importing data</a></li>
 <li><a href="#filtering-observations-based-on-error-rate"><span class="toc-section-number">3.2</span> Filtering observations based on error rate</a></li>
 </ul></li>
+<li><a href="#unite-implicit-with-explicit"><span class="toc-section-number">4</span> Unite implicit with explicit</a></li>
+<li><a href="#analysis"><span class="toc-section-number">5</span> Analysis</a><ul>
+<li><a href="#assumption-checks"><span class="toc-section-number">5.1</span> Assumption checks</a></li>
+<li><a href="#hypothesis-testing"><span class="toc-section-number">5.2</span> Hypothesis testing</a></li>
+<li><a href="#plots-and-figures"><span class="toc-section-number">5.3</span> Plots and figures</a></li>
+</ul></li>
 </ul>
 </div>
 
@@ -466,9 +472,8 @@ explicit_raw &lt;-
   mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;criticism&quot;)))) %&gt;% 
   dplyr::select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1, measurement, group, time_end_diff)</code></pre>
 <p>Neptun codes that were removed from second round</p>
-<pre class="r"><code>setdiff(explicit_raw %&gt;% filter(measurement == 2) %&gt;% mutate(neptun_1 = tolower(`Neptun:1`)) %$% neptun_1, 
-        explicit %&gt;% filter(measurement == 2) %$% neptun_1)</code></pre>
-<pre><code>## [1] &quot;fo9j9b&quot; &quot;c6ggx3&quot; NA       &quot;wirw0p&quot; &quot;s9h2c1&quot; &quot;cqchew&quot;</code></pre>
+<pre class="r"><code>excluded &lt;- setdiff(explicit_raw %&gt;% filter(measurement == 2) %&gt;% mutate(neptun_1 = tolower(`Neptun:1`)) %$% neptun_1,
+                    explicit %&gt;% filter(measurement == 2) %$% neptun_1)</code></pre>
 <p>Counting number of participants in groups The 2 week group is coded as group 0, the 4 week group is coded as group 1.</p>
 <pre class="r"><code>explicit %&gt;% 
   count(group)</code></pre>
@@ -504,7 +509,7 @@ gnat_raw &lt;-
   vroom::vroom(file = files2, 
         id = &quot;id&quot;, 
         col_names = c(&quot;block&quot;, &quot;block_id&quot;, &quot;word&quot;, &quot;max_rt&quot;, &quot;trial_type&quot;, &quot;word_category&quot;, &quot;rt&quot;, &quot;error&quot;, &quot;target&quot;)) %&gt;% mutate(measurement = 2)) %&gt;% 
-  extract(col = id, 
+  tidyr::extract(col = id, 
           into = c(NA, &quot;id&quot;, NA), 
           regex = &quot;^(.*data.)(.*)(.txt)$&quot;)</code></pre>
 </div>
@@ -550,13 +555,18 @@ gnat_filter2 &lt;-
   group_by(id) %&gt;% 
   mutate(correct_all = 1 - mean(error)) %&gt;% 
   ungroup() %&gt;% 
-  filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0)</code></pre>
+  filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0)
+
+#participants that were removed from explicit because they didn&#39;t complete second round
+excluded_id &lt;- explicit_raw %&gt;% filter(`Neptun:1` %in% excluded) %$% participant</code></pre>
 <p>filtering observations and creating d-scores</p>
 <pre class="r"><code>implicit &lt;- 
   gnat_raw %&gt;% 
   #filter only important trials and only go_trials 
   filter(target %in%important_targets,
          trial_type == &#39;go_trial&#39;) %&gt;% 
+  #filtering out participants that didnt complete the second round
+  filter(!id %in% excluded_id) %&gt;%
   #checking for block error rate per participant
   group_by(id, target) %&gt;% 
   mutate(correct_block = 1 - mean(error)) %&gt;% 
@@ -580,6 +590,26 @@ gnat_filter2 &lt;-
   spread(target, d) %&gt;% 
   mutate(challange_d = chall_neg - chall_pos,
          crit_d = crit_neg - crit_pos)</code></pre>
+</div>
+</div>
+<div id="unite-implicit-with-explicit" class="section level1">
+<h1><span class="header-section-number">4</span> Unite implicit with explicit</h1>
+<pre class="r"><code>final &lt;- left_join(explicit, implicit, by = c(&quot;id&quot;, &quot;measurement&quot;))</code></pre>
+</div>
+<div id="analysis" class="section level1">
+<h1><span class="header-section-number">5</span> Analysis</h1>
+<div id="assumption-checks" class="section level2">
+<h2><span class="header-section-number">5.1</span> Assumption checks</h2>
+<ul>
+<li>implicit - implicit</li>
+<li></li>
+</ul>
+</div>
+<div id="hypothesis-testing" class="section level2">
+<h2><span class="header-section-number">5.2</span> Hypothesis testing</h2>
+</div>
+<div id="plots-and-figures" class="section level2">
+<h2><span class="header-section-number">5.3</span> Plots and figures</h2>
 </div>
 </div>
 
