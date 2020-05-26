@@ -377,457 +377,202 @@ summary {
 <div id="TOC">
 <ul>
 <li><a href="#data-input-and-opening-libraries"><span class="toc-section-number">1</span> Data input and opening libraries</a></li>
-<li><a href="#creating-groups"><span class="toc-section-number">2</span> Creating groups</a><ul>
-<li><a href="#responses-that-have-not-been-completed"><span class="toc-section-number">2.1</span> Responses that have not been completed</a></li>
-<li><a href="#uniting-round1-and-round2-explicit-measures"><span class="toc-section-number">2.2</span> Uniting round1 and round2 explicit measures</a><ul>
-<li><a href="#joining-separate-rounds"><span class="toc-section-number">2.2.1</span> Joining separate rounds</a></li>
+<li><a href="#explicit"><span class="toc-section-number">2</span> Explicit</a><ul>
+<li><a href="#importing-data"><span class="toc-section-number">2.1</span> Importing data</a></li>
+<li><a href="#reversing-items-creating-groups-creating-means-of-explicit-measures"><span class="toc-section-number">2.2</span> Reversing items, creating groups, creating means of explicit measures</a></li>
 </ul></li>
-<li><a href="#creating-groups-2-week-and-4-week"><span class="toc-section-number">2.3</span> Creating groups (2 week and 4 week)</a><ul>
-<li><a href="#converting-times-to-date-format"><span class="toc-section-number">2.3.1</span> Converting times to date format</a></li>
-<li><a href="#adding-days-between-data-collections-column-and-filtering-missing-values"><span class="toc-section-number">2.3.2</span> Adding ‘days between data collections’ column and filtering missing values</a></li>
-<li><a href="#exporting-missing-values-and-checking-manually"><span class="toc-section-number">2.3.3</span> Exporting missing values and checking manually</a></li>
-<li><a href="#counting-number-of-participants-in-groups"><span class="toc-section-number">2.3.4</span> Counting number of participants in groups</a></li>
-</ul></li>
-<li><a href="#plotting-frequency-of-number-of-days-between-data-collections"><span class="toc-section-number">2.4</span> Plotting frequency of number of days between data collections</a></li>
-</ul></li>
-<li><a href="#round-1-data"><span class="toc-section-number">3</span> Round 1 data</a><ul>
-<li><a href="#explicit-measure"><span class="toc-section-number">3.1</span> Explicit measure</a><ul>
-<li><a href="#data-cleaning"><span class="toc-section-number">3.1.1</span> Data cleaning</a></li>
-</ul></li>
-<li><a href="#implicit-measure"><span class="toc-section-number">3.2</span> Implicit measure</a><ul>
-<li><a href="#data-cleaning-1"><span class="toc-section-number">3.2.1</span> Data cleaning</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#round-2-data"><span class="toc-section-number">4</span> Round 2 data</a><ul>
-<li><a href="#explicit-measure-1"><span class="toc-section-number">4.1</span> Explicit measure</a><ul>
-<li><a href="#data-cleaning-2"><span class="toc-section-number">4.1.1</span> Data cleaning</a></li>
-</ul></li>
-<li><a href="#implicit-measure-1"><span class="toc-section-number">4.2</span> Implicit measure</a><ul>
-<li><a href="#data-cleaning-3"><span class="toc-section-number">4.2.1</span> Data cleaning</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#collecting-all-data-in-one-dataframe"><span class="toc-section-number">5</span> Collecting all data in one dataframe</a></li>
-<li><a href="#analysis"><span class="toc-section-number">6</span> Analysis</a><ul>
-<li><a href="#assumption-checks"><span class="toc-section-number">6.1</span> Assumption checks</a></li>
-<li><a href="#hypothesis-testing"><span class="toc-section-number">6.2</span> Hypothesis testing</a></li>
-<li><a href="#plots-and-figures"><span class="toc-section-number">6.3</span> Plots and figures</a></li>
+<li><a href="#implicit"><span class="toc-section-number">3</span> Implicit</a><ul>
+<li><a href="#importing-data-1"><span class="toc-section-number">3.1</span> Importing data</a></li>
+<li><a href="#filtering-observations-based-on-error-rate"><span class="toc-section-number">3.2</span> Filtering observations based on error rate</a></li>
 </ul></li>
 </ul>
 </div>
 
 <div id="data-input-and-opening-libraries" class="section level1">
 <h1><span class="header-section-number">1</span> Data input and opening libraries</h1>
-<pre class="r"><code>library(readr); library(tidyverse); library(readxl); library(lubridate); library(ggplot2); library(stringr); library(vroom); library(janitor); library(widyr); library(data.table)</code></pre>
+<pre class="r"><code>library(readr)
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(ggplot2)
+library(stringr)
+library(vroom)
+library(janitor)
+library(widyr)
+# library(data.table)
+library(ggpubr)
+library(vroom)
+library(lubridate)</code></pre>
 </div>
-<div id="creating-groups" class="section level1">
-<h1><span class="header-section-number">2</span> Creating groups</h1>
-<p>Reading in data files</p>
-<pre class="r"><code>round1 &lt;- read_csv(&quot;D:/Documents/Egyebek/Thesis/data/Round 1/data.csv&quot;)
-round2 &lt;- read_csv(&quot;D:/Documents/Egyebek/Thesis/data/Round 2/data.csv&quot;)</code></pre>
-<div id="responses-that-have-not-been-completed" class="section level2">
-<h2><span class="header-section-number">2.1</span> Responses that have not been completed</h2>
-<p>Extracting responses based on missing completion time (‘TIME_end’)</p>
-<pre class="r"><code>missing1 &lt;- round1[is.na(round1$TIME_end),]
-missing2 &lt;- round2[is.na(round2$TIME_end),]</code></pre>
+<div id="explicit" class="section level1">
+<h1><span class="header-section-number">2</span> Explicit</h1>
+<div id="importing-data" class="section level2">
+<h2><span class="header-section-number">2.1</span> Importing data</h2>
+<pre class="r"><code>setwd(&quot;D:/Documents/Egyebek/Thesis&quot;)
+explicit_raw &lt;-
+  bind_rows(
+    read_csv(&quot;data/Round 1/data.csv&quot;) %&gt;% mutate(measurement = 1),
+    read_csv(&quot;data/Round 2/data.csv&quot;) %&gt;% mutate(measurement = 2)
+  ) </code></pre>
 </div>
-<div id="uniting-round1-and-round2-explicit-measures" class="section level2">
-<h2><span class="header-section-number">2.2</span> Uniting round1 and round2 explicit measures</h2>
-<p>Cleaning variable names, and dropping missing cases. Changing Neptun codes to upper case. Filtering out duplicate answers.</p>
-<pre class="r"><code>time1 &lt;- round1 %&gt;% 
-  select(c(&quot;participant&quot;, &quot;Neptun:1&quot;, &quot;TIME_start&quot;, &quot;TIME_end&quot;)) %&gt;% 
-  rename(TIME_start_first = &quot;TIME_start&quot;, TIME_end_first = &quot;TIME_end&quot;, participant_first = &quot;participant&quot;) %&gt;% 
-  drop_na()
-time2 &lt;- round2 %&gt;% 
-  select(c(&quot;participant&quot;, &quot;Neptun:1&quot;, &quot;TIME_start&quot;, &quot;TIME_end&quot;)) %&gt;% 
-  rename(TIME_start_second = &quot;TIME_start&quot;, TIME_end_second = &quot;TIME_end&quot;, participant_second = &quot;participant&quot;) %&gt;% 
-  drop_na()
-
-#neptun codes to upper case
-time1$`Neptun:1` &lt;- toupper(time1$`Neptun:1`)
-time2$`Neptun:1` &lt;- toupper(time2$`Neptun:1`)
-
-#neptun codes more than once in data
-neptun_duplicate_time1 &lt;- time1 %&gt;% 
-  count(`Neptun:1`) %&gt;% 
-  filter(n &gt; 1)
-neptun_duplicate_time2 &lt;- time2 %&gt;% 
-  count(`Neptun:1`) %&gt;% 
-  filter(n &gt; 1)</code></pre>
-<div id="joining-separate-rounds" class="section level3">
-<h3><span class="header-section-number">2.2.1</span> Joining separate rounds</h3>
-<p>Cases missing first round means, they either did not complete round 1 or they made a typo in their Neptun code and therefore it can’t be automatically matched to it.</p>
-<pre class="r"><code>joined &lt;- left_join(time2, time1, by = &quot;Neptun:1&quot;)
-missing_joined_first_round &lt;- joined[is.na(joined$TIME_end_first),]
-#Neptun codes that appear more than once
-neptun_duplicate_joined &lt;- joined %&gt;% 
-  count(`Neptun:1`) %&gt;% 
-  filter(n &gt; 1)</code></pre>
-</div>
-</div>
-<div id="creating-groups-2-week-and-4-week" class="section level2">
-<h2><span class="header-section-number">2.3</span> Creating groups (2 week and 4 week)</h2>
-<div id="converting-times-to-date-format" class="section level3">
-<h3><span class="header-section-number">2.3.1</span> Converting times to date format</h3>
-<pre class="r"><code>joined$TIME_end_first &lt;- as.Date(joined$TIME_end_first)
-joined$TIME_end_second &lt;- as.Date(joined$TIME_end_second)
-joined$TIME_start_first &lt;- as.Date(joined$TIME_start_first)
-joined$TIME_start_second &lt;- as.Date(joined$TIME_start_second)</code></pre>
-</div>
-<div id="adding-days-between-data-collections-column-and-filtering-missing-values" class="section level3">
-<h3><span class="header-section-number">2.3.2</span> Adding ‘days between data collections’ column and filtering missing values</h3>
-<pre class="r"><code>joined &lt;- joined %&gt;% 
-  mutate(
-    TIME_between_end = TIME_end_second - TIME_end_first
-  ) 
-#this should be empty
-missing_joined_TIME_between &lt;- joined %&gt;% 
-  dplyr::filter(is.na(&quot;TIME_end_between&quot;))
-joined &lt;- joined %&gt;% 
-  drop_na(TIME_between_end)</code></pre>
-</div>
-<div id="exporting-missing-values-and-checking-manually" class="section level3">
-<h3><span class="header-section-number">2.3.3</span> Exporting missing values and checking manually</h3>
-<pre class="r"><code>#write_csv2(neptun_duplicate_joined, &quot;D:/Documents/Egyebek/Thesis/data/Temp/neptun_duplicate_joined.csv&quot;)
-#write_csv2(neptun_duplicate_time1, &quot;D:/Documents/Egyebek/Thesis/data/Temp/neptun_duplicate_time1.csv&quot;)
-#write_csv2(neptun_duplicate_time2, &quot;D:/Documents/Egyebek/Thesis/data/Temp/neptun_duplicate_time2.csv&quot;)</code></pre>
-</div>
-<div id="counting-number-of-participants-in-groups" class="section level3">
-<h3><span class="header-section-number">2.3.4</span> Counting number of participants in groups</h3>
-<p>The 2 week group is coded as group 0, the 4 week group is coded as group 1.</p>
-<pre class="r"><code>joined$group &lt;- ifelse(joined$TIME_between_end &gt; 20, 1, 0)
-# if there are more than 20 days between administration it is assigned 1, else 0
-joined %&gt;% 
+<div id="reversing-items-creating-groups-creating-means-of-explicit-measures" class="section level2">
+<h2><span class="header-section-number">2.2</span> Reversing items, creating groups, creating means of explicit measures</h2>
+<pre class="r"><code>explicit &lt;- 
+  explicit_raw %&gt;% 
+  tidyr::extract(col = participant, 
+          into = c(NA, &quot;id&quot;, NA), 
+          regex = &quot;^(.*s.)(.*)(.txt)$&quot;) %&gt;% 
+  clean_names() %&gt;% 
+  drop_na(time_end) %&gt;% 
+  mutate(neptun_1 = str_to_lower(neptun_1)) %&gt;% 
+  mutate_at(c(&quot;time_start&quot;, &quot;time_end&quot;), ymd_hm) %&gt;% 
+  mutate_at(c(&quot;time_start&quot;, &quot;time_end&quot;), as_date) %&gt;% 
+  group_by(measurement) %&gt;% 
+  distinct(neptun_1, .keep_all = TRUE) %&gt;% 
+  ungroup() %&gt;% 
+#creating 2-week and 4-week group, filtering participants that were only in one part  
+  group_by(neptun_1) %&gt;% 
+  arrange(neptun_1, time_end) %&gt;% 
+  mutate(time_end_lag = time_end - dplyr::lag(time_end),
+         time_end_lead = dplyr::lead(time_end)- time_end,
+         time_end_lag = replace_na(time_end_lag, 0),
+         time_end_lead = replace_na(time_end_lead, 0),
+         time_end_diff = time_end_lag + time_end_lead) %&gt;% 
+  filter(time_end_diff &gt; 0) %&gt;% 
+  mutate(group = ifelse(time_end_diff &gt; 20, 1, 0)) %&gt;% 
+  select(-c(time_end_lag, time_end_lead, time_end)) %&gt;% 
+  ungroup() %&gt;% 
+#reversing items
+  mutate_at(vars(iq1_1, iq2_1, fms3_1, fms4_1, cr_ms3_1, cr_ms4_1, ch_ms3_1, ch_ms4_1), 
+            ~recode(., `1` = 6,
+                    `2` = 5,
+                    `3` = 4,
+                    `4` = 3,
+                    `5` = 2,
+                    `6` = 1,
+            )) %&gt;% 
+  mutate_at(vars(failurescenario_1, criticismscenario_1), 
+            ~recode(., `1` = 5,
+                    `2` = 4,
+                    `4` = 2,
+                    `5` = 1,
+            )) %&gt;% 
+#creating means of explicit measures
+  mutate(iqms_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;iq&quot;)))) %&gt;% 
+  mutate(crms_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;cr_ms&quot;)))) %&gt;% 
+  mutate(chms_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;ch_ms&quot;)))) %&gt;% 
+  mutate(fms_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;fms&quot;)))) %&gt;% 
+  mutate(fsc_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;failure&quot;)))) %&gt;% 
+  mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;criticism&quot;)))) %&gt;% 
+  dplyr::select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1, measurement, group, time_end_diff)</code></pre>
+<p>Neptun codes that were removed from second round</p>
+<pre class="r"><code>setdiff(explicit_raw %&gt;% filter(measurement == 2) %&gt;% mutate(neptun_1 = tolower(`Neptun:1`)) %$% neptun_1, 
+        explicit %&gt;% filter(measurement == 2) %$% neptun_1)</code></pre>
+<pre><code>## [1] &quot;fo9j9b&quot; &quot;c6ggx3&quot; NA       &quot;wirw0p&quot; &quot;s9h2c1&quot; &quot;cqchew&quot;</code></pre>
+<p>Counting number of participants in groups The 2 week group is coded as group 0, the 4 week group is coded as group 1.</p>
+<pre class="r"><code>explicit %&gt;% 
   count(group)</code></pre>
 <pre><code>## # A tibble: 2 x 2
 ##   group     n
 ##   &lt;dbl&gt; &lt;int&gt;
-## 1     0    62
-## 2     1    29</code></pre>
-<pre class="r"><code>joined &lt;- joined %&gt;% 
-  rename(neptun = `Neptun:1`)</code></pre>
+## 1     0   116
+## 2     1    58</code></pre>
+<p>Plotting frequency of number of days between data collections</p>
+<pre class="r"><code>ggplot(explicit, aes(time_end_diff)) +
+  geom_bar() + 
+  xlab(&#39;Days between measures&#39;) + 
+  ylab(&#39;Number of particpants&#39;) + 
+  theme_classic()</code></pre>
+<pre><code>## Don&#39;t know how to automatically pick scale for object of type difftime. Defaulting to continuous.</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAABXFBMVEUAAAAAACsAAFUAKysAK1UAK4AAVYAAVaorAAArKwArKysrK1UrK4ArVVUrVYArVaorgIArgKorgNQzMzNNTU1NTWtNTYhNa4hNa6ZNiMRVAABVACtVKwBVKytVK4BVVStVVVVVVYBVgFVVgIBVgKpVgNRVqqpVqtRVqv9ZWVlrTU1ra2tra4hriKZriMRrpuGAKwCAKyuAVSuAVVWAVYCAgFWAgKqAqqqAqtSA1P+ITU2Ia02Ia2uIpqaIpsSIpuGIxOGIxP+ma02ma2umiGumxOGm4f+qVQCqVSuqVVWqgCuqgFWqgICqqoCqqqqqqtSq1NSq1P+q///EiE3EiGvExKbE4f/E///UgCvUgFXUqlXUqoDUqqrUqtTU1IDU1KrU1NTU1P/U///hpmvhxIjhxKbh////qlX/xIj/1ID/1Kr/1NT/4ab/4cT/4eH//6r//8T//9T//+H///9Vn+D5AAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3dfZscV3ng4Ra21oMSm8Vu4ZdAbDbO4lXWoLU3AUR2ExQHEZMYjFgjbLIYFPRiS2uN5vtf13af7pmp7p4az1PVVHed577/sDT2nFLX0cOPfq2ZHAHQyWTXNwBgrAQUoCMBBehIQAE6ElCAjgQUoCMBBehIQAE6ElCAjgQUoCMBBehIQAE6ElCAjv5kAZ1IM1A5AQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI46Z+7RtVfuld88fe/adPr2RxsHFlCgcl0z9/TmdBHQJzemc9/49fqBBRSoXNfM3Z0uA3p7+spHR4+Pc9o4sIACleuYuUfXlgF9dK3c93xy4+pP1g4soEDlumVu9gD+fy2eA707fbX8m7vT760dWECBynXL3O3pq8sXkW5Pf1z+zYNlSE8PLKBA5Tpl7sHs4fsioE9vLh+6n7wof/TSkoACleuSufKEZ+KA/regXd9e4E+kS+Zuz5/v3Ajo2huZKn4IL6BA0SFzd8vr7633QI8PLKACCpWLZ+7RtdJMARVQyC6eubvTE7NH7RlfhRdQoOgb0OP3f2Z6H6iAAkXfi4lk/CSSgAJF34A+vTl9Odtn4QUUKHpfzu5xvqsxCShQ9L8e6OP3Zv18+976fxdQAYXauSJ9nIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFAIaJyAAoWAxgkoUAhonIAChYDGCShQCGicgAKFgMYJKFB0ytwffzSdXv3f9xZfPH3v2nT69kcbBxZQAYXKdcnc3Wnx8q/nXzy5Ub74xq/XDyygAgqV65C5R9eu/uPR0eMfTV+df3V7+spHR49vTl+5t3ZgARVQqFyHzN2efm/+y6Nr83udi3/O7ode/cnagQVUQKFy3TP35MY8nXcX90Nnv35v7cACKqBQue6Ze3Rt/qj99vTH5asHy5CeHlhABRQq1zlz/3Ftns6nN5cP3Rc5nXtpSUAFFCrXMXO3p9Or/3wkoAIKmXXL3NN/+ptr06v/sBLQtTcyeQgvoFC77pn74/wx/Bn3QI8PLKACCpXrkbkH01fuCaiAQl49Mlea6VV4AYW04pl7enPZzBLQ4/d/eh+ogEI6nT6J9Orprz6JJKCQVqfPwk+/e+/o6a+m82bO7o++7LPwAgopdcncg8XVmK6WR/KPXY1JQCGpTpl7/PezfB5fAvTxe7N+vn1v/XsEVEChdq5IHyegQCGgcQIKFAIaJ6BAIaBxAgoUAhonoEAhoHECChQCGiegQCGgcQIKFAIaJ6BAIaBxAgoUAhonoEAhoHECChQCGiegQCGgcQIKFAIaJ6BAIaBxAgoUAhonoEAhoHECChQCGiegQCGgcQIKFAIaJ6BAIaBxAgoUAhonoEAhoHECChQCGiegQCGgcQIKFAIaJ6BAIaBxAgoUAhonoEAhoHECChQCGiegQCGgcQIKFAIaJ6BAIaBxAgoUAhonoEAhoHECChQCGiegQCGgcQIKFAIaJ6BAIaBxAgoUAhonoEAhoHECChQCGiegQCGgcQIKFAIaJ6BA8SWZO/ztBz/veGABFVCoXGvmPvuffzg6+uKbk8nk2R92OrCACihUri1zdyZf+eXR0a3J3Px38QMLqIBC5Voyd79k8+HB5PIfPntt8mKXAwuogELlWjJ3a1bOeUYv/XD+z/nvwwcWUAGFyp2ducPr83IuM/rFa10ewwuogELtzs7coplfvDZ57khANwgoUJwX0IcHk7eOBHSDgALFeQ/h75SnQD0Huk5AgaL1RaTn5i+/z8vpVfh1AgoU7W9jmnvr6PCdyeJ+aPjAAiqgULn2N9LPPFdeSLr0VqcDC6iAQuXaP8r57rd/MPvli7944cNuBxZQAYXKuRpTnIACRcur8O9++/SF94ev/7lX4ZsEFCjOex/oWV9c/MACKqBQuQsE9OGBgK4QUKDYyNwXr002eCP9CgEFis3M3d8MaJf3MQmogELtNjN3+C9vvPH6waXn3zj2V7/odGABFVCo3AWeA+14YAEVUKjcBd7G1PHAAiqgUDlvpI8TUKA4L3OfHvt9lwMLqIBC5doy99k7jVfhvQ90hYACRUvmVt8NKqArBBQoWjJ3ZzJ59q8+OPZzb6RvElCgaPuRHuXHyfU6sIAKKFSu7X2gna5Cv3JgARVQqJw30scJKFCc91M5+x1YQAUUKtf6IlKXn8S5cmABFVCoXEvmZndBv9PzwAIqoFC5ts/Cvz6ZnF6QqcsH4wVUQKF2bS8iTbyRvpWAAoWAxgkoULgaU5yAAoWAxgkoUAhonIACxTmZOzy+HOgnf+k50CYBBQrXA40TUKC40PVALwtok4ACRfv1QC89P//hxq8fTLp9JklABRRq13o90Mt/mP/zrXlLL3f5CZ0CKqBQu3OvB7q4pMiteUbjBxZQAYXKnXs90PvluvT3O12dXkAFFGr3JQGdP3r/4rUuj+EFVEChdudeUPnhwbyj3S5PL6ACCrVrydyt8uzn4qnQRUbDBxZQAYXKtWTu4cHkhQ/nL8O/OI+ph/ArBBQo2jJ3q3z+6P5kculg0unHewiogELtWjP3m/kD98Nb5YNI3ge6QkCB4pzM/fusm4cfX7nyZpd+CqiAQvVczi5OQIHi/Mx92uPAAiqgULn2zH3yrfnzn5de+LDjgQVUQKFybZk7vH5yMbuveQ50lYACRUvm5v289Pz3P/jX1w8mnT4KL6ACCtVrvx7o1xd3PA/fn7ga0yoBBYrW64Gevnn+lqsxrRJQoDj3eqALPgu/RkCB4tzL2Z3xxcUPLKACCpU793J2Cw8PXExkhYACReuLSM+d+fvAgQVUQKFy7W9jOn77551OPxZeQAUUqtfyEP7d+fs/n3/zg3+b//pnbxTfDj2QF1ABhdq1vYg02RS7IyqgAgq1E9A4AQUKl7OLE1CgENA4AQUKAY0TUKD4ssx1vqSygAoo1K41c4c/+7NflleTOl5RWUAFFGrXlrn7B+VV9/nL8Ze6XM1OQAUUqteSuYcHy59m/Nt3DiaNz8UHDiygAgqVa8ncrcmzx4/cD6/7LPwqAQUK1wONE1CgcD3QOAEFCvdA4wQUKFqfA33uzN8HDiygAgqVa8nc/cnkhd+X333+Uz+Vc42AAkVb5m5NJpNLV65cOZj4ufDrBBQo2jI3/3HwC5f+utuBBVRAoXLtmTv85PXZPdDn/67DD5QrBxZQAYXKuRpTnIAChYDGCShQrGfu8N35D4+b/bMp9uPklgcWUAGFyq1n7ovX5ldhWvuZSN5Iv0JAgUJA4wQUKDwHGiegQCGgcQIKFGdn7vDdxutGD1//cy8iNQkoULicXZyAAsUFAupydmsEFCg2Mrf2Anxx2UP4JgEFis3M3d8MqMvZrRBQoNjM3OG/vPHG6weXnj/5HNJf/aLTgQVUQKFyF3gOtOOBBVRAoXIXeBtTxwMLqIBC5dp+JtILH579Hy5+YAEVUKhc20P4Ti8crRxYQAUUKuc50DgBBYqW50CvN34ufMcDjyGg3VIooCQTHfk8M9+SuTuTyz2fBBXQfMNEraIjn2fmWzL3+fuTyTPPV39F+m5jYZhIJjryeWa+9UWkFBdU7jYWholkoiOfZ+YFND4WholkoiOfZ+ZzX1C521gYJpKJjnyemRfQ+FgYJpKJjnyemRfQ+FgYJpKJjnyemT8nc4efLn3yl54DbY6FYSKZ6Mjnmfm2zH32jheR2sbCMJFMdOTzzHxL5lZfhr8soM2xMEwkEx35PDPf+kmkyaXn55dVfv1gcuk7nQ4soOmGiVpFRz7PzLd9Fn7+c5Bm/3yrfKqzy7VBBTTfMFGr6Mjnmfm2N9KXi4ncmbw4++eten8mUrexMEwkEx35PDN/7uXs7k+eO/ln+MACmm6YqFV05PPM/JcEdP7o/YvXqv2xxt3GwjCRTHTk88z8udcDfXgw72i3qysLaL5holbRkc8z820/E6k8+7l4KnSR0fCBBTTdMFGr6MjnmfmWzD08mLzw4fxl+BfnMfUQfmUsDBPJREc+z8y3Ze5W+fzR/cnk0sGk3BsNH1hA0w0TtYqOfJ6Zb83cb+YP3A9vlQ8ieR/oylgYJpKJjnyemT8nc/8+6+bhx1euvNmlnwKacJioVXTk88y8y9nFx8IwkUx05PPM/PmZ+7THgQU03TBRq+jI55n59sx98q3585+XXuj4440FNN8wUavoyOeZ+bbMHV4/uZjd1zwHujoWholkoiOfZ+ZbMjfv56Xnv//Bv75+MOn0UXgBTThM1Co68nlmvv16oF9f3PE8fH/iakyrY2GYSCY68nlmvvV6oKdvnr/lakyrY2GYSCY68nlm/tzrgS74LPzaWBgmkomOfJ6ZP/dydmd8cfEDC2i6YaJW0ZHPM/PnXs5u4eGBi4msjIVhIpnoyOeZ+dYXkZ478/cLf/z76fTq2x8tvnj63rXp9PiLxoEFNN0wUavoyOeZ+fa3MR2//fPOxo+F/9W0uPqT+RdPbpQvvvHr9QMLaLpholbRkc8z8y0P4d+dv//z+Tc/+Lf5r3/2RvHtZVEfTK/+49HR45uLaN6evvLR/ItX7q0dWEDTDRO1io58nplvexFpsml5R/TpzemP57/O7nrOfn10rWT0yY3F/dHGgQU03TBRq+jI55n5eECf3Fg+XL89/d7R0d3pq+WLu/MvVg4soOmGiVpFRz7PzPfIXAno7cXd0dnj+lfXDiyg6YaJWkVHPs/Md89cedT+9Obyofuja8dPgr60JKDpholaRUc+z8x3z1x58C6ghon6RUc+z8x3ztyD8jamRkDX3sjkIXy+YaJW0ZHPM/NdM/fg2tX5k59n3AM9PrCAphsmahUd+Twz3zFzd5dvoxdQw0T9oiOfZ+a7Ze5X0+O3fXoV3jBRvejI55n5Lpl7env68vETnsfv//Q+UMNEtaIjn2fmu2TuduNzmz6JZJioXnTk88z8euaWF7L7/PftS+42P/f+9Ob0ZZ+FN0xULTryeWZ+PXOLqyefdw3l5eWX5uZPez52NSbDROWiI59n5jcDOr8Hel5AH0xXAnr0+L3Z796+t/5tAppvmKhVdOTzzPzmQ/jJ5Z9/+rvXvvKLT0+d83i+/cACmm6YqFV05PPM/Ebm7rRfhyl2YAFNN0zUKjryeWZ+I3OHPxXQLxkLw0Qy0ZHPM/NnZO7w0w/+7eDS9z849XM/VK45FoaJZKIjn2fmL/BjjTseWEDTDRO1io58nplv+5lI3+5wp3P1wAKabpioVXTk88z8nyxzAppvmKhVdOTzzHx75j7/2ZXJ5NKVN7u8h+lIQDMOE7WKjnyemW/N3OnbmV7sdmABTTdM1Co68nlmvi1z834+8/wbr3+1a0EFNN8wUavoyOeZ+ZbMPTyYXP6w/O6z65NyeZHwgQU03TBRq+jI55n5lszdmlw+fhn+8PrkuS4HFtB0w0StoiOfZ+Zb3sZ0vXGv8+HBZW+kb46FYSKZ6MjnmfkLvJG+27vqBTTfMFGr6MjnmXkBjY+FYSKZ6Mjnmfm2h/CTt06+uD/xEH5lLAwTyURHPs/MexEpPhaGiWSiI59n5tvfxvTsL8rvfvdNb2NaGwvDRDLRkc8z8+e9kX5y5cqVzh9FEtB8w0StoiOfZ+ZbM/fxwfKTnJe+0+3AAppumKhVdOTzzHx75g4/eX12D/T5H3S8rp2A5hsmahUd+Twz73J28bEwTCQTHfk8My+g8bEwTCQTHfk8My+g8bEwTCQTHfk8My+g8bEwTCQTHfk8My+g8bEwTCQTHfk8My+g8bEwTCQTHfk8My+g8bEwTCQTHfk8My+g8bEwTCQTHfk8My+g8bEwTCQTHfk8M992NaYXPux7YAFNN0zUKjryeWa+7YLKjeuBdjywgKYbJmoVHfk8M3+BK9J3PLCAphsmahUd+Twzf4EfKtfxwAKabpioVXTk88x8S+buHP9Y+O4HFtB0w0StoiOfZ+ZbMvf5+5PJM8+/sfRtPxOpORaGiWSiI59n5ltfRGryUzlXxsIwkUx05PPMvIDGx8IwkUx05PPMvDfSx8fCMJFMdOTzzLyAxsfCMJFMdOTzzPy5mTv8fY8DC2i6YaJW0ZHPM/PtmfvkW/MnP7/4ize7/VQ5Ac03TNQqOvJ5Zr4tc4c/Xbx69MVrk2c7fShJQPMNE7WKjnyemW/L3K3J5Nn/cvCVXx7+j8nkcpf7oAKab5ioVXTk88x8S+buTybfWX4i/uODThcWEdB8w0StoiOfZ+bbLmc3efHkkiJ3Js91ObCAphsmahUd+Twzf97FRJYBfXjgjfQrY2GYSCY68nlm/rzL2S0D2u3adgKab5ioVXTk88y8gMbHwjCRTHTk88x820P4+QtHy3Le7/QyvIDmGyZqFR35PDPfej3Q544DOoupF5FWxsIwkUx05PPMfEvmHh5MvvaHEtDPvjnpdHV6Ac03TNQqOvJ5Zr4tc3cmk8mVg0vPf3X264udDiyg6YaJWkVHPs/Mt2buNwfHVwPt1E8BTThM1Co68nlmvj1zn//syqyez3T9AfECmm+YqFV05PPMvOuBxsfCMJFMdOTzzPz51wP9tMeBBTTdMFGr6Mjnmfnzrwc64yH8xlgYJpKJjnyemW+9Huj1kx8p97VOV1QW0HzDRK2iI59n5lsyN+/npef/7oN/fX1W0C7voxfQhMNEraIjn2fm268Hunz30uH7E9cDXR0Lw0Qy0ZHPM/Otn4U/fffnLR/lXB0Lw0Qy0ZHPM/NtV2NqfHzT9UDXxsIwkUx05PPM/HmXszvri4sfWEDTDRO1io58npk/74r0Sw8PXM5uZSwME8lERz7PzJ93ObuT33f5NLyA5hsmahUd+Twz35K5L16bfH15t/POpMsjeAFNOEzUKjryeWZ+PXOH775RvL54H+i/vXEwmTz/bQ/hm2NhmEgmOvJ5Zn49c7O7npu8iLQyFoaJZKIjn2fmBTQ+FoaJZKIjn2fmXc4uPhaGiWSiI59n5gU0PhaGiWSiI59n5gU0PhaGiWSiI59n5tsz99sPTvzcq/DNsTBMJBMd+Twz35a5058p50Wk9bEwTCQTHfk8M99+OTsBbRsLw0Qy0ZHPM/Otl7O79INPT/y+y4EFNN0wUavoyOeZ+barMXW6iPLKgQU03TBRq+jI55n5C1zOruOBBTTdMFGr6Mjnmfm2h/AC2j4WholkoiOfZ+ZbL2fnIXzrWBgmkomOfJ6Zb72cXeOKyt0OLKDpholaRUc+z8y3Ze6z1ybPvnHM5exWxsIwkUx05PPMfFvmfup9oK1jYZhIJjryeWa+9TlQAW0dC8NEMtGRzzPz57yRvsPj9uaBBTTdMFGr6MjnmfkL/Fz4jgcW0HTDRK2iI59n5r2RPj4WholkoiOfZ+a9kT4+FoaJZKIjn2fmW19E6vKz4FcOLKDpholaRUc+z8y3ZO7w+qXv9DywgKYbJmoVHfk8M9/yEP7d8nPhvZH+zLEwTCQTHfk8M996OTvvA20dC8NEMtGRzzPzAhofC8NEMtGRzzPzfipnfCwME8lERz7PzAtofCwME8lERz7PzAtofCwME8lERz7PzLdk7vNPm/xQuZWxMEwkEx35PDPvRaT4WBgmkomOfJ6ZF9D4WBgmkomOfJ6Zb3kj/W8/WPrbb04uff/n3kjfHAvDRDLRkc8z81+euYcHl7tcGVRA8w0TtYqOfJ6Zv0Dmul1YREDzDRO1io58npm/QOa63QUV0HzDRK2iI59n5i+QuW5XVxbQfMNEraIjn2fmL3QPVEBXxsIwkUx05PPM/Jdn7vDWxEP4lbEwTCQTHfk8M992PdDjS4G+8frBxItIq2NhmEgmOvJ5Zv4ib6T3NqbVsTBMJBMd+Twz/+UBfebNTj8gXkDzDRO1io58npl3Nab4WBgmkomOfJ6ZF9D4WBgmkomOfJ6ZF9D4WBgmkomOfJ6ZF9D4WBgmkomOfJ6ZX89c4w1Mp/xY45WxMEwkEx35PDO/nrm1K4G6HugZY2GYSCY68nlmXkDjY2GYSCY68nlm/ssy98nBxCeR1sbCMJFMdOTzzPz5mTt8Z5bPZz/sdGABTTdM1Co68nlm/tzMfTy7+3mp2weRBDThMFGr6MjnmflzMtfj7ueRgGYcJmoVHfk8M9+euXL386+7H1hA0w0TtYqOfJ6Zb8vcZ73ufh4JaMZholbRkc8z8y2Z63n380hAMw4TtYqOfJ6ZPzNzn12fXwW0x93PIwHNOEzUKjryeWb+rMyVu5/f6XtgAU03TNQqOvJ5Zn4zc9u4+3kkoBmHiVpFRz7PzG9k7jfbuPt5JKAZh4laRUc+z8z7LHx8LAwTyURHPs/MC2h8LAwTyURHPs/Mux5ofCwME8lERz7PzLsifXwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHwsDBPJREc+z8wLaHws9n+Yaj0vdiQ6GnlmQ0DjY7H/w1TrebEj0dHIMxsCGh+L/R+mWs+LHYmORp7ZEND4WOz/MNV6XuxIdDTyzIaAxsdi/4ep1vNiR6KjkWc2BDQ+Fvs/TLWeFzsSHY08syGg8bHY/2Gq9bzYkeho5JkNAY2Pxf4PU63nxY5ERyPPbAhofCz2f5hqPS92JDoaeWZDQONjsf/DVOt5sSPR0cgzGwIaH4v9H6Zaz4sdiY5GntkQ0PhY7P8w1Xpe7Eh0NPLMhoDGx2L/h6nW82JHoqORZzYEND4W+z9MtZ4XOxIdjTyzIaDxsdj/Yar1vNiR6GjkmQ0BjY/F/g9TrefFjkRHI89sCGh8LPZ/mGo9L3YkOhp5ZkNA42Ox/8NU63mxI9HRyDMbAhofi/0fplrPix2Jjkae2RDQ+Fjs/zDVel7sSHQ08syGgMbHYv+HqdbzYkeio5FnNgQ0Phb7P0y1nhc7Eh2NPLMhoPGx2P9hqvW82JHoaOSZDQGNj8X+D1Ot58WOREcjz2wIaHws9n+Yaj0vdiQ6GnlmQ0DjY7H/w1TrebEj0dHIMxsCGh+L/R+mWs+LHYmORp7ZEND4WOz/MNV6XuxIdDTyzIaAxsdi/4ep1vNiR6KjkWc2BDQ+Fvs/TLWeFzsSHY08syGg8bHY/2Gq9bzYkeho5JkNAY2Pxf4PU63nxY5ERyPPbHTN3JMbry5/9/S9a9Pp2x9tHFhAdzdMtZ4XOxIdjTyz0TVzt6fLgD65MZ37xq/XDyyguxumWs+LHYmORp7Z6Ja5p7enxwG9PX3lo6PHN6ev3Fs7sIDubphqPS92JDoaeWajU+b++KPpcUAfXSv3PZ/cuPqTtQML6O6GqdbzYkeio5FnNrpk7u50+t3/WAb07smv31s7sIDubphqPS92JDoaeWajU0Bf/uejB8tw3p7+uPx6/PXpgQV0d8NU63mxI9HRyDMbXTO3DObTm8uH7o+uHT8J+tKSgO5umGo9L3YkOhp5ZqOWgHb7Cx5ylQ4bbeMAABaCSURBVPNitKKjkWc2thfQtTcyDfwQvttf8JCrnBejFR2NPLOx/XugxwcW0NVVzovRio5GntkQ0KFWOS9GKzoaeWajZ0D35lX4bn/BQ65yXoxWdDTyzEbfgB6//3PX7wPt9hc85CrnxWhFRyPPbPQN6L58EqnbX/CQq5wXoxUdjTyz0TegT29OX96Hz8J3+wsecpXzYrSio5FnNvoG9OjxflyNqdtf8JCrnBejFR2NPLPRO6BHj9+b9fPte+vfIKBrq5wXoxUdjTyzUcsV6bv9BQ+5ynkxWtHRyDMbAjrUKufFaEVHI89sCOhQq5wXoxUdjTyzIaBDrXJejFZ0NPLMhoAOtcp5MVrR0cgzGwI61CrnxWhFRyPPbAjoUKucF6MVHY08syGgQ61yXoxWdDTyzIaADrXKeTFa0dHIMxsCOtQq58VoRUcjz2wI6FCrnBejFR2NPLMhoEOtcl6MVnQ08syGgA61ynkxWtHRyDMbAjrUKufFaEVHI89sCOhQq5wXoxUdjTyzIaBDrXJejFZ0NPLMhoAOtcp5MVrR0cgzGwI61CrnxWhFRyPPbAjoUKucF6MVHY08syGgQ61yXoxWdDTyzIaADrXKeTFa0dHIMxsCOtQq58VoRUcjz2wI6FCrnBejFR2NPLMhoEOtcl6MVnQ08syGgA61ynkxWtHRyDMbAjrUKufFaEVHI89sCOhQq5wXoxUdjTyzIaBDrXJejFZ0NPLMhoAOtcp5MVrR0cgzGwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwI61CrnlUB0C8eyh7WeV38COtQq55VAdAvHsoe1nld/AjrUKueVQHQLx7KHtZ5XfwJqlYBuTXQL++xhtz9r/1eNi4BaJaBbE91CAd1cNS4CapWAbk10CwV0c9W4CKhVAro10S0U0M1V4yKgVgno1kS3UEA3V42LgFoloFsT3UIB3Vw1LgJqlYBuTXQLBXRz1bgIqFUCujXRLRTQzVXjIqBWCejWRLdQQDdXjYuAWiWgWxPdQgHdXDUuAmqVgG5NdAsFdHPVuAioVQK6NdEtFNDNVeMioFYJ6NZEt1BAN1eNi4BaJaBbE91CAd1cNS4CapWAbk10CwV0c9W4CKhVAro10S0U0M1V4yKgVgno1kS3UEA3V42LgFoloFsT3UIB3Vw1LgJqlYBuTXQLBXRz1bgIqFUCujXRLRTQzVXjIqBWCejWRLdQQDdXjYuAWiWgWxPdQgHdXDUuAmqVgG5NdAsFdHPVuAioVQK6NdEtFNDNVeMioFYJ6NZEt1BAN1eNi4BaJaBbE91CAd1cNS4CapWAbk10CwV0c9W4CKhVAro10S0U0M1V4yKgVgno1kS3UEA3V42LgFoloFsT3UIB3Vw1LgJqlYBuTXQLBXRz1bgIqFUCujXRLRTQzVXjIqBWCejWRLdQQDdXjYuAWiWgWxPdQgHdXDUuAmqVgG5NdAsFdHPVuAioVQK6NdEtFNDNVeMioFYJ6NZEt1BAN1eNi4BaJaBbE91CAd1cNS4CapWAbk10CwV0c9W4CKhVAro10S0cS9SGXDUuAmqVgG5NdAvHErUhV42LgFoloFsT3cKxRG3IVeMioFYJ6NZEt3AsURty1bgIqFUCujXRLRxL1IZcNS4CapWAbk10C8cStSFXjYuAWiWgWxPdwrFEbchV4yKgVgno1kS3cCxRG3LVuAioVQK6NdEtHEvUhlw1LgJqlYBuTXQLxxK1IVeNi4BaJaBbE93CsURtyFXjIqBWCejWRLdwLFEbctW4CKhVAro10S0cS9SGXDUuAmqVgG5NdAvHErUhV42LgFoloFsT3cKxRG3IVeMioFYJ6NZEt3AsURty1bgIqFUCujXRLRxL1IZcNS4CapWAbk10C8cStSFXjYuAWiWgWxPdwrFEbchV4yKgVgno1kS3cCxRG3LVuAioVQK6NdEtHEvUhlw1LgJqlYBuTXQLxxK1IVeNi4BaJaBbE93CsURtyFXjIqBWCejWRLdwLFEbctW4CKhVAro10S0cS9SGXDUuAmqVgG5NdAvHErUhV42LgFoloFsT3cKxRG3IVeMioFYJ6NZEt3AsURty1bgIqFUCujXRLRxL1IZcNS4CapWAbk10C8cStSFXjYuAWiWgWxPdwrFEbchV4yKgVgno1kS3cCxRG3LVuAioVQK6NdEtHEvUhlw1LgJqlYBuTXQLxxK1IVeNi4BaJaBbE93CsURtyFXjIqBWCejWRLdwLFEbctW4CKhVAro10S0cS9SGXDUuAmqVgG5NdAvHErUhV42LgFoloFsT3cKxRG3IVeOyfwEd5u+q259l1eaqYf6W+/xZg9zAseTJquaq/gTUKgHdwg0cSzKsaq7qT0CtEtAt3MCxJMOq5qr+BNQqAd3CDRxLMqxqrupPQK0S0C3cwLEkw6rmqv4E1CoB3cINHEsyrGqu6k9ArRLQLdzAsSTDquaq/gTUKgHdwg0cSzKsaq7qT0CtEtAt3MCxJMOq5qr+BNQqAd3CDRxLMqxqrupPQK0S0C3cwLEkw6rmqv4E1CoB3cINHEsyrGqu6k9ArRLQLdzAsSTDquaq/gTUKgHdwg0cSzKsaq7qT0CtEtAt3MCxJMOq5qr+BNQqAd3CDRxLMqxqrupPQK0S0C3cwLEkw6rmqv4E1CoB3cINHEsyrGqu6k9ArRLQLdzAsSTDquaq/gTUKgHdwg0cSzKsaq7qT0CtEtAt3MCxJMOq5qr+BNQqAd3CDRxLMqxqrupPQK0S0C3cwLEkw6rmqv4E1CoB3cINHEsyrGqu6k9ArRLQLdzAsSTDquaq/gTUKgHdwg0cSzKsaq7qT0CtEtAt3MCxJMOq5qr+BNQqAd3CDRxLMqxqrupPQK0S0C3cwLEkw6rmqv4E1CoB3cINHEsyrGqu6k9ArRLQLdzAsSTDquaq/gTUKgHdwg0cSzKsaq7qr39An753bTp9+6ONAwtojlXD/C33+bMGuYFjSYZVzVX99Q7okxvTuW/8ev3AAppj1TB/y33+rEFu4FiSYVVzVX+9A3p7+spHR49vTl+5t3ZgAc2xapi/5T5/1iA3cCzJsKq5qr++AX10rdz3fHLj6k/WDiygOVYN87fc588a5AaOJRlWNVf11zegd6evLn/93tqBBTTHqmH+lvv8WYPcwLEkw6rmqv76BvT29Mfl1wfLkJ4eWEBzrBrmb7nPnzXIDRxLMqxqruqvZ0Cf3lw+dH907fhJ0JeWBDTHqmH+lvv8WYPcwLEkw6rmqv72L6AAI7G9gK69kanzQ3iAkdj+PdDjAwsoUDkBBeho/16FBxiJ/u8D/d7Kr6cHFlCgcvv3SSSAkeibuac3py9v97PwACPRO3OPt301JoCR6J+5x+/N+vn2vfV/LaBA7fbvivQAIyGgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQ0Z8woACVGSqg7QV96aUBT3fv2Y0mu9FkNxr2ZTMGC2irl14a/s/cX3ajyW402Y2GPd0MAd0xu9FkN5rsRsOeboaA7pjdaLIbTXajYU83Q0B3zG402Y0mu9Gwp5shoDtmN5rsRpPdaNjTzRDQHbMbTXajyW407OlmCOiO2Y0mu9FkNxr2dDN8XgigIwEF6EhAAToSUICOBBSgIwEF6EhAAToSUICOBg3okxuvLn/39L1r0+nbHw35h++dk914cmNafOPXu71Bu/PHv59Orx6PQ/rZaO5G+tn4449mm/G/7y2+2MPRGDSgt6eryUg7FcXJbjy6lvx/JL9anP/Vn8y/SD8bK7uRfTbuLk7/5XL6+zgaAwb06e3pcTJuT1/56Ojxzekr94b74/dMYzceHP8mqQfTq/94NB+H8r+M7LOxuhvJZ+PRtbIZP1rswj6OxnABnd8XX07Do2tlOJ7cWPy/bEaN3ZjNxfd2e2N26+nN6Y/nv87uX/zYbKzuRvbZWJ7+Yij2cjQGC+jsvvh3/2OZjLsnv2adjuZuPL25TwMxvCc3lo/Jyv9ass/G6m5kn42lxabs5WgMF9CX//nk8cjtxf/JJn580tyNJzde+T+z+6P/fa+eG9+FkgyzsVR2w2wUj67NH7Xv5WgM+iLS8sxP/m91sS9ZPTh5QmPxRPlyPNIqD83MxtLigarZmPuPa/Pz38/RENCdOQ7og9nD+XtH/++9afJHa+URmtlYWjxeNRvzO57Tq/98tK+jseOA7tU7Egb2YO0Z4eSvFzwokTAbC4vdMBuzifinv7k2vfoP+zoa7oHuzPpTOQ/26u0ZQ3tw7er8YarZKJa7cfp16tk4+uP8Mfx+joaA7sx6QPfq/1iHdnf5INVszN1df8ieejaOFv8Hsp+jsYuA7ufLaYPbDOgezcXAfnVSDLPR3I1jmWdjrpz/Xo7GTgJ6/EauvXpD1+BO7o/v41wM6unt5Wf1jszGym5kn42T8y8B3cvR2ElA9/IjBYM7vT++GtJ8bjee4TMbzd3IPhu3m/8b2cvR2ElAZ/Pw8t59qHVwjfeBfvfe/PO+WXfjbvPM08/Gym5kn43F+T/91fIdGns4GjsJ6NHjPbysyuBOdmN5xZlvJP24yfEV25YXB0g+G2u7kXw25m+ELZemKnfA93E0dhPQo8fvzTbi7T36P5IdaOzG/AKQ3826Gw+mK8lIPhsbu5F6Npbnf3wJ0D0cDVekB+hIQAE6ElCAjgQUoCMBBehIQAE6ElCAjgQUoCMBBehIQAE6ElCAjgQUoCMBBehIQLmIW5NjV174sMdxvnht8uLWbhTsmoByEacBnXnhD52P8+UB/fjPux8dBiagXMRKQCeXOzfuSwN6q8fBYWgCykXcmnzll+U3h797Z1bQ57oeR0CpioByEScBnbkzmVz6YcfjCChVEVAuohnQ+eP5rndBBZSqCCgXsRLQWQWXX/3unYP5C/Nvzpv38GDZxtl/nvf1s/Lf/uwHK8eZB/TwpwfNf1++79Litf07i+dYv359mdHloU7D2/zmja/LwX/21cnkmTdXInx4fXaUT745+8avzf79J9+avw724VkHWDuj9ZM4rf+dsgGz4741P+wzP9w80JlnT3UElItYCegsHOUx/OFPj19VevaXJS+L6s1K+tbR0cfN/3Zi9k0vvLbyStSd4+/72ukXL95ZPkkwO9Tiz72/+Bcr37zx9ezg//mbZ/yhs9v7n5avgn3ll8vbvHwSYu2Aq2e0fhJnBPSNxUE3DnT22VMdAeUiVgI6r8Vbi1/md+k+++biIf2tZZVKXWbpuzy7N3b4/urD/S/m9ZwtmpfqueWh5vfaPv/pMj2Lh/CLBi+ytPzN/F+vf/Pa1/ODX/rrPxx9dn2y8kTBLHQnf+gzkxd+X25V6fcZB2ye0dpJnBHQ+Sl/9oONA7WcPdURUC7irIA2H1/Pc3R/EbvygHmZmI2V88a9uDzGPLez0jx31Ph6GdDFMRbvnnpxccwXN795/ev5wUtuD6+vPJN6eBzU+Tc817hVZxxg5YzWTuKsgJY/b+NALWdPdQSUi9gI6IsnD6tLSJZ9Wd5te+ukh+tOnz5dfPdJaY6beev4ruHiiJf+tnGPdP2b178+eRJh7eYub9/R6Z3k9c4tD7B+RmsncUZAl+s3b1nn9ykwKgLKRZz5EH79v95aVmf+z/vzV1R+sXGck/t4i1Qe39M8/vokoIuU3Z9c/r8HJ8dc/+aNxacHv7Me0PWwluNv/ulrZ7R2EmcEdLFo40AtZ091BJSLWA3ordOAfv67D9796uJ1lMVj+OOYLF6OeebN368cp/E2pvkhv3it+QGn+UGWIVt8353Ji/NXuk/vYK5888bi9cAdO+3bakA3//T1M1o9iTMCevKIf+1AZ5891RFQLuLMV+GPPv7qSn3KPcDj138Wbxeavw7dfCvP7FuO03vnvIAe38V8a/ab55arhgjo2hmtnkQgoGefPdURUC5iJaDz15j/sHxxe3Lljb/7/fF/nVfvfuM7f/du6VHj4f7mPdC1V6mPAzov3MP5w/f7J8dc/+aNxR0CunqAzTNaOYnzAnrGi+2bZ091BJSLOOuTSMv3/DT+6zxLt1ZbcvKOoYWVgJb7mGsfPDoO6PxO5/3FA/fjY65/88biaEA3DrB5RisncXr8W6sB3TyNs8+e6ggoF9EMyseLt6GfVuPkpfXZb77+WuO9TBtLGy+UL2p08rL48eFuNV6XuTX/jtlv/uvycf/6N69/HQ3o+gHWz2j9JE7uaC5ffm8ed/1AZ5491RFQLuL0akzlyb3VO4R3Tl6BuTV55mDx2zuNdwSt3gNdPqa9dfxWzuV/Xb6L9NbpQZ/56smnjxbHXP/m9a/DAV07wMYZrZ3EyX+/P1kL6PotaTl7qiOgXMRZ1wNdPuD93fzTk8te3J9MTp8WvPSd+Yd6rq8/BzqZfP0PR5+9s3xv+53F6yyNzwZd+uHh/LXrWZMW/2b+m5N3J61/88rX4YCuH2D9jNZPYvbfL394dPizg/WAnnFLzjp7qiOgXMRKQJfPE36x/Nz55IX3jzNxegezdG+h+anK+cfVly9Zr3+c/eTO3ckd3EWeTj+8tPHNa1/HA7p+gPUzWjuJxYtMs29+fz2g67fs7LOnOgLKRTR+JtLpexvLlY/mbxg/fRW68ZTf4c+uzL79ma+tvBXy9GpMJ28z/+yd+YvVJ9ct+nh+h3N597L5YP/Mb179ukNA1w64cUZrJ7G41tN31l+FP+OWnXn2VEdA2aY7Lp5BJgLKFpW3vkMaAsoWPTzwph0yEVC257PrXjMhFQFlW07fsAlJCCjbcn8yefbDL/82qIeAAnQkoAAdCShARwIK0JGAAnQkoAAdCShARwIK0JGAAnQkoAAdCShARwIK0JGAAnQkoAAd/X+dFSv2BpMYvwAAAABJRU5ErkJggg==" width="672" /></p>
 </div>
 </div>
-<div id="plotting-frequency-of-number-of-days-between-data-collections" class="section level2">
-<h2><span class="header-section-number">2.4</span> Plotting frequency of number of days between data collections</h2>
-<pre class="r"><code>joined$TIME_between_end &lt;- as.numeric(joined$TIME_between_end)
-plot &lt;- ggplot(joined, aes(TIME_between_end))
-plot + geom_bar() + xlab(&#39;Days between measures&#39;) + ylab(&#39;Number of particpants&#39;) + theme_classic()</code></pre>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAABWVBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrYzMzM6AAA6OgA6Ojo6OmY6OpA6ZmY6ZpA6ZrY6kJA6kLY6kNtNTU1NTW5NTY5Nbo5NbqtNjshZWVlmAABmADpmOgBmOjpmOpBmZjpmZmZmZpBmkGZmkJBmkLZmkNtmtrZmtttmtv9uTU1ubm5ubo5ujqtujshuq+SOTU2Obk2Obm6Oq8iOq+SOyOSOyP+QOgCQOjqQZjqQZmaQZpCQkGaQkLaQtraQttuQ2/+rbk2rbm6rjm6ryOSr5P+2ZgC2Zjq2Zma2kDq2kGa2kJC2tpC2tra2ttu229u22/+2///Ijk3Ijm7IyKvI5P/I///bkDrbkGbbtmbbtpDbtrbbttvb25Db27bb29vb2//b///kq27kyI7kyKvk////tmb/yI7/25D/27b/29v/5Kv/5Mj/5OT//7b//8j//9v//+T///94c0KKAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3d/4McZZ3g8Y6QgzFu4KQjeKwueMse5BaM3q05uFs1h46LK4pxMYJ7AtF8gyyZzP//w3U/3T1T3T01zKeqrUw9n9frB5Ih81S6Hj6+7a81k0MAOpk86RsAMFYCCtCRgAJ0JKAAHQkoQEcCCtCRgAJ0JKAAHQkoQEcCCtCRgAJ0JKAAHQkoQEd/tYBOpBmonIACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JKEBHAgrQkYACdCSgAB0JaNx/CXrStxf4KxHQOAEFCgGNE1CgENA4AQUKAY0TUKAQ0DgBBQoBjRNQoBDQOAEFCgGNE1CgENA4AQUKAY0TUKAQ0DgBBQoBjRNQoBDQOAEFCgGNE1CgENA4AQUKAY0TUKAQ0DgBBQoBjRNQoBDQOAEFCgGNE1CgENA4AQUKAY0TUKAQ0DgBBQoBjRNQoBDQOAEFCgGNE1CgENA4AQUKAY0TUKAQ0DgBBYpOmfvLD6fTK29+uPji8btXp9PVF40DC6iAQuW6ZO530+LKz+dfPLpWvvjW7zcPLKACCpXrkLl70yv/dHj48MYimjenL304/+KlOxsHFlABhcrFM/f4xvRH819ndz1nv35xtWT00bXF/dHGgQVUQKFy8cw9urZ8uH5z+v3Dw9vTb5cvbs+/WDuwgAooVK5H5kpAby7ujs4e139748ACKqBQue6ZK4/aH99YPnT/4urqSdBnlwRUQKFy3TNXHrwLqIBCXp0zd6+8jakR0I03MnkIL6BQu66Zu3f1yvzJzxPuga4OLKACCpXrmLnby7fRC6iAQl7dMve76eptn16FF1BIq0vmHt+cvrh6wnP1/k/vAxVQSKdL5m42Prfpk0gCCml1yNzt5ufeH9+Yvuiz8AIKKXX5KOd0Zf6050NXYxJQSCqeuXvTtYAePnx39rs372x+m4AKKNTOFenjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoBDROQIFCQOMEFCgENE5AgUJA4wQUKAQ0TkCBQkDjBBQoumbu0bVvr34zLb71+40DC6iAQuW6Zu7mdBnQL64KqIBCTt0y9/jmdBXQe6vfbB5YQAUUKtcpc3/5wfQooDen3z/5wAIqoFC5Lpm7PZ2+9edlQB/fuPLzkw8soAIKlesU0Bd/dvTI/dG1l/5tdn/0Hz/cOrCACihUrmvmVgFdvYY0/dHqT55dElABhcr1Dei92cP5O4f/8e706JG8gAooJNE3oLeXv269luQhvIBC7foG9Pjrl+6sH1hABRQqt6uAfnF14530AiqgULvdBdQ9UAGFZHoG9PGN5cvvWx9IElABhdr1vQd6cyOkxwcWUAGFyu3gfaBv3Tl8+IPN15AEVECher2fA729vBjT5keRBFRAoXb9X0R6+MPp9Mpbdza/QUAFFGrnivRxAgoUAhonoEAhoHECChQCGiegQCGgcQIKFAIaJ6BAIaBxAgoUAhonoEAhoHECChQCGiegQCGgcQIKFAIaJ6BAIaBxAgoUAhonoEAhoHECChQCGiegQCGgcQIKFF+RuYM/vv/rjgcWUAGFyrVm7sH//uzw8MvvTCaTp3/a6cACKqBQubbM3Zp87beHh/uTufnv4gcWUAGFyrVk7m7J5v29ycXPHrw8eaHLgQVUQKFyLZnbn5VzntELP53/c/778IEFVEChcidn7uD6vJzLjH75cpfH8AIqoFC7kzO3aOaXL0+eORTQLQIKFKcF9P7e5I1DAd0ioEBx2kP4W+UpUM+BbhJQoGh9EemZ+cvv83J6FX6TgAJF+9uY5t44PHh7srgfGj6wgAooVK79jfQzz5QXki680enAAiqgULn2j3K+872fzH758m+f+6DbgQVUQKFyrsYUJ6BA0fIq/DvfO37h/f4rf+NV+CYBBYrT3gd60hdnP7CACihU7gwBvb8noGsEFCi2Mvfly5Mt3ki/RkCBYjtzd7cD2uV9TAIqoFC77cwd/Murr76yd+Hyqyt//5tOBxZQAYXKneE50I4HFlABhcqd4W1MHQ8soAIKlfNG+jgBBYrTMvfJyqddDiygAgqVa8vcg7cbr8J7H+gaAQWKlsytvxtUQNcIKFC0ZO7WZPL037+/8mtvpG8SUKBo+5Ee5cfJ9TqwgAooVK7tfaCdrkK/dmABFVConDfSxwkoUJz2Uzn7HVhABRQq1/oiUpefxLl2YAEVUKhcS+Zmd0Ff73lgARVQqFzbZ+FfmUyOL8jU5YPxAiqgULu2F5Em3kjfSkCBQkDjBBQoXI0pTkCBQkDjBBQoBDROQIHilMwdrC4H+vHfeQ60SUCBwvVA4wQUKM50PdCLAtokoEDRfj3QC5fnP9z4lb1Jt88kCaiAQu1arwd68bP5P9+Yt/Ril5/QKaACCrU79Xqgi0uK7M8zGj+wgAooVO7U64HeLdelv9vp6vQCKqBQu68I6PzR+5cvd3kML6ACCrU79YLK9/fmHe12eXoBFVCoXUvm9suzn4unQhcZDR94DAHtlkIBBYqWzN3fmzz3wfxl+BfmMa32IbyAAj20ZW6/fP7o7mRyYW/S6cd7CKiAQu1aM/eH+QP3g/3yQaRq3wcqoEAPp2Tu32fdPPjo0qXXuvRTQAUUqpf7cnYCCvRweuY+6XFgARVQqFx75j7+7vz5zwvPfdDxwAIqoFC5tswdXD+6mN3zngMVUOAELZmb9/PC5R+//6+v7E06fRReQAUUqtd+PdBvLu54Hrw3qfdqTAIK9NB6PdDjN8/v13s1JgEFejj1eqALPgsvoMBJTr2c3QlfnP3AAiqgULlTL2e3cH/PxUQEFNjW+iLSMyf+PnBgARVQqFz725hWb/+81enHwguogEL1Wh7CvzN//+fl197/1fzXb7xafC/0QF5ABRRq1/Yi0mRb7I6ogAoo1E5ABRToyOXsBBToSEAFFOhIQAUU6OirMtf5ksoCKqBQu9bMHfzyG78tryZ1vKKygAoo1K4tc3f3yqvu85fjL3S5mp2ACihUryVz9/eWP834j2/vTRqfiw8cWEAFFCrXkrn9ydOrR+4H130WXkCBE7geqIACHbkeqIACHbkHKqBAR63PgT5z4u8DBxZQAYXKtWTu7mTy3Kfld5//wk/lFFDgJG2Z259MJhcuXbq0N/Fz4QUUOFFb5uY/Dn7hwj90O7CACihUrj1zBx+/MrsHevmfO/xAuXJgARVQqJyrMQko0JGACijQ0WbmDt6Z//C42T+bYj9ObnlgARVQqNxm5r58eX4Vpo2fieSN9AIKbBNQAQU68hyogAIdCaiAAh2dnLmDdxqvG91/5W+8iCSgwBaXsxNQoKMzBNTl7AQUOMlW5jZegC8ueggvoMCW7czd3Q6oy9kJKLBtO3MH//Lqq6/sXbh89Dmkv/9NpwMLqIBC5c7wHGjHAwuogELlzvA2po4HFlABhcq1/Uyk5z44+Q/OfmABFVCoXNtD+E4vHK0dWEAFFCrnOVABBTpqeQ70euPnwnc8sIAKKFSuJXO3Jhd7PgkqoAIKtWvJ3OfvTSZPXXZFegEF2rW+iOSCygIKnE5ABRToyAWVBRToSEAFFOhIQAUU6OiUzB18svTx33kOVECBLW2Ze/C2F5EEFDhVS+bWX4a/KKACCmxp/STS5MLl+WWVX9mbXHi904EFVEChcm2fhZ//HKTZP98on+rscm1QARVQqF3bG+nLxURuTV6Y/XPfz0QSUOAEp17O7u7kmaN/hg8soAIKlfuKgM4fvX/5sh9rLKDAtlOvB3p/b97RbldXFlABhdq1/Uyk8uzn4qnQRUbDBxZQAYXKtWTu/t7kuQ/mL8O/MI+ph/ACCmxry9x++fzR3cnkwt6k3BsNH1hABRQq15q5P8wfuB/slw8ieR+ogJJZdOTzzPwpmfv3WTcPPrp06bUu/RTQhMNEraIjn2fmXc4uPhaGiWSiI59n5k/P3Cc9Diyg6YaJWkVHPs/Mt2fu4+/On/+88FzHH28soPmGiVpFRz7PzLdl7uD60cXsnvcc6PpYGCaSiY58nplvydy8nxcu//j9f31lb9Lpo/ACmnCYqFV05PPMfPv1QL+5uON58N7E1ZjWx8IwkUx05PPMfOv1QI/fPL/vakzrY2GYSCY68nlm/tTrgS74LPzGWBgmkomOfJ6ZP/Vydid8cfYDC2i6YaJW0ZHPM/OnXs5u4f6ei4msjYVhIpnoyOeZ+dYXkZ458feBAwtoumGiVtGRzzPz7W9jWr3981anHwsvoAmHiVpFRz7PzLc8hH9n/v7Py6+9/6v5r994tfhe6IG8gOYbJmoVHfk8M9/2ItJkW+yOqIDmGyZqFR35PDMvoPGxMEwkEx35PDPvcnbxsTBMJBMd+TwzL6DxsTBMJBMd+TwzL6DxsTBMJBMd+TwzL6DxsTBMJBMd+TwzL6DxsTBMJBMd+TwzL6DxsTBMJBMd+TwzL6DxsTBMJBMd+TwzL6DxsTBMJBMd+TwzL6DxsTBMJBMd+Twzv5m55YXsPv+094EFNN0wUavoyOeZ+c3MLa6e3O0ayusHFtB0w0StoiOfZ+a3Azq/Byqgp42FYSKZ6Mjnmfnth/CTi7/+5E8vf+03nxzr8nheQPMNE7WKjnyemd/K3K2zXYfp0bVvL3/3+N2r0+mbH24dWEDTDRO1io58npnfytzBL84U0JvTZUAfXZvOfev3mwcW0HTDRK2iI59n5k/I3MEn7/9q78KP3z/2681r0T++OV0F9Ob0pQ8PH96YvnRn48ACmm6YqFV05PPM/Bl+rPG2v/xgugroF1fLfc9H1678fOPAAppumKhVdOTzzHzbz0Q67Qcg3Z5O3/rzMqC3j379/saBBTTdMFGr6Mjnmfkumbv94s8O7y3DeXP6o/Lr6uvjAwtoumGiVtGRzzPz7Zn7/JeXJpMLl147+T1My2A+vrF86P7F1dWToM8uCWi6YaJW0ZHPM/OtmTt+O9MLJ/2xgBom0oiOfJ6Zb8vcvJ9PXX71la+3FHQ7oBtvZPIQPt8wUavoyOeZ+ZbM3d+bXPyg/O7B9Um5vMiG9nugqwMLaLpholbRkc8z8y2Z259cXL0Mf3B98sz2NwioYSKN6MjnmfmWtzFdb9zrvL93cfs9TV6FN0ykER35PDN/hjfSn/iu+nsb7//0PlDDRLWiI59n5vsG1CeRDBPVi458nplvewg/eePoi7uTUx7CP74xfdFn4Q0TVYuOfJ6Z7/ki0uHhQ1djMkxULjryeWa+/W1MT/+m/O5P3zntbUwzD9+d9fPNO5vfIKD5holaRUc+z8yf9kb6yaVLl1o/ivSVBxbQdMNEraIjn2fmWzP30d7yk5wXXu92YAFNN0zUKjryeWa+PXMHH78yuwd6+SenXNfu1AMLaLpholbRkc8z83+1zAlovmGiVtGRzzPzAhofC8NEMtGRzzPzAhofC8NEMtGRzzPzAhofC8NEMtGRzzPzAhofC8NEMtGRzzPzAhofC8NEMtGRzzPzAhofC8NEMtGRzzPzAhofC8NEMtGRzzPzAhofC8NEMtGRzzPzbVdjeu6DvgcW0HTDRK2iI59n5tsuqNy4HmjHAwtoumGiVtGRzzPzZ7gifccDC2i6YaJW0ZHPM/Nn+KFyHQ8soOmGiVpFRz7PzLdk7tbqx8J3P7CAphsmahUd+Twz35K5z9+bTJ66/OrS9zpc0k5A8w0TtYqOfJ6Zb30RqanLE6ICmm+YqFV05PPMvIDGx8IwkUx05PPMvDfSx8fCMJFMdOTzzLyAxsfCMJFMdOTzzPypmTv4tMeBBTTdMFGr6Mjnmfn2zH383fmTn1/+7WvdfqqcgOYbJmoVHfk8M9+WuYNfLF49+vLlydOdPpQkoPmGiVpFRz7PzLdlbn8yefq/7n3ttwf/azK52OU+qIDmGyZqFR35PDPfkrm7k8nry0/Ef7TX6cIiAppvmKhVdOTzzHzb5ewmLxxdUuTW5JkuBxbQdMNEraIjn2fmT7uYyDKg9/e8kX5tLAwTyURHPs/Mn3Y5u2VAu13bTkDzDRO1io58npkX0PhYGCaSiY58nplvewg/f+FoWc67nV6GF9B8w0StoiOfZ+Zbrwf6zCqgs5h6EWltLAwTyURHPs/Mt2Tu/t7k+c9KQB98Z9Lp6vQCmm+YqFV05PPMfFvmbk0mk0t7Fy5/ffbrC50OLKDpholaRUc+z8y3Zu4Pe6urgXbqp4AmHCZqFR35PDPfnrnPf3lpVs+nuv6AeAHNN0zUKjryeWbe9UDjY2GYSCY68nlm/vTrgX7S48ACmm6YqFV05PPM/OnXA53xEH5rLAwTyURHPs/Mt14P9PrRj5R7vtMVlQU03zBRq+jI55n5lszN+3nh8j+//6+vzAra5X30AppwmKhVdOTzzHz79UCX7146eG/ieqDrY2GYSCY68nlmvvWz8Mfv/tz3Uc71sTBMJBMd+Twz33Y1psbHN10PdGMsDBPJREc+z8yfdjm7k744+4EFNN0wUavoyOeZ+dOuSL90f8/l7NbGwjCRTHTk88z8aZezO/p9l0/DC2i+YaJW0ZHPM/Mtmfvy5ck3l3c7b026PIIX0ITDRK2iI59n5jczd/DOq8Uri/eB/urVvcnk8vc8hG+OhWEimejI55n5zczN7npu8yLS2lgYJpKJjnyemRfQ+FgYJpKJjnyemXc5u/hYGCaSiY58npkX0PhYGCaSiY58npkX0PhYGCaSiY58nplvz9wf3z/ya6/CN8fCMJFMdOTzzHxb5o5/ppwXkTbHwjCRTHTk88x8++XsBLRtLAwTyURHPs/Mt17O7sJPPjnyaZcDC2i6YaJW0ZHPM/NtV2PqdBHltQMLaLpholbRkc8z82e4nF3HAwtoumGiVtGRzzPzbQ/hBbR9LAwTyURHPs/Mt17OzkP41rEwTCQTHfk8M996ObvGFZW7HVhA0w0TtYqOfJ6Zb8vcg5cnT7+64nJ2a2NhmEgmOvJ5Zr4tc7/wPtDWsTBMJBMd+Twz3/ocqIC2joVhIpnoyOeZ+VPeSN/hcXvzwAKabpioVXTk88z8GX4ufMcDC2i6YaJW0ZHPM/PeSB8fC8NEMtGRzzPz3kgfHwvDRDLRkc8z860vInX5WfBrBxbQdMNEraIjn2fmWzJ3cP3C6z0PLKDpholaRUc+z8y3PIR/p/xceG+kP3EsDBPJREc+z8y3Xs7O+0Bbx8IwkUx05PPMvIDGx8IwkUx05PPMvJ/KGR8Lw0Qy0ZHPM/MCGh8Lw0Qy0ZHPM/MCGh8Lw0Qy0ZHPM/Mtmfv8kyY/VG5tLAwTyURHPs/MexEpPhaGiWSiI59n5gU0PhaGiWSiI59n5lveSP/H95f+z3cmF378a2+kb46FYSKZ6Mjnmfmvztz9vYtdrgwqoPmGiVpFRz7PzJ8hc90uLCKg+YaJWkVHPs/MnyFz3e6CCmi+YaJW0ZHPM/NnyFy3qysLaL5holbRkc8z82e6Byqga2NhmEgmOvJ5Zv6rM3ewP/EQfm0sDBPJREc+z8y3XQ90dSnQV1/Zm3gRaX0sDBPJREc+z8yf5Y303sa0PhaGiWSiI59n5r86oE+91ukHxAtovmGiVtGRzzPzrsYUHwvDRDLRkc8z8wIaHwvDRDLRkc8z8wIaHwvDRDLRkc8z8wIaHwvDRDLRkc8z85uZa7yB6Zgfa7w2FoaJZKIjn2fmNzO3cSVQ1wM9YSwME8lERz7PzAtofCwME8lERz7PzH9V5j7em/gk0sZYGCaSiY58npk/PXMHb8/y+fQHnQ4soOmGiVpFRz7PzJ+auY9mdz8vdPsgkoAmHCZqFR35PDN/SuZ63P08FNCMw0StoiOfZ+bbM1fufv5D9wMLaLpholbRkc8z822Ze9Dr7uehgGYcJmoVHfk8M9+SuZ53Pw8FNOMwUavoyOeZ+RMz9+D6/CqgPe5+HgpoxmGiVtGRzzPzJ2Wu3P18ve+BBTTdMFGr6MjnmfntzO3i7uehgGYcJmoVHfk8M7+VuT/s4u7noYBmHCZqFR35PDPvs/DxsTBMJBMd+TwzL6DxsTBMJBMd+Twz73qg8bEwTCQTHfk8M++K9PGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDMvoPGxMEwkEx35PDNfS0C7/QceclWtu0EC0dHIMxsCOtSqWneDBKKjkWc2BHSoVbXuBglERyPPbAjoUKtq3Q0SiI5GntkQ0KFW1bobJBAdjTyzIaBDrap1N0ggOhp5ZkNAh1pV626QQHQ08syGgA61qtbdIIHoaOSZDQEdalWtu0EC0dHIMxsCOtSqWneDBKKjkWc2BHSoVbXuBglERyPPbAjoUKtq3Q0SiI5GntkQ0KFW1bobJBAdjTyzIaBDrap1N0ggOhp5ZkNAh1pV626QQHQ08syGgA61qtbdIIHoaOSZDQEdalWtu0EC0dHIMxsCOtSqWneDBKKjkWc2BHSoVbXuBglERyPPbAjoUKtq3Q0SiI5GntkQ0KFW1bobJBAdjTyzIaBDrap1N0ggOhp5ZkNAh1pV626QQHQ08syGgA61qtbdIIHoaOSZDQEdalWtu0EC0dHIMxsCOtSqWneDBKKjkWc2BHSoVbXuBglERyPPbAjoUKtq3Q0SiI5GntkQ0KFW1bobJBAdjTyzIaBDrap1N0ggOhp5ZqN35h5dmxbf+v3GgQV0fVWtu0EC0dHIMxu9M/fFVQE906pad4MEoqORZzZ6Z+7e9NsnH1hA11fVuhskEB2NPLPRO3M3p98/+cACur6q1t0ggeho5JmNvpl7fOPKz08+sICur6p1N0ggOhp5ZqNv5h5de+nffjCd/uOHWwcW0PVVte4GCURHI89s9M3c6jWk6Y9W/+bZJQFdX1XrbpBAdDTyzEbfzN2bTt+6c/gf706PHskL6MmrnBejFR2NPLPRN3O3ly/Cb72W5CH8xirnxWhFRyPPbOwqc/emL91ZP7CArq9yXoxWdDTyzMauMvfF1Y130gvoxirnxWhFRyPPbOwuoO6Bnr7KeTFa0dHIMxs9M/f4xvLl960PJAnoxirnxWhFRyPPbPTN3M1FOI9CenxgAV1f5bwYreho5JmNHbwP9K07hw9/sPkakoBurnJejFZ0NPLMRu/M3V5ejGnzo0gCurHKeTFa0dHIMxv9M/fwh9PplbfubP5rAd1Y5bwYreho5JkNV6QfapXzYrSio5FnNgR0qFXOi9GKjkae2RDQoVY5L0YrOhp5ZkNAh1rlvBit6GjkmQ0BHWqV82K0oqORZzYEdKhVzovRio5GntkQ0KFWOS9GKzoaeWZDQIda5bwYreho5JkNAR1qlfNitOSxhFgAABTRSURBVKKjkWc2BHSoVc6L0YqORp7ZENChVjkvRis6GnlmQ0CHWuW8GK3oaOSZDQEdapXzYrSio5FnNgR0qFXOi9GKjkae2RDQoVY5L0YrOhp5ZkNAh1rlvBit6GjkmQ0BHWqV82K0oqORZzYEdKhVzovRio5GntkQ0KFWOS9GKzoaeWZDQIda5bwYreho5JkNAR1qlfNitKKjkWc2BHSoVc6L0YqORp7ZENChVjkvRis6GnlmQ0CHWuW8GK3oaOSZDQEdapXzYrSio5FnNgR0qFXOi9GKjkae2RDQoVY5L0YrOhp5ZkNAh1rlvBit6GjkmQ0BHWqV80oguoVj2cNaz6s/AR1qlfNKILqFY9nDWs+rPwEdapXzSiC6hWPZw1rPqz8BHWqV80oguoVj2cNaz6s/AR1qlfNKILqFY9nDWs+rPwEdapXzSiC6hWPZw1rPqz8BHWqV80oguoVj2cNaz6s/AR1qlfNKILqFY9nDWs+rPwEdapXzSiC6hWPZw1rPqz8BHWqV80oguoVj2cNaz6s/AR1qlfNKILqFY9nDWs+rPwEdapXzSiC6hWPZw1rPqz8BHWqV80oguoVj2cNaz6s/AR1qlfNKILqFY9nDWs+rPwEdapXzSiC6hWPZw1rPqz8BHWqV80oguoVj2cNaz6s/AR1qlfNKILqFY9nDWs+rPwEdapXzSiC6hWPZw1rPqz8BHWqV80oguoVj2cNaz6s/AR1qlfNKILqFY9nDWs+rPwEdapXzSiC6hWPZw1rPqz8BHWqV80oguoVj2cNaz6s/AR1qlfNKILqFY9nDWs+rPwEdapXzSiC6hWPZw1rPqz8BHWqV80oguoVj2cNaz6s/AR1qlfNKILqFY9nDWs+rPwEdapXzSiC6hWPZw1rPqz8BHWqV80oguoVj2cNaz6s/AR1qlfNKILqFY9nDWs+rPwEdapXzSiC6hWPZw1rPqz8BHWqV80oguoVj2cNaz6s/AR1qlfNKILqFY9nDWs+rPwEdapXzSiC6hWPZw1rPqz8BHWqV80oguoVj2cNaz6s/AR1qlfNKILqFY9nDWs+rPwEdapXzSiC6hWPZw1rPqz8BHWqV80oguoVj2cNaz6s/AbVKQHcmuoV99rDb33X+V42LgFoloDsT3UIB3V41LgJqlYDuTHQLBXR71bgIqFUCujPRLRTQ7VXjIqBWCejORLdQQLdXjYuAWiWgOxPdQgHdXjUuAmqVgO5MdAsFdHvVuAioVQK6M9EtFNDtVeMioFYJ6M5Et1BAt1eNi4BaJaA7E91CAd1eNS4CapWA7kx0CwV0e9W4CKhVAroz0S0U0O1V4yKgVgnozkS3UEC3V42LgFoloDsT3UIB3V41LgJqlYDuTHQLBXR71bgIqFUCujPRLRTQ7VXjIqBWCejORLdQQLdXjYuAWiWgOxPdQgHdXjUuAmqVgO5MdAsFdHvVuAioVQK6M9EtFNDtVeMioFYJ6M5Et1BAt1eNi4BaJaA7E91CAd1eNS4CapWA7kx0CwV0e9W4CKhVAroz0S0U0O1V4yKgVgnozkS3UEC3V42LgFoloDsT3UIB3V41LgJqlYDuTHQLBXR71bgIqFUCujPRLRTQ7VXjIqBWCejORLdQQLdXjYuAWiWgOxPdQgHdXjUuAmqVgO5MdAsFdHvVuAioVQK6M9EtFNDtVeMioFYJ6M5Et1BAt1eNi4BaJaA7E91CAd1eNS4CapWA7kx0CwV0e9W4CKhVAroz0S0U0O1V4yKgVgnozkS3UEC3V42LgFoloDsT3cKxRG3IVeMioFYJ6M5Et3AsURty1bgIqFUCujPRLRxL1IZcNS4CapWA7kx0C8cStSFXjYuAWiWgOxPdwrFEbchV4yKgVgnozkS3cCxRG3LVuAioVQK6M9EtHEvUhlw1LgJqlYDuTHQLxxK1IVeNi4BaJaA7E93CsURtyFXjIqBWCejORLdwLFEbctW4CKhVAroz0S0cS9SGXDUuAmqVgO5MdAvHErUhV42LgFoloDsT3cKxRG3IVeMioFYJ6M5Et3AsURty1bgIqFUCujPRLRxL1IZcNS4CapWA7kx0C8cStSFXjYuAWiWgOxPdwrFEbchV4yKgVgnozkS3cCxRG3LVuAioVQK6M9EtHEvUhlw1LgJqlYDuTHQLxxK1IVeNi4BaJaA7E93CsURtyFXjIqBWCejORLdwLFEbctW4CKhVAroz0S0cS9SGXDUuAmqVgO5MdAvHErUhV42LgFoloDsT3cKxRG3IVeMioFYJ6M5Et3AsURty1bgIqFUCujPRLRxL1IZcNS4CapWA7kx0C8cStSFXjYuAWiWgOxPdwrFEbchV4yKgVgnozkS3cCxRG3LVuAioVQK6M9EtHEvUhlw1LgJqlYDuTHQLxxK1IVeNi4BaJaA7E93CsURtyFXjIqBWCejORLdwLFEbctW4CKhVAroz0S0cS9SGXDUuAmqVgO5MdAvHErUhV42LgFoloDsT3cKxRG3IVeNy/gI6zH+rbn+XVdurhvmv3OfvGuQGjiVPVjVX9SegVgnoDm7gWJJhVXNVfwJqlYDu4AaOJRlWNVf1J6BWCegObuBYkmFVc1V/AmqVgO7gBo4lGVY1V/UnoFYJ6A5u4FiSYVVzVX8CapWA7uAGjiUZVjVX9SegVgnoDm7gWJJhVXNVfwJqlYDu4AaOJRlWNVf1J6BWCegObuBYkmFVc1V/AmqVgO7gBo4lGVY1V/UnoFYJ6A5u4FiSYVVzVX8CapWA7uAGjiUZVjVX9SegVgnoDm7gWJJhVXNVfwJqlYDu4AaOJRlWNVf1J6BWCegObuBYkmFVc1V/AmqVgO7gBo4lGVY1V/UnoFYJ6A5u4FiSYVVzVX8CapWA7uAGjiUZVjVX9SegVgnoDm7gWJJhVXNVfwJqlYDu4AaOJRlWNVf1J6BWCegObuBYkmFVc1V/AmqVgO7gBo4lGVY1V/UnoFYJ6A5u4FiSYVVzVX8CapWA7uAGjiUZVjVX9SegVgnoDm7gWJJhVXNVfwJqlYDu4AaOJRlWNVf1J6BWCegObuBYkmFVc1V/AmqVgO7gBo4lGVY1V/UnoFYJ6A5u4FiSYVVzVX/9A/r43avT6Zsfbh1YQHOsGua/cp+/a5AbOJZkWNVc1V/vgD66Np371u83DyygOVYN81+5z981yA0cSzKsaq7qr3dAb05f+vDw4Y3pS3c2DiygOVYN81+5z981yA0cSzKsaq7qr29Av7ha7ns+unbl5xsHFtAcq4b5r9zn7xrkBo4lGVY1V/XXN6C3p99e/vr9jQMLaI5Vw/xX7vN3DXIDx5IMq5qr+usb0JvTH5Vf7y1DenxgAc2xapj/yn3+rkFu4FiSYVVzVX89A/r4xvKh+xdXV0+CPrskoDlWDfNfuc/fNcgNHEsyrGqu6u/8BRRgJHYX0I03MnV+CA8wEru/B7o6sIAClRNQgI7O36vwACPR/32g31/79fjAAgpU7vx9EglgJPpm7vGN6Yu7/Sw8wEj0ztzDXV+NCWAk+mfu4buzfr55Z/NfCyhQu/N3RXqAkRBQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXo6K8YUIDKDBXQ9oI+++yAp3vu2Y0mu9FkNxrOy2YMFtBWzz47/N95ftmNJrvRZDcazulmCOgTZjea7EaT3Wg4p5shoE+Y3WiyG012o+GcboaAPmF2o8luNNmNhnO6GQL6hNmNJrvRZDcazulmCOgTZjea7EaT3Wg4p5shoE+Y3WiyG012o+GcbobPCwF0JKAAHQkoQEcCCtCRgAJ0JKAAHQkoQEcCCtDRoAF9dO3by989fvfqdPrmh0P+5efO0W48ujYtvvX7J3uDnpy//HA6vbIah/Sz0dyN9LPxlx/MNuN/3Fl8cQ5HY9CA3pyuJyPtVBRHu/HF1eT/I/nd4vyv/Hz+RfrZWNuN7LNxe3H6L5bTP4+jMWBAH9+crpJxc/rSh4cPb0xfujPcX3/ONHbj3uo3Sd2bXvmnw/k4lP9lZJ+N9d1IPhtfXC2b8YPFLpzH0RguoPP74stp+OJqGY5H1xb/L5tRYzdmc/H9J3tjnqzHN6Y/mv86u3/xI7OxvhvZZ2N5+ouhOJejMVhAZ/fF3/rzMhm3j37NOh3N3Xh84zwNxPAeXVs+Jiv/a8k+G+u7kX02lhabci5HY7iAvvizo8cjNxf/J5v48UlzNx5de+nfZvdH//FcPTf+JJRkmI2lshtmo/ji6vxR+7kcjUFfRFqe+dH/rS72Jat7R09oLJ4oX45HWuWhmdlYWjxQNRtzf746P//zORoC+sSsAnpv9nD+zuF/vDtN/mitPEIzG0uLx6tmY37Hc3rlZ4fndTSecEDP1TsSBnZv4xnh5K8X3CuRMBsLi90wG7OJ+L///er0yv88r6PhHugTs/lUzr1z9faMod27emX+MNVsFMvdOP469Wwc/mX+GP58joaAPjGbAT1X/8c6tNvLB6lmY+725kP21LNxuPg/kPM5Gk8ioOfz5bTBbQf0HM3FwH53VAyz0dyNlcyzMVfO/1yOxhMJ6OqNXOfqDV2DO7o/fh7nYlCPby4/q3doNtZ2I/tsHJ1/Cei5HI0nEtBz+ZGCwR3fH18PaT43G8/wmY3mbmSfjZvN/42cy9F4IgGdzcOL5+5DrYNrvA/0rTvzz/tm3Y3bzTNPPxtru5F9Nhbn//h3y3donMPReCIBPXx4Di+rMrij3VheceZbST9usrpi2/LiAMlnY2M3ks/G/I2w5dJU5Q74eRyNJxPQw4fvzjbizXP0fyRPQGM35heAfCvrbtybriUj+Wxs7Ubq2Vie/+oSoOdwNFyRHqAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAQXoSEABOhJQgI4EFKAjAeUs9icrl577oMdxvnx58sLObhQ8aQLKWRwHdOa5zzof56sD+tHfdD86DExAOYu1gE4udm7cVwZ0v8fBYWgCylnsT7722/Kbgz+9PSvoM12PI6BURUA5i6OAztyaTC78tONxBJSqCChn0Qzo/PF817ugAkpVBJSzWAvorILLr/709t78hfnX5s27v7ds4+yP5319UP7sGz9ZO848oAe/2Gv++/J9Fxav7d9aPMf6zevLjC4PdRze5jdvfV0O/suvTyZPvbYW4YPrs6N8/J3ZNz4/+/cff3f+OtgHJx1g44w2T+K4/rfKBsyO+8b8sE/9dPtAJ5491RFQzmItoLNwlMfwB79Yvar09G9LXhbVm5X0jcPDj5p/dmT2Tc+9vPZK1K3V9z1//MULt5ZPEswOtfh77y7+xdo3b309O/h//s4Jf+ns9v6n5atgX/vt8jYvn4TYOOD6GW2exAkBfXVx0K0DnXz2VEdAOYu1gM5r8cbil/ldugffWTyk319WqdRllr6Ls3tjB++tP9z/cl7P2aJ5qZ5ZHmp+r+3zXyzTs3gIv2jwIkvL38z/9eY3b3w9P/iFf/js8MH1ydoTBbPQHf2lT02e+7TcqtLvEw7YPKONkzghoPNTfvCTrQO1nD3VEVDO4qSANh9fz3N0dxG78oB5mZitlfPGvbA8xjy3s9I8c9j4ehnQxTEW7556YXHMF7a/efPr+cFLbg+urz2TerAK6vwbnmncqhMOsHZGGydxUkDL37d1oJazpzoCyllsBfSFo4fVJSTLvizvtr1x1MNNx0+fLr77qDSrZu6v7houjnjh/zTukW5+8+bXR08ibNzc5e07PL6TvNm55QE2z2jjJE4I6HL99i3r/D4FRkVAOYsTH8Jv/un+sjrzf96dv6Lym63jHN3HW6RydU9z9fVRQBcpuzu5+P/2jo65+c1bi48PfmszoJthLcff/ts3zmjjJE4I6GLR1oFazp7qCChnsR7Q/eOAfv6n99/5+uJ1lMVj+FVMFi/HPPXap2vHabyNaX7IL19ufsBpfpBlyBbfd2vywvyV7uM7mGvfvLV4M3Arx31bD+j23755RusncUJAjx7xbxzo5LOnOgLKWZz4KvzhR19fq0+5B7h6/WfxdqH569DNt/LMvmWV3lunBXR1F/ON2W+eWa4aIqAbZ7R+EoGAnnz2VEdAOYu1gM5fY/5s+eL25NKr//zp6k/n1bvb+M4/vVN61Hi4v30PdONV6lVA54W7P3/4fvfomJvfvLW4Q0DXD7B9RmsncVpAT3ixffvsqY6AchYnfRJp+Z6fxp/Os7S/3pKjdwwtrAW03Mfc+ODR/vFb6N+4u3jgvjrm5jdvLY4GdOsA22e0dhLHx99fD+j2aZx89lRHQDmLZlA+WrwN/bgaRy+tz37zzZcb72XaWtp4oXxRo6OXxVeH22+8LrM//47Zb/7b8nH/5jdvfh0N6OYBNs9o8ySO7mguX35vHnfzQCeePdURUM7i+GpM5cm99TuEt45egdmfPLW3+O2txjuC1u+BLh/T7q/eyrn80+W7SPePD/rU148+fbQ45uY3b34dDujGAbbOaOMkjv787mQjoJu3pOXsqY6AchYnXQ90+YD3T/NPTy57cXcyOX5a8MLr8w/1XN98DnQy+eZnhw/eXr63/dbidZbGZ4Mu/PRg/tr1rEmLfzP/zdG7kza/ee3rcEA3D7B5RpsnMfvzix8cHvxybzOgJ9ySk86e6ggoZ7EW0OXzhF8uP3c+ee69VSaO72CW7i00P1U5/7j68iXrzY+zH925O7qDu8jT8YeXtr554+t4QDcPsHlGGyexeJFp9s3vbQZ085adfPZUR0A5i8bPRDp+b2O58tH8DePHr0I3nvI7+OWl2bc/9fzaWyGPr8Z09DbzB2/PX6w+um7RR/M7nMu7l80H+yd+8/rXHQK6ccCtM9o4icW1nl7ffBX+hFt24tlTHQFll265eAaZCCg7VN76DmkIKDt0f8+bdshEQNmdB9e9ZkIqAsquHL9hE5IQUHbl7mTy9Adf/W1QDwEF6EhAAToSUICOBBSgIwEF6EhAAToSUICOBBSgIwEF6EhAAToSUICOBBSgIwEF6EhAATr6/wpEvnRFmtO/AAAAAElFTkSuQmCC" width="672" /></p>
-</div>
-</div>
-<div id="round-1-data" class="section level1">
-<h1><span class="header-section-number">3</span> Round 1 data</h1>
-<div id="explicit-measure" class="section level2">
-<h2><span class="header-section-number">3.1</span> Explicit measure</h2>
-<div id="data-cleaning" class="section level3">
-<h3><span class="header-section-number">3.1.1</span> Data cleaning</h3>
-<p>import data</p>
-<pre class="r"><code>explicit_raw1 &lt;- 
-  read_excel(&quot;D:/Documents/Egyebek/Thesis/data/Round 1/data.xlsx&quot;, 1) %&gt;%
-  extract(col = participant, 
-          into = c(NA, &quot;id&quot;, NA), 
-          regex = &quot;^(.*s.)(.*)(.txt)$&quot;) %&gt;% 
-  clean_names()</code></pre>
-<p>round 1</p>
-<pre class="r"><code>#reversing items
-explicit_reversed1 &lt;- 
-  explicit_raw1 %&gt;% 
-  mutate_at(vars(iq1_1, iq2_1, fms3_1, fms4_1, cr_ms3_1, cr_ms4_1, ch_ms3_1, ch_ms4_1), 
-            ~recode(., `1` = 6,
-                    `2` = 5,
-                    `3` = 4,
-                    `4` = 3,
-                    `5` = 2,
-                    `6` = 1,
-            ))
-
-explicit_reversed1 &lt;- 
-  explicit_reversed1 %&gt;% 
-  mutate_at(vars(failurescenario_1, criticismscenario_1), 
-            ~recode(., `1` = 5,
-                    `2` = 4,
-                    `4` = 2,
-                    `5` = 1,
-            ))
-
-#creating means of explicit measures
-explicit_coded1 &lt;-
-  explicit_reversed1 %&gt;%
-  mutate(iqms_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;iq&quot;))))
-
-explicit_coded1 &lt;- explicit_coded1 %&gt;%
-  mutate(crms_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;cr_ms&quot;))))
-
-explicit_coded1 &lt;- explicit_coded1 %&gt;%
-  mutate(chms_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;ch_ms&quot;))))
-
-explicit_coded1 &lt;- explicit_coded1 %&gt;%
-  mutate(fms_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;fms&quot;))))
-
-explicit_coded1 &lt;- explicit_coded1 %&gt;%
-  mutate(fsc_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;failure&quot;))))
-
-explicit_coded1 &lt;- explicit_coded1 %&gt;%
-  mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;criticism&quot;))))
-
-#final explicit data
-explicit1 &lt;-
-  explicit_coded1 %&gt;% 
-  select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)</code></pre>
-</div>
-</div>
-<div id="implicit-measure" class="section level2">
-<h2><span class="header-section-number">3.2</span> Implicit measure</h2>
-<div id="data-cleaning-1" class="section level3">
-<h3><span class="header-section-number">3.2.1</span> Data cleaning</h3>
-<p>Importing data</p>
+<div id="implicit" class="section level1">
+<h1><span class="header-section-number">3</span> Implicit</h1>
+<div id="importing-data-1" class="section level2">
+<h2><span class="header-section-number">3.1</span> Importing data</h2>
 <pre class="r"><code>#defining path
 files1 &lt;- list.files(path = &quot;D:/Documents/Egyebek/Thesis/data/Round 1&quot;, pattern = &quot;immtest.*.txt$&quot;, full.names = TRUE)
-
-#importing data files
-gnat_raw1 &lt;- 
-  vroom::vroom(file = files1, 
-        id = &quot;id&quot;, 
-        col_names = c(&quot;block&quot;, &quot;block_id&quot;, &quot;word&quot;, &quot;max_rt&quot;, &quot;trial_type&quot;, &quot;word_category&quot;, &quot;rt&quot;, &quot;error&quot;, &quot;target&quot;)) %&gt;% 
-  extract(col = id, 
-          into = c(NA, &quot;id&quot;, NA), 
-          regex = &quot;^(.*data.)(.*)(.txt)$&quot;)</code></pre>
-<p>Keeping only important blocks</p>
-<pre class="r"><code>important_targets &lt;- c(&quot;chall_pos&quot;, &quot;chall_neg&quot;, &quot;crit_pos&quot;, &quot;crit_neg&quot;)
-
-#filter only important trials and only go_trials for first round
-gnat_important1 &lt;- 
-  gnat_raw1 %&gt;% 
-  filter(target %in%important_targets) %&gt;% 
-  filter(trial_type == &#39;go_trial&#39;)</code></pre>
-<p>Establishing block error rate per participant</p>
-<pre class="r"><code>#checking for block error rate above 40% for first round
-correct_block_rate1 &lt;- 
-  gnat_important1 %&gt;% 
-  group_by(id, target) %&gt;% 
-  summarise(correct_block = 1 - mean(error))</code></pre>
-<p>Establishing overall error rate per participant</p>
-<pre class="r"><code>#no more removal needed for round 1
-correct_all_rate1 &lt;-
-  gnat_important1 %&gt;% 
-  filter(target %in% important_targets) %&gt;%
-  group_by(id) %&gt;% 
-  summarise(correct_all = 1 - mean(error))</code></pre>
-<p>Filtering observations based on error rate</p>
-<p>Criteria:</p>
-<ul>
-<li>Block error rate below 60%</li>
-<li>Overall error rate below 80%</li>
-<li>Erroneous association</li>
-<li>Response latency under 300 ms</li>
-<li>Response latency <span class="math inline">\(3*SD\)</span> above average RT</li>
-</ul>
-<p>Determining average RT and SD for previous filter</p>
-<pre class="r"><code>#deleting rows with too quick and too slow response windows for round1 (too quick is 300 and too slow is 3 SD above average rt)
-rt_mean1 &lt;- as.integer(gnat_important1 %&gt;% 
-                         left_join(correct_block_rate1, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
-                         left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;% 
-                         filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
-                         summarise(pers_a = mean(rt)))
-
-rt_sd1 &lt;- as.integer(gnat_important1 %&gt;% 
-                       left_join(correct_block_rate1, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
-                       left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;% 
-                       filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
-                       summarise(pers_sd = sd(rt)))
-
-rt_filter1 &lt;- (rt_sd1 * 3) + rt_mean1</code></pre>
-<p>Deleting rows based on exclusion criteria</p>
-<pre class="r"><code>#must delete these observations due to high block error rate from round1
-final_gnat1 &lt;-
-  gnat_important1 %&gt;% 
-  left_join(correct_block_rate1, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
-  left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;% 
-  filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
-  filter(rt &gt; 300 &amp; rt &lt; rt_filter1)</code></pre>
-<p>Rows that have been removed</p>
-<p>Every row that has been removed from further analysis.</p>
-<pre class="r"><code>final_diff1 &lt;- 
-  dplyr::setdiff(gnat_important1, final_gnat1[, -c(11,12)])</code></pre>
-<p>Participants that have been excluded due to high overall error rate.</p>
-<pre class="r"><code>#participants from round 1 that had exceeded 80% error rate
-participants_removed1 &lt;- 
-  gnat_important1 %&gt;% 
-  left_join(correct_all_rate1, by = c(&quot;id&quot;)) %&gt;%
-  filter(correct_all &lt;= 0.8)
-p_rem_id1 &lt;- unique(participants_removed1$id)</code></pre>
-<p>number of participants removed from first round:</p>
-<pre class="r"><code>length(p_rem_id1)</code></pre>
-<pre><code>## [1] 4</code></pre>
-<p>Calculating d-scores</p>
-<pre class="r"><code>#d-scores for round 1
-dscores1 &lt;-
-  final_gnat1 %&gt;% 
-  group_by(id) %&gt;% 
-  mutate(pers_sd = sd(rt)) %&gt;% 
-  group_by(id, target, pers_sd) %&gt;% 
-  summarise(pers_block_avg = mean(rt)) %&gt;% 
-  mutate(d = pers_block_avg/pers_sd) %&gt;% 
-  ungroup() %&gt;% 
-  select(-pers_block_avg, -pers_sd) %&gt;%
-  spread(target, d) %&gt;% 
-  mutate(challange_d = chall_neg - chall_pos,
-         crit_d = crit_neg - crit_pos)</code></pre>
-</div>
-</div>
-</div>
-<div id="round-2-data" class="section level1">
-<h1><span class="header-section-number">4</span> Round 2 data</h1>
-<div id="explicit-measure-1" class="section level2">
-<h2><span class="header-section-number">4.1</span> Explicit measure</h2>
-<div id="data-cleaning-2" class="section level3">
-<h3><span class="header-section-number">4.1.1</span> Data cleaning</h3>
-<p>import data</p>
-<pre class="r"><code>explicit_raw2 &lt;- 
-  read_excel(&quot;D:/Documents/Egyebek/Thesis/data/Round 2/data.xlsx&quot;, 1) %&gt;%
-  extract(col = participant, 
-          into = c(NA, &quot;id&quot;, NA), 
-          regex = &quot;^(.*s.)(.*)(.txt)$&quot;) %&gt;% 
-  clean_names()</code></pre>
-<p>round 2</p>
-<pre class="r"><code>#reversing items
-explicit_reversed2 &lt;- 
-  explicit_raw2 %&gt;% 
-  mutate_at(vars(iq1_1, iq2_1, fms3_1, fms4_1, cr_ms3_1, cr_ms4_1, ch_ms3_1, ch_ms4_1), 
-            ~recode(., `1` = 6,
-                    `2` = 5,
-                    `3` = 4,
-                    `4` = 3,
-                    `5` = 2,
-                    `6` = 1,
-            ))
-
-explicit_reversed2 &lt;- 
-  explicit_reversed2 %&gt;% 
-  mutate_at(vars(failurescenario_1, criticismscenario_1), 
-            ~recode(., `1` = 5,
-                    `2` = 4,
-                    `4` = 2,
-                    `5` = 1,
-            ))
-
-#creating means of explicit measures
-explicit_coded2 &lt;-
-  explicit_reversed2 %&gt;%
-  mutate(iqms_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;iq&quot;))))
-
-explicit_coded2 &lt;- explicit_coded2 %&gt;%
-  mutate(crms_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;cr_ms&quot;))))
-
-explicit_coded2 &lt;- explicit_coded2 %&gt;%
-  mutate(chms_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;ch_ms&quot;))))
-
-explicit_coded2 &lt;- explicit_coded2 %&gt;%
-  mutate(fms_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;fms&quot;))))
-
-explicit_coded2 &lt;- explicit_coded2 %&gt;%
-  mutate(fsc_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;failure&quot;))))
-
-explicit_coded2 &lt;- explicit_coded2 %&gt;%
-  mutate(crsc_avg = rowMeans(x = select(.data = ., starts_with(match = &quot;criticism&quot;))))
-
-#final explicit data
-explicit2 &lt;-
-  explicit_coded2 %&gt;% 
-  select(neptun_1, id, gender_1, age_1, iqms_avg, crms_avg, chms_avg, fms_avg, fsc_avg, crsc_avg, challengescenario_1)</code></pre>
-</div>
-</div>
-<div id="implicit-measure-1" class="section level2">
-<h2><span class="header-section-number">4.2</span> Implicit measure</h2>
-<div id="data-cleaning-3" class="section level3">
-<h3><span class="header-section-number">4.2.1</span> Data cleaning</h3>
-<p>Importing data</p>
-<pre class="r"><code>#defining path
 files2 &lt;- list.files(path = &quot;D:/Documents/Egyebek/Thesis/data/Round 2&quot;, pattern = &quot;immtest.*.txt$&quot;, full.names = TRUE)
 
 #importing data files
-gnat_raw2 &lt;- 
+gnat_raw &lt;- 
+  bind_rows(
+  vroom::vroom(file = files1, 
+        id = &quot;id&quot;, 
+        col_names = c(&quot;block&quot;, &quot;block_id&quot;, &quot;word&quot;, &quot;max_rt&quot;, &quot;trial_type&quot;, &quot;word_category&quot;, &quot;rt&quot;, &quot;error&quot;, &quot;target&quot;)) %&gt;% mutate(measurement = 1),
   vroom::vroom(file = files2, 
         id = &quot;id&quot;, 
-        col_names = c(&quot;block&quot;, &quot;block_id&quot;, &quot;word&quot;, &quot;max_rt&quot;, &quot;trial_type&quot;, &quot;word_category&quot;, &quot;rt&quot;, &quot;error&quot;, &quot;target&quot;)) %&gt;% 
+        col_names = c(&quot;block&quot;, &quot;block_id&quot;, &quot;word&quot;, &quot;max_rt&quot;, &quot;trial_type&quot;, &quot;word_category&quot;, &quot;rt&quot;, &quot;error&quot;, &quot;target&quot;)) %&gt;% mutate(measurement = 2)) %&gt;% 
   extract(col = id, 
           into = c(NA, &quot;id&quot;, NA), 
           regex = &quot;^(.*data.)(.*)(.txt)$&quot;)</code></pre>
-<p>Keeping only important blocks</p>
-<pre class="r"><code>#filter only important trials and only go_trials for second round
-gnat_important2 &lt;- 
-  gnat_raw2 %&gt;% 
-  filter(target %in%important_targets) %&gt;% 
-  filter(trial_type == &#39;go_trial&#39;)</code></pre>
-<p>Establishing block error rate per participant</p>
-<pre class="r"><code>#checking for block error rate above 40% for second round
-correct_block_rate2 &lt;- 
-  gnat_important2 %&gt;% 
-  group_by(id, target) %&gt;% 
-  summarise(correct_block = 1 - mean(error))</code></pre>
-<p>Establishing overall error rate per participant</p>
-<pre class="r"><code>#no more removal needed for round 2
-correct_all_rate2 &lt;-
-  gnat_important2 %&gt;% 
-  filter(target %in% important_targets) %&gt;%
-  group_by(id) %&gt;% 
-  summarise(correct_all = 1 - mean(error))</code></pre>
-<p>Filtering observations based on error rate</p>
+</div>
+<div id="filtering-observations-based-on-error-rate" class="section level2">
+<h2><span class="header-section-number">3.2</span> Filtering observations based on error rate</h2>
 <p>Criteria:</p>
 <ul>
 <li>Block error rate below 60%</li>
 <li>Overall error rate below 80%</li>
 <li>Erroneous association</li>
 <li>Response latency under 300 ms</li>
-<li>Response latency <span class="math inline">\(3*SD\)</span> above average RT</li>
+<li>Response latency above 1399 ms</li>
 </ul>
-<p>Determining average RT and SD for previous filter</p>
-<pre class="r"><code>#deleting rows with too quick and too slow response windows for round2 (too quick is 300 and too slow is 3 SD above average rt)
-rt_mean2 &lt;- as.integer(gnat_important2 %&gt;% 
-                         left_join(correct_block_rate2, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
-                         left_join(correct_all_rate2, by = c(&quot;id&quot;)) %&gt;% 
-                         filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
-                         summarise(pers_a = mean(rt)))
+<p>Determining average RT and SD for filter</p>
+<pre class="r"><code>#important targets
+important_targets &lt;- c(&quot;chall_pos&quot;, &quot;chall_neg&quot;, &quot;crit_pos&quot;, &quot;crit_neg&quot;)
 
-rt_sd2 &lt;- as.integer(gnat_important2 %&gt;% 
-                       left_join(correct_block_rate2, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
-                       left_join(correct_all_rate2, by = c(&quot;id&quot;)) %&gt;% 
-                       filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
-                       summarise(pers_sd = sd(rt)))
-
-rt_filter2 &lt;- (rt_sd2 * 3) + rt_mean2</code></pre>
-<p>Deleting rows based on exclusion criteria</p>
-<pre class="r"><code>#must delete these observations due to high block error rate from round2
-final_gnat2 &lt;-
-  gnat_important2 %&gt;% 
-  left_join(correct_block_rate2, by = c(&quot;id&quot;, &quot;target&quot;)) %&gt;% 
-  left_join(correct_all_rate2, by = c(&quot;id&quot;)) %&gt;% 
-  filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0) %&gt;% 
-  filter(rt &gt; 300 &amp; rt &lt; rt_filter2)</code></pre>
-<p>Rows that have been removed</p>
-<p>Every row that has been removed from further analysis.</p>
-<pre class="r"><code>final_diff2 &lt;- 
-  dplyr::setdiff(gnat_important2, final_gnat2[, -c(11,12)])</code></pre>
-<p>Participants that have been excluded due to high overall error rate.</p>
-<pre class="r"><code>#participants from round 2 that had exceeded 80% error rate
-participants_removed2 &lt;- 
-  gnat_important2 %&gt;% 
-  left_join(correct_all_rate2, by = c(&quot;id&quot;)) %&gt;%
-  filter(correct_all &lt;= 0.8)
-p_rem_id2 &lt;- unique(participants_removed2$id)</code></pre>
-<p>number of participants removed from second round</p>
-<pre class="r"><code>length(p_rem_id2)</code></pre>
-<pre><code>## [1] 2</code></pre>
-<p>participants removed from the first round that have also been removed from the second round -&gt; no participants from both</p>
-<pre class="r"><code>p_rem_id1[(p_rem_id1 %in% p_rem_id2)]</code></pre>
-<pre><code>## character(0)</code></pre>
-<p>Calculating d-scores</p>
-<pre class="r"><code>#d-scores for round 2
-dscores2 &lt;-
-  final_gnat2 %&gt;% 
+#deleting rows with too quick and too slow response windows (too quick is 300 and too slow is 3 SD above average rt)
+gnat_filter1 &lt;- 
+  gnat_raw %&gt;% 
+  filter(target %in% important_targets,
+         trial_type == &#39;go_trial&#39;,
+         measurement == 1) %&gt;% 
+  # checking for block error rate per participant
+  group_by(id, target) %&gt;% 
+  mutate(correct_block = 1 - mean(error)) %&gt;% 
+  ungroup() %&gt;% 
+  # checking for overall error rate per participant
   group_by(id) %&gt;% 
+  mutate(correct_all = 1 - mean(error)) %&gt;% 
+  ungroup() %&gt;% 
+  filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0)
+gnat_filter2 &lt;- 
+  gnat_raw %&gt;% 
+  filter(target %in% important_targets,
+         trial_type == &#39;go_trial&#39;,
+         measurement == 2) %&gt;% 
+  # checking for block error rate per participant
+  group_by(id, target) %&gt;% 
+  mutate(correct_block = 1 - mean(error)) %&gt;% 
+  ungroup() %&gt;% 
+  # checking for overall error rate per participant
+  group_by(id) %&gt;% 
+  mutate(correct_all = 1 - mean(error)) %&gt;% 
+  ungroup() %&gt;% 
+  filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0)</code></pre>
+<p>filtering observations and creating d-scores</p>
+<pre class="r"><code>implicit &lt;- 
+  gnat_raw %&gt;% 
+  #filter only important trials and only go_trials 
+  filter(target %in%important_targets,
+         trial_type == &#39;go_trial&#39;) %&gt;% 
+  #checking for block error rate per participant
+  group_by(id, target) %&gt;% 
+  mutate(correct_block = 1 - mean(error)) %&gt;% 
+  ungroup() %&gt;% 
+  # checking for overall error rate per participant
+  group_by(id) %&gt;% 
+  mutate(correct_all = 1 - mean(error)) %&gt;% 
+  ungroup() %&gt;% 
+  # filter overall and block error rates, filter too quick and too slow responses
+  filter(correct_block &gt; 0.6 &amp; correct_all &gt; 0.8 &amp; error == 0,
+         rt &gt; 300 &amp; rt &lt; 1399) %&gt;%
+  #calculating d-scores
+  group_by(measurement, id) %&gt;% 
   mutate(pers_sd = sd(rt)) %&gt;% 
-  group_by(id, target, pers_sd) %&gt;% 
+  ungroup() %&gt;% 
+  group_by(measurement, id, target, pers_sd) %&gt;% 
   summarise(pers_block_avg = mean(rt)) %&gt;% 
   mutate(d = pers_block_avg/pers_sd) %&gt;% 
   ungroup() %&gt;% 
@@ -835,45 +580,6 @@ dscores2 &lt;-
   spread(target, d) %&gt;% 
   mutate(challange_d = chall_neg - chall_pos,
          crit_d = crit_neg - crit_pos)</code></pre>
-</div>
-</div>
-</div>
-<div id="collecting-all-data-in-one-dataframe" class="section level1">
-<h1><span class="header-section-number">5</span> Collecting all data in one dataframe</h1>
-<p>joining implicit data with respective explicit data</p>
-<pre class="r"><code>#joining implicit with round 1 explicit measures
-final_data1 &lt;- 
-  dscores1 %&gt;% 
-  left_join(explicit1, by = &quot;id&quot;) 
-#joining implicit with round 2 explicit measures
-final_data2 &lt;- 
-  dscores2 %&gt;% 
-  left_join(explicit2, by = &quot;id&quot;)</code></pre>
-<p>renaming columns respectively</p>
-<pre class="r"><code>old_names1 &lt;- colnames(final_data1)
-old_names2 &lt;- colnames(final_data2)
-round1_names &lt;- c(&quot;id1&quot;, &quot;chall_neg1&quot;, &quot;chall_pos1&quot;, &quot;crit_neg1&quot;, &quot;crit_pos1&quot;, &quot;challenge_d1&quot;, &quot;crit_d1&quot;, &quot;neptun&quot;, &quot;gender_1&quot;, &quot;age_1&quot;, &quot;iqms_avg1&quot;, &quot;crms_avg1&quot;, &quot;chms_avg1&quot;, &quot;fms_avg1&quot;, &quot;fsc_avg1&quot;, &quot;crsc_avg1&quot;, &quot;challengescenario_1&quot;)
-round2_names &lt;- c(&quot;id2&quot;, &quot;chall_neg2&quot;, &quot;chall_pos2&quot;, &quot;crit_neg2&quot;, &quot;crit_pos2&quot;, &quot;challenge_d2&quot;, &quot;crit_d2&quot;, &quot;neptun&quot;, &quot;gender_2&quot;, &quot;age_2&quot;, &quot;iqms_avg2&quot;, &quot;crms_avg2&quot;, &quot;chms_avg2&quot;, &quot;fms_avg2&quot;, &quot;fsc_avg2&quot;, &quot;crsc_avg2&quot;, &quot;challengescenario_2&quot;)
-
-setnames(final_data1, old = old_names1, new = round1_names)
-setnames(final_data2, old = old_names2, new = round2_names)</code></pre>
-<p>joining round 1 and round 2 data</p>
-<pre class="r"><code>round12 &lt;- left_join(final_data2, final_data1, by = &quot;neptun&quot;)</code></pre>
-<p>adding grouping variable</p>
-<pre class="r"><code>round12 &lt;- joined %&gt;% 
-  select(neptun, group) %&gt;% 
-  right_join(round12, by = &quot;neptun&quot;)</code></pre>
-</div>
-<div id="analysis" class="section level1">
-<h1><span class="header-section-number">6</span> Analysis</h1>
-<div id="assumption-checks" class="section level2">
-<h2><span class="header-section-number">6.1</span> Assumption checks</h2>
-</div>
-<div id="hypothesis-testing" class="section level2">
-<h2><span class="header-section-number">6.2</span> Hypothesis testing</h2>
-</div>
-<div id="plots-and-figures" class="section level2">
-<h2><span class="header-section-number">6.3</span> Plots and figures</h2>
 </div>
 </div>
 

@@ -148,6 +148,9 @@ Criteria:
 
 Determining average RT and SD for filter
 ```{r}
+#important targets
+important_targets <- c("chall_pos", "chall_neg", "crit_pos", "crit_neg")
+
 #deleting rows with too quick and too slow response windows (too quick is 300 and too slow is 3 SD above average rt)
 gnat_filter1 <- 
   gnat_raw %>% 
@@ -177,9 +180,6 @@ gnat_filter2 <-
   mutate(correct_all = 1 - mean(error)) %>% 
   ungroup() %>% 
   filter(correct_block > 0.6 & correct_all > 0.8 & error == 0)
-
-#important targets
-important_targets <- c("chall_pos", "chall_neg", "crit_pos", "crit_neg")
 ```
 
 filtering observations and creating d-scores
