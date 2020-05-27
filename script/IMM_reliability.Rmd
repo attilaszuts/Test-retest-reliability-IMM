@@ -341,6 +341,12 @@ final %>%
 Words rt correlation
 ```{r}
 cor.test(words$mean_rt_1, words$mean_rt_2, method = "pearson")
+
+# correlation by word category
+words %>% 
+  split(.$word_category) %>% 
+  map(select, -c(word_category, word)) %>% 
+  map(cor)
 ```
 
 
