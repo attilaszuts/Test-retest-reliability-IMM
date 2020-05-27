@@ -27,6 +27,7 @@ library(ggpubr)
 library(vroom)
 library(lubridate)
 library(corrr)
+library(multicon)
 ```
 
 # Explicit
@@ -355,6 +356,13 @@ words %>%
   split(.$word_category) %>% 
   map(select, -c(word_category, word)) %>% 
   map(cor)
+```
+
+splithalf reliability
+```{r}
+final %>% 
+  select(c(4:7, 12, 13, 16:27)) %>%
+  splithalf.r(sims = 1000, seed = 1)
 ```
 
 
