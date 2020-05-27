@@ -265,54 +265,18 @@ shapiro.test(words$mean_rt_2)
 
 ## Hypothesis testing
 
-D-score correlation between measures
+D-score difference correlation between measures for challenge and criticism
 ```{r}
 cor.test(final$challenge_d_1, final$challenge_d_2, method = "pearson")
 cor.test(final$crit_d_1, final$crit_d_2, method = "spearman")
 ```
 
-D-score correlation by groups
-```{r}
-final %>% 
-  filter(group == 1) %>% 
-  select(c(24:27)) %>% 
-  corrr::correlate() %>% 
-  corrr::focus(challenge_d_1, challenge_d_2, mirror = T)
-final %>% 
-  filter(group == 1) %>% 
-  select(c(24:27)) %>% 
-  corrr::correlate(method = "spearman") %>% 
-  corrr::focus(crit_d_1, crit_d_2, mirror = T)
-
-final %>% 
-  filter(group == 0) %>% 
-  select(c(24:27)) %>% 
-  corrr::correlate() %>% 
-  corrr::focus(challenge_d_1, challenge_d_2, mirror = T)
-final %>% 
-  filter(group == 0) %>% 
-  select(c(24:27)) %>% 
-  corrr::correlate(method = "spearman") %>% 
-  corrr::focus(crit_d_1, crit_d_2, mirror = T)
-```
-
+Correlation matrix for explicit and d-scores
 ```{r}
 final %>% 
   select(c(2:13, 16:27)) %>% 
   corrr::correlate(method = "spearman") %>% 
   corrr::focus(matches("1$")) %>% 
-  view()
-
-final %>% 
-  select(c(4:7, 12, 13, 16:27)) %>% 
-  corrr::correlate(method = "spearman") %>% 
-  corrr::focus(matches("1$"), mirror = T) %>% 
-  view()
-
-final %>% 
-  select(c(4:7, 12, 13, 16:27)) %>% 
-  corrr::correlate(method = "spearman") %>% 
-  corrr::focus(matches("2$"), mirror = T) %>% 
   view()
 ```
 
