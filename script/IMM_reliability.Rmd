@@ -26,6 +26,7 @@ library(widyr)
 library(ggpubr)
 library(vroom)
 library(lubridate)
+library(corrr)
 ```
 
 # Explicit
@@ -267,7 +268,35 @@ cor.test(final$crit_d_1, final$crit_d_2, method = "spearman")
 
 D-score correlation by groups
 ```{r}
+final %>% 
+  filter(group == 1) %>% 
+  select(c(24:27)) %>% 
+  corrr::correlate() %>% 
+  corrr::focus(challenge_d_1, challenge_d_2, mirror = T)
+final %>% 
+  filter(group == 1) %>% 
+  select(c(24:27)) %>% 
+  corrr::correlate(method = "spearman") %>% 
+  corrr::focus(crit_d_1, crit_d_2, mirror = T)
 
+final %>% 
+  filter(group == 0) %>% 
+  select(c(24:27)) %>% 
+  corrr::correlate() %>% 
+  corrr::focus(challenge_d_1, challenge_d_2, mirror = T)
+final %>% 
+  filter(group == 0) %>% 
+  select(c(24:27)) %>% 
+  corrr::correlate(method = "spearman") %>% 
+  corrr::focus(crit_d_1, crit_d_2, mirror = T)
+```
+
+```{r}
+final %>% 
+  select(c(2:13, 16:27)) %>% 
+  corrr::correlate() %>% 
+  corrr::focus(matches("1$")) %>% 
+  view()
 ```
 
 
