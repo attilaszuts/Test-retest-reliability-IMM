@@ -289,6 +289,13 @@ shapiro.test(final$crit_d_1)
 shapiro.test(final$crit_d_2)
 ```
 
+word rt normality test
+```{r}
+# normal
+shapiro.test(words$mean_rt_1)
+shapiro.test(words$mean_rt_2)
+```
+
 
 ## Hypothesis testing
 
@@ -329,6 +336,11 @@ final %>%
   corrr::correlate() %>% 
   corrr::focus(matches("1$")) %>% 
   view()
+```
+
+Words rt correlation
+```{r}
+cor.test(words$mean_rt_1, words$mean_rt_2, method = "pearson")
 ```
 
 
