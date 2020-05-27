@@ -280,13 +280,9 @@ final <- left_join(explicit, implicit, by = c("id", "measurement")) %>%
 
 D-score normality test
 ```{r}
-# normal
-shapiro.test(final$challenge_d_1)
-shapiro.test(final$challenge_d_2)
-
-# not normal
-shapiro.test(final$crit_d_1)
-shapiro.test(final$crit_d_2)
+final %>% 
+  select(c(2:13, 16:27)) %>% 
+  map(shapiro.test)
 ```
 
 word rt normality test
@@ -333,8 +329,20 @@ final %>%
 ```{r}
 final %>% 
   select(c(2:13, 16:27)) %>% 
-  corrr::correlate() %>% 
+  corrr::correlate(method = "spearman") %>% 
   corrr::focus(matches("1$")) %>% 
+  view()
+
+final %>% 
+  select(c(4:7, 12, 13, 16:27)) %>% 
+  corrr::correlate(method = "spearman") %>% 
+  corrr::focus(matches("1$"), mirror = T) %>% 
+  view()
+
+final %>% 
+  select(c(4:7, 12, 13, 16:27)) %>% 
+  corrr::correlate(method = "spearman") %>% 
+  corrr::focus(matches("2$"), mirror = T) %>% 
   view()
 ```
 
