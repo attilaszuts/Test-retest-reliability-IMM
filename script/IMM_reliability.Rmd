@@ -150,44 +150,11 @@ Criteria:
 * Response latency under 300 ms
 * Response latency above 1399 ms
 
-Determining average RT and SD for filter
+filtering observations and creating d-scores
 ```{r}
 #important targets
 important_targets <- c("chall_pos", "chall_neg", "crit_pos", "crit_neg")
 
-#deleting rows with too quick and too slow response windows (too quick is 300 and too slow is 3 SD above average rt)
-gnat_filter1 <- 
-  gnat_raw %>% 
-  filter(target %in% important_targets,
-         trial_type == 'go_trial',
-         measurement == 1) %>% 
-  # checking for block error rate per participant
-  group_by(id, target) %>% 
-  mutate(correct_block = 1 - mean(error)) %>% 
-  ungroup() %>% 
-  # checking for overall error rate per participant
-  group_by(id) %>% 
-  mutate(correct_all = 1 - mean(error)) %>% 
-  ungroup() %>% 
-  filter(correct_block > 0.6 & correct_all > 0.8 & error == 0)
-gnat_filter2 <- 
-  gnat_raw %>% 
-  filter(target %in% important_targets,
-         trial_type == 'go_trial',
-         measurement == 2) %>% 
-  # checking for block error rate per participant
-  group_by(id, target) %>% 
-  mutate(correct_block = 1 - mean(error)) %>% 
-  ungroup() %>% 
-  # checking for overall error rate per participant
-  group_by(id) %>% 
-  mutate(correct_all = 1 - mean(error)) %>% 
-  ungroup() %>% 
-  filter(correct_block > 0.6 & correct_all > 0.8 & error == 0)
-```
-
-filtering observations and creating d-scores
-```{r}
 implicit <- 
   gnat_raw %>% 
   #filter only important trials and only go_trials 
@@ -254,7 +221,7 @@ words <- gnat_raw %>%
 
 # Unite implicit with explicit
 
-Excluded participants that had too high error rate
+Excluded participants from final that had too high error rate in implicit task
 ```{r}
 final <- left_join(explicit, implicit, by = c("id", "measurement")) %>% 
   filter(neptun_1 != "q69vn2",
