@@ -219,6 +219,38 @@ implicit <-
          crit_d = crit_neg - crit_pos)
 ```
 
+Words RT
+```{r}
+words <- gnat_raw %>% 
+  #filter only important trials and only go_trials 
+  filter(target %in%important_targets,
+         trial_type == 'go_trial') %>% 
+  #filtering out participants that didnt complete the second round
+  filter(!id %in% excluded_id) %>%
+  #checking for block error rate per participant
+  group_by(id, target) %>% 
+  mutate(correct_block = 1 - mean(error)) %>% 
+  ungroup() %>% 
+  # checking for overall error rate per participant
+  group_by(id) %>% 
+  mutate(correct_all = 1 - mean(error)) %>% 
+  ungroup() %>% 
+  # filter overall and block error rates, filter too quick and too slow responses
+  filter(correct_block > 0.6 & correct_all > 0.8 & error == 0,
+         rt > 300 & rt < 1399) %>%
+  group_by(measurement, word_category, word) %>% 
+  summarise(mean_rt = mean(rt),
+            median_rt = median(rt),
+            range_rt = max(rt)-min(rt),
+            min_rt = min(rt),
+            max_rt = max(rt),
+            IQR_rt = IQR(rt)) %>%
+  pivot_wider(id_cols = word, names_from = measurement, values_from = c(2, 4)) %>% 
+  rename(word_category = "word_category_1") %>% 
+  select(-word_category_2)
+```
+
+
 # Unite implicit with explicit
 
 Excluded participants that had too high error rate
