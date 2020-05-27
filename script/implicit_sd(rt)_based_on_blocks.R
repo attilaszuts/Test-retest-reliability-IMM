@@ -25,7 +25,6 @@ implicit <-
   summarise(pers_block_avg = mean(rt)) %>% 
   mutate(d = pers_block_avg/pers_sd) %>% 
   ungroup() %>% 
-  view()
   select(-pers_block_avg, -pers_sd) %>% 
   spread(target, d) %>% 
   mutate(challenge_d = chall_neg - chall_pos,
