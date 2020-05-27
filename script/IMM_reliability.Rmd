@@ -239,8 +239,7 @@ final <- left_join(explicit, implicit, by = c("id", "measurement")) %>%
 
 ## Assumption checks
 
-* implicit - implicit 
-* split - half
+* implicit - implicit
 * explicit - explicit
 * words RT 
 * implicit - explicit at the separate times
@@ -323,18 +322,6 @@ words %>%
   split(.$word_category) %>% 
   map(select, -c(word_category, word)) %>% 
   map(cor)
-```
-
-splithalf reliability
-```{r}
-# round 1
-final %>% 
-  select(c(24, 26)) %>%
-  splithalf.r(sims = 10, seed = 1)
-# roud 2
-final %>% 
-  select(c(25, 27)) %>%
-  splithalf.r(sims = 10, seed = 1)
 ```
 
 
