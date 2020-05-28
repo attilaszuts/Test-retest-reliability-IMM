@@ -250,7 +250,7 @@ final <- left_join(explicit, implicit, by = c("id", "measurement")) %>%
 
 Normality test
 ```{r}
-final_d %>% 
+final %>% 
   select(c(2:13, 16:27)) %>% 
   map(shapiro.test)
 ```
