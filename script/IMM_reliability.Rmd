@@ -298,6 +298,12 @@ words %>%
   split(.$word_category) %>% 
   map(select, -c(word_category, word)) %>% 
   map(cor)
+
+# significance by word category
+words %>% 
+  split(.$word_category) %>% 
+  map(select, -c(word_category, word)) %>% 
+  map(cor_pmat)
 ```
 
 
