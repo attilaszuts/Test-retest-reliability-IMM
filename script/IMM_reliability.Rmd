@@ -11,7 +11,9 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Data input and opening libraries
+# Data processing 
+
+## Data input and opening libraries
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 library(readr)
@@ -37,9 +39,9 @@ library(lme4)
 library(dotwhisker)
 ```
 
-# Explicit
+## Explicit
 
-## Importing data
+### Importing data
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 explicit_raw <-
@@ -49,7 +51,7 @@ explicit_raw <-
   ) 
 ```
 
-## Reversing items, creating groups, creating means of explicit measures
+### Reversing items, creating groups, creating means of explicit measures
 
 ```{r}
 explicit <- 
@@ -126,9 +128,9 @@ ggplot(explicit, aes(time_end_diff)) +
   theme_classic()
 ```
 
-# Implicit
+## Implicit
 
-## Importing data
+### Importing data
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 #defining path
 files1 <- list.files(path = "D:/Documents/Egyebek/Thesis/data/Round 1", pattern = "immtest.*.txt$", full.names = TRUE)
@@ -147,7 +149,7 @@ gnat_raw <-
           into = c(NA, "id", NA), 
           regex = "^(.*data.)(.*)(.txt)$")
 ```
-## Filtering observations based on error rate 
+### Filtering observations based on error rate 
 
 Criteria: 
 
@@ -228,7 +230,7 @@ words <- gnat_raw %>%
   select(-word_category_2)
 ```
 
-# Unite implicit with explicit
+## Unite implicit with explicit
 
 Excluded participants from final that had too high error rate in implicit task
 ```{r}
