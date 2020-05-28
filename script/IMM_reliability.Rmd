@@ -270,6 +270,26 @@ word rt normality test
 # normal
 shapiro.test(words$mean_rt_1)
 shapiro.test(words$mean_rt_2)
+
+words %>% 
+  filter(word_category == "challenge") %>% 
+  select(mean_rt_1, mean_rt_2) %>% 
+  map(shapiro.test)
+
+words %>% 
+  filter(word_category == "criticism") %>% 
+  select(mean_rt_1, mean_rt_2) %>% 
+  map(shapiro.test)
+
+words %>% 
+  filter(word_category == "positive") %>% 
+  select(mean_rt_1, mean_rt_2) %>% 
+  map(shapiro.test)
+
+words %>% 
+  filter(word_category == "criticism") %>% 
+  select(mean_rt_1, mean_rt_2) %>% 
+  map(shapiro.test)
 ```
 
 
