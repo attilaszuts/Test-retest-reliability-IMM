@@ -21,29 +21,29 @@ implicit <-
   mutate(pers_sd = sd(rt)) %>% 
   ungroup() %>% 
   group_by(measurement, id, target, pers_sd) %>% 
-  summarise(pers_block_avg = mean(rt)) %>% 
-  mutate(d = pers_block_avg/pers_sd) %>% 
+  summarise(rt = mean(rt)) %>% 
+  mutate(d = rt/pers_sd) %>% 
   ungroup() %>% 
   select(-pers_sd) %>%
-  tidyr::pivot_wider(id_cols = id, names_from = target, values_from = c(d, pers_block_avg), names_glue = "{target}_{.value}") %>% 
-  view()
-  mutate(challenge_d = chall_neg - chall_pos,
-         crit_d = crit_neg - crit_pos)
+  tidyr::pivot_wider(id_cols = c(id, measurement), names_from = target, values_from = c(d, rt), names_glue = "{target}_{.value}") %>% 
+  mutate(challenge_rt = chall_neg_rt - chall_pos_rt,
+         crit_rt = crit_neg_rt - crit_pos_rt,
+         challenge_d = chall_neg_d - chall_pos_d,
+         crit_d = crit_neg_d - crit_pos_d) 
 
 final <- left_join(explicit, implicit, by = c("id", "measurement")) %>% 
   filter(neptun_1 != "q69vn2",
          neptun_1 != "bm0vx1") %>% 
-  pivot_wider(id_cols = neptun_1, names_from = measurement, values_from = c(3:11, 13:20)) %>% 
+  pivot_wider(id_cols = neptun_1, names_from = measurement, values_from = c(3:10, 13, 15:26)) %>% 
   mutate(gender = gender_1_1, 
          age = age_1_1,
-         group = group_1,
-         time_end_diff = time_end_diff_1) %>% 
-  select(-c(gender_1_1, gender_1_2, age_1_1, age_1_2, group_1, group_2, time_end_diff_1, time_end_diff_2))
+         group = group_1) %>% 
+  select(-c(gender_1_1, gender_1_2, age_1_1, age_1_2, group_1, group_2))
 
 results_basic <- final %>% 
-  select(c(2:13, 16:27)) %>% 
+  select(c(2:37)) %>% 
   corrr::correlate(method = "spearman") %>% 
   corrr::focus(matches("1$")) %>% 
-  select(c(1, 8:13)) %>% 
-  slice(7:12) %>% 
+  select(c(1, 8:19)) %>%
+  slice(7:18) %>% 
   view()
