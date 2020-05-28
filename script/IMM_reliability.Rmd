@@ -245,13 +245,12 @@ final <- left_join(explicit, implicit, by = c("id", "measurement")) %>%
 
 # Analysis
 
-## Assumption checks
+* D-score difference between measures
+* words RT correlation between measures
+* test-retest reliability
+* difference of effect size between groups
 
-* implicit - implicit
-* explicit - explicit
-* words RT 
-* implicit - explicit at the separate times
-* between groups
+## Assumption checks
 
 Normality test
 ```{r}
@@ -295,10 +294,40 @@ words %>%
   map(shapiro.test)
 ```
 
+## Descriptives
+
+```{r}
+final %>% 
+  select(c(challenge_d_1, challenge_d_2, challenge_rt_1, challenge_rt_2, crit_d_1, crit_d_2, crit_rt_1,crit_rt_2)) %>% 
+  summarise(
+    #challenge d-score
+    mean_ch_d_1 = mean(challenge_d_1),
+    sd_ch_d_1 = sd(challenge_d_1),
+    mean_ch_d_2 = mean(challenge_d_2),
+    sd_ch_d_2 = sd(challenge_d_2),
+    #criticism d-score
+    mean_cr_d_1 = mean(crit_d_1),
+    sd_cr_d_1 = sd(crit_d_1),
+    mean_cr_d_2 = mean(crit_d_1),
+    sd_cr_d_2 = sd(crit_d_2),
+    #challenge rt
+    mean_ch_rt_1 = mean(challenge_rt_1),
+    sd_ch_rt_1 = sd(challenge_rt_1),
+    mean_ch_rt_2 = mean(challenge_rt_2),
+    sd_ch_rt_2 = sd(challenge_rt_2),
+    #criticism rt
+    mean_cr_rt_1 = mean(crit_rt_1),
+    sd_cr_rt_1 = sd(crit_rt_1),
+    mean_cr_rt_2 = mean(crit_rt_1),
+    sd_cr_rt_2 = sd(crit_rt_2)
+  ) %>% 
+  view()
+```
+
 
 ## Hypothesis testing
 
-### D-score difference correlation between measures for challenge and criticism
+### D-score difference between measures for challenge and criticism
 ```{r}
 # t test
 t.ch_d <- t.test(final$challenge_d_1, final$challenge_d_2, paired = T)
