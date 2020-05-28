@@ -10,6 +10,7 @@ output:
 editor_options: 
   chunk_output_type: console
 ---
+
 # Data input and opening libraries
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
@@ -305,7 +306,7 @@ words %>%
 ### Correlation matrix for implicit results 
 
 d-scores
-```{r echo=TRUE}
+```{r fig.dim = c(6,6), fig.align = "center", dpi = 400}
 results_d <- final %>% 
   select(c(4:7, 12:21, 34:37)) %>% 
   cor(method = "spearman") %>% 
@@ -318,11 +319,13 @@ ggcorrplot(results_d,
            ggtheme = ggplot2::theme_classic(),
            lab = T,
            p.mat = results_d.p,
-           insig = "blank")
+           insig = "blank",
+           show.legend = F,
+           lab_size = 3)
 ```
 
 RT
-```{r echo=TRUE}
+```{r fig.dim = c(6,6), fig.align = "center", dpi = 400}
 results_rt <- final %>% 
   select(c(4:7, 12:13, 22:33)) %>% 
   cor(method = "spearman") %>% 
@@ -335,5 +338,7 @@ ggcorrplot(results_rt,
            ggtheme = ggplot2::theme_classic(),
            lab = T,
            p.mat = results_rt.p,
-           insig = "blank")
+           insig = "blank",
+           show.legend = F,
+           lab_size = 3)
 ```
