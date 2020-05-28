@@ -273,58 +273,6 @@ shapiro.test(words$mean_rt_2)
 
 ```
 
-### Correlation matrix for implicit results 
-
-d-scores
-```{r echo=TRUE}
-results_d <- final %>% 
-  select(c(4:7, 12:21, 34:37)) %>% 
-  corrr::correlate(method = "spearman") %>% 
-  corrr::focus(matches("1$")) 
-```
-
-RT
-```{r echo=TRUE}
-results_rt <- final %>% 
-  select(c(4:7, 12:13, 22:33)) %>% 
-  corrr::correlate(method = "spearman") %>% 
-  corrr::focus(matches("1$")) 
-```
-
-### Correlation between implicit and explicit measures (d-scores)
-in the first round 
-```{r echo=TRUE}
-results_d_first <- final %>% 
-  select(c(4:7, 12:21, 34:37)) %>% 
-  corrr::correlate(method = "spearman") %>% 
-  corrr::focus(matches("1$"), mirror = T)
-```
-
-and in the second round
-```{r echo=TRUE}
-results_d_second <- final %>% 
-  select(c(4:7, 12:21, 34:37)) %>%
-  corrr::correlate(method = "spearman") %>% 
-  corrr::focus(matches("2$"), mirror = T)
-```
-
-### Correlation between implicit and explicit measures (rt)
-in the first round 
-```{r echo=TRUE}
-results_rt_first <- final %>% 
-  select(c(4:7, 12:13, 22:33)) %>% 
-  corrr::correlate(method = "spearman") %>% 
-  corrr::focus(matches("1$"), mirror = T)
-```
-
-and in the second round
-```{r echo=TRUE}
-results_rt_second <- final %>% 
-  select(c(4:7, 12:13, 22:33)) %>% 
-  corrr::correlate(method = "spearman") %>% 
-  corrr::focus(matches("2$"), mirror = T)
-```
-
 ### Words rt correlation
 ```{r}
 cor.test(words$mean_rt_1, words$mean_rt_2, method = "pearson")
@@ -339,9 +287,38 @@ words %>%
 
 ## Plots and figures
 
-### Correlation matrices
+### Correlation matrix for implicit results 
 
-```{r}
-
+d-scores
+```{r echo=TRUE}
+results_d <- final %>% 
+  select(c(4:7, 12:21, 34:37)) %>% 
+  cor(method = "spearman") %>% 
+  round(3)
+results_d.p <- cor_pmat(results_d)
+ggcorrplot(results_d, 
+           outline.color = "white", 
+           type = "lower", 
+           colors = c("blue", "white", "darkgreen"),
+           ggtheme = ggplot2::theme_classic(),
+           lab = T,
+           p.mat = results_d.p,
+           insig = "blank")
 ```
 
+RT
+```{r echo=TRUE}
+results_rt <- final %>% 
+  select(c(4:7, 12:13, 22:33)) %>% 
+  cor(method = "spearman") %>% 
+  round(3)
+results_rt.p <- cor_pmat(results_rt)
+ggcorrplot(results_rt, 
+           outline.color = "white", 
+           type = "lower", 
+           colors = c("blue", "white", "darkgreen"),
+           ggtheme = ggplot2::theme_classic(),
+           lab = T,
+           p.mat = results_rt.p,
+           insig = "blank")
+```
