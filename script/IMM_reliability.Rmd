@@ -31,6 +31,7 @@ library(corrr)
 library(multicon)
 library(VGAM)
 library(ggcorrplot)
+library(broom)
 ```
 
 # Explicit
@@ -253,7 +254,7 @@ final <- left_join(explicit, implicit, by = c("id", "measurement")) %>%
 Normality test
 ```{r}
 final %>% 
-  select(c(2:37)) %>% 
+  select(c(14:33)) %>% 
   map(shapiro.test)
 ```
 
@@ -331,6 +332,21 @@ words %>%
 
 ```
 
+### Test-retest reliability
+
+```{r}
+cor.test(final$chall_neg_d_1, final$chall_neg_d_2, method = "spearman")
+cor.test(final$chall_pos_d_1, final$chall_pos_d_2, method = "spearman")
+cor.test(final$crit_neg_d_1, final$crit_neg_d_2, method = "spearman")
+cor.test(final$crit_pos_d_1, final$crit_pos_d_2, method = "spearman")
+
+cor.test(final$chall_neg_rt_1, final$chall_neg_rt_2, method = "spearman")
+cor.test(final$chall_pos_rt_1, final$chall_pos_rt_2, method = "spearman")
+cor.test(final$crit_neg_rt_1, final$crit_neg_rt_2, method = "spearman")
+cor.test(final$crit_pos_rt_1, final$crit_pos_rt_2, method = "spearman")
+```
+
+
 
 ## Plots and figures
 
@@ -339,7 +355,7 @@ words %>%
 d-scores
 ```{r fig.dim = c(6,6), fig.align = "center", dpi = 400}
 results_d <- final %>% 
-  select(c(4:7, 12:21, 34:37)) %>% 
+  select(c(14:21, 34:37)) %>% 
   cor(method = "spearman") %>% 
   round(3)
 results_d.p <- cor_pmat(results_d)
@@ -350,15 +366,18 @@ ggcorrplot(results_d,
            ggtheme = ggplot2::theme_classic(),
            lab = T,
            p.mat = results_d.p,
-           insig = "blank",
+           insig = "pch",
            show.legend = F,
-           lab_size = 3)
+           lab_size = 4,
+           pch = 0,
+           pch.cex = 13,
+           title = "fields without outline represent significant correlations")
 ```
 
 RT
 ```{r fig.dim = c(6,6), fig.align = "center", dpi = 400}
 results_rt <- final %>% 
-  select(c(4:7, 12:13, 22:33)) %>% 
+  select(c(22:33)) %>% 
   cor(method = "spearman") %>% 
   round(3)
 results_rt.p <- cor_pmat(results_rt)
@@ -369,7 +388,10 @@ ggcorrplot(results_rt,
            ggtheme = ggplot2::theme_classic(),
            lab = T,
            p.mat = results_rt.p,
-           insig = "blank",
+           insig = "pch",
            show.legend = F,
-           lab_size = 3)
+           lab_size = 4,
+           pch = 0,
+           pch.cex = 13,
+           title = "fields without outline represent significant correlations")
 ```
