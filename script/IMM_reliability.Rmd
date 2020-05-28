@@ -233,11 +233,13 @@ Excluded participants from final that had too high error rate in implicit task
 final <- left_join(explicit, implicit, by = c("id", "measurement")) %>% 
   filter(neptun_1 != "q69vn2",
          neptun_1 != "bm0vx1") %>% 
-  pivot_wider(id_cols = neptun_1, names_from = measurement, values_from = c(3:10, 13, 15:26)) %>% 
+  pivot_wider(id_cols = c(neptun_1, gender_1, age_1, group, time_end_diff), names_from = measurement, values_from = c(3:10, 13, 15:26)) %>% 
   mutate(gender = gender_1_1, 
          age = age_1_1,
-         group = group_1) %>% 
-  select(-c(gender_1_1, gender_1_2, age_1_1, age_1_2, group_1, group_2))
+         group = group_1,
+         time_end_diff_1 = time_end_diff) %>% 
+  select(-c(gender_1_1, gender_1_2, age_1_1, age_1_2, group_1, group_2, time_end_diff)) %>% 
+  rename(time_end_diff = "time_end_diff_1")
 ```
 
 
