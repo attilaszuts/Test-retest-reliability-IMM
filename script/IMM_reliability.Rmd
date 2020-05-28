@@ -293,17 +293,22 @@ t.cr_rt
 ```{r}
 cor.test(words$mean_rt_1, words$mean_rt_2, method = "pearson")
 
-# correlation by word category
 words %>% 
-  split(.$word_category) %>% 
-  map(select, -c(word_category, word)) %>% 
-  map(cor)
+  filter(word_category == "challenge") %$% 
+  cor.test(mean_rt_1, mean_rt_2)
 
-# significance by word category
 words %>% 
-  split(.$word_category) %>% 
-  map(select, -c(word_category, word)) %>% 
-  map(cor_pmat)
+  filter(word_category == "criticism") %$% 
+  cor.test(mean_rt_1, mean_rt_2)
+
+words %>% 
+  filter(word_category == "positive") %$% 
+  cor.test(mean_rt_1, mean_rt_2)
+
+words %>% 
+  filter(word_category == "negative") %$% 
+  cor.test(mean_rt_1, mean_rt_2)
+
 ```
 
 
