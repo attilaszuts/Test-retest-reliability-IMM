@@ -257,6 +257,14 @@ final %>%
   map(shapiro.test)
 ```
 
+Normality test for t-test
+```{r}
+shapiro.test(final$challenge_d_1 - final$challenge_d_2)
+shapiro.test(final$challenge_rt_1 - final$challenge_rt_2)
+shapiro.test(final$crit_d_1 - final$crit_d_2)
+shapiro.test(final$crit_rt_1 - final$crit_rt_2)
+```
+
 word rt normality test
 ```{r}
 # normal
@@ -270,7 +278,15 @@ shapiro.test(words$mean_rt_2)
 ### D-score difference correlation between measures for challenge and criticism
 ```{r}
 # t test
+t.ch_d <- t.test(final$challenge_d_1, final$challenge_d_2, paired = T)
+t.ch_rt <- t.test(final$challenge_rt_1, final$challenge_rt_2, paired = T)
+t.cr_d <- t.test(final$crit_d_1, final$crit_d_2, paired = T)
+t.cr_rt <- t.test(final$crit_rt_1, final$crit_rt_2, paired = T)
 
+t.ch_d
+t.ch_rt
+t.cr_d
+t.cr_rt
 ```
 
 ### Words rt correlation
