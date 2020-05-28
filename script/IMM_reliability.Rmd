@@ -32,6 +32,9 @@ library(multicon)
 library(VGAM)
 library(ggcorrplot)
 library(broom)
+library(lmerTest)
+library(lme4)
+library(dotwhisker)
 ```
 
 # Explicit
@@ -225,7 +228,6 @@ words <- gnat_raw %>%
   select(-word_category_2)
 ```
 
-
 # Unite implicit with explicit
 
 Excluded participants from final that had too high error rate in implicit task
@@ -240,6 +242,45 @@ final <- left_join(explicit, implicit, by = c("id", "measurement")) %>%
          time_end_diff_1 = time_end_diff) %>% 
   select(-c(gender_1_1, gender_1_2, age_1_1, age_1_2, group_1, group_2, time_end_diff)) %>% 
   rename(time_end_diff = "time_end_diff_1")
+```
+
+Long format for plots
+```{r}
+final_long <- final %>% 
+  select(c(1, 14:37, 41)) %>% 
+  rename(chall_score_rt_1 = "challenge_rt_1",
+         chall_score_rt_2 = "challenge_rt_2",
+         crit_score_rt_1 = "crit_rt_1",
+         crit_score_rt_2 = "crit_rt_2",
+         chall_score_d_1 = "challenge_d_1",
+         chall_score_d_2 = "challenge_d_2",
+         crit_score_d_1 = "crit_d_1",
+         crit_score_d_2 = "crit_d_2",
+         days = "time_end_diff",
+         id = "neptun_1") %>% 
+  pivot_longer(cols = c(2:25), ) %>% 
+  separate(name, c("block_1", "block_2", "measurement_type", "measurement_round")) %>% 
+  unite(col = "block", c("block_1", "block_2"), sep = "_") 
+```
+
+Long format for glm
+```{r}
+final_day_diff <- final %>% 
+  select(c(1, 14:37, 41)) %>% 
+  rename(chall_score_rt_1 = "challenge_rt_1",
+         chall_score_rt_2 = "challenge_rt_2",
+         crit_score_rt_1 = "crit_rt_1",
+         crit_score_rt_2 = "crit_rt_2",
+         chall_score_d_1 = "challenge_d_1",
+         chall_score_d_2 = "challenge_d_2",
+         crit_score_d_1 = "crit_d_1",
+         crit_score_d_2 = "crit_d_2",
+         days = "time_end_diff",
+         id = "neptun_1") %>% 
+  pivot_longer(cols = c(2:25), ) %>% 
+  separate(name, c("block_1", "block_2", "measurement_type", "measurement_round")) %>% 
+  unite(col = "block", c("block_1", "block_2"), sep = "_") %>% 
+  pivot_wider(id_cols = c(id, measurement_round, days), names_from = c(block, measurement_type), values_from = value)
 ```
 
 
@@ -377,6 +418,38 @@ cor.test(final$crit_neg_rt_1, final$crit_neg_rt_2, method = "spearman")
 cor.test(final$crit_pos_rt_1, final$crit_pos_rt_2, method = "spearman")
 ```
 
+### Difference in effect size between groups
+```{r}
+#d
+lmer_ch_n_d <- lmer(chall_neg_d ~ measurement_round + days + (1 | id), data = final_day_diff)
+lmer_ch_p_d <- lmer(chall_pos_d ~ measurement_round + days + (1 | id), data = final_day_diff)
+lmer_cr_n_d <- lmer(crit_neg_d ~ measurement_round + days + (1 | id), data = final_day_diff)
+lmer_cr_p_d <- lmer(crit_pos_d ~ measurement_round + days + (1 | id), data = final_day_diff)
+lmer_ch_sc_d <- lmer(chall_score_d ~ measurement_round + days + (1 | id), data = final_day_diff)
+lmer_cr_sc_d <- lmer(crit_score_d ~ measurement_round + days + (1 | id), data = final_day_diff)
+
+#rt
+lmer_ch_n_rt <- lmer(chall_neg_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
+lmer_ch_p_rt <- lmer(chall_pos_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
+lmer_cr_n_rt <- lmer(crit_neg_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
+lmer_cr_p_rt <- lmer(crit_pos_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
+lmer_ch_sc_rt <- lmer(chall_score_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
+lmer_cr_sc_rt <- lmer(crit_score_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
+
+summary(lmer_ch_n_d)
+summary(lmer_ch_p_d)
+summary(lmer_cr_n_d)
+summary(lmer_cr_p_d)
+summary(lmer_ch_sc_d)
+summary(lmer_cr_sc_d)
+
+summary(lmer_ch_n_rt)
+summary(lmer_ch_p_rt)
+summary(lmer_cr_n_rt)
+summary(lmer_cr_p_rt)
+summary(lmer_ch_sc_rt)
+summary(lmer_cr_sc_rt)
+```
 
 
 ## Plots and figures
@@ -426,3 +499,59 @@ ggcorrplot(results_rt,
            pch.cex = 13,
            title = "fields without outline represent significant correlations")
 ```
+
+### Difference in effect size between groups
+
+Adding predictions
+```{r}
+pred <- final_long %>% 
+  mutate(
+    pred = ifelse(final_long$block == "chall_neg" & final_long$measurement_type == "d", predict(lmer_ch_n_d, re.form = NA),
+                  ifelse(final_long$block == "chall_pos" & final_long$measurement_type == "d", predict(lmer_ch_p_d, re.form = NA),
+                         ifelse(final_long$block == "crit_neg" & final_long$measurement_type == "d", predict(lmer_cr_n_d, re.form = NA),
+                                ifelse(final_long$block == "crit_pos" & final_long$measurement_type == "d", predict(lmer_cr_p_d, re.form = NA),
+                                       ifelse(final_long$block == "chall_score" & final_long$measurement_type == "d", predict(lmer_ch_sc_d, re.form = NA),
+                                              ifelse(final_long$block == "crit_score" & final_long$measurement_type == "d", predict(lmer_cr_sc_d, re.form = NA),
+                                                     #rt
+                                                     ifelse(final_long$block == "chall_neg" & final_long$measurement_type == "rt", predict(lmer_ch_n_rt, re.form = NA),
+                                                            ifelse(final_long$block == "chall_pos" & final_long$measurement_type == "rt", predict(lmer_ch_p_rt, re.form = NA),
+                                                                   ifelse(final_long$block == "crit_neg" & final_long$measurement_type == "rt", predict(lmer_cr_n_rt, re.form = NA),
+                                                                          ifelse(final_long$block == "crit_pos" & final_long$measurement_type == "rt", predict(lmer_cr_p_rt, re.form = NA),
+                                                                                 ifelse(final_long$block == "chall_score" & final_long$measurement_type == "rt", predict(lmer_ch_sc_rt, re.form = NA), predict(lmer_cr_sc_rt, re.form = NA)))))))))))),
+    pred1 = ifelse(final_long$block == "chall_neg" & final_long$measurement_type == "d", predict(lmer_ch_n_d),
+                  ifelse(final_long$block == "chall_pos" & final_long$measurement_type == "d", predict(lmer_ch_p_d),
+                         ifelse(final_long$block == "crit_neg" & final_long$measurement_type == "d", predict(lmer_cr_n_d),
+                                ifelse(final_long$block == "crit_pos" & final_long$measurement_type == "d", predict(lmer_cr_p_d),
+                                       ifelse(final_long$block == "chall_score" & final_long$measurement_type == "d", predict(lmer_ch_sc_d),
+                                              ifelse(final_long$block == "crit_score" & final_long$measurement_type == "d", predict(lmer_cr_sc_d),
+                                                     #rt
+                                                     ifelse(final_long$block == "chall_neg" & final_long$measurement_type == "rt", predict(lmer_ch_n_rt),
+                                                            ifelse(final_long$block == "chall_pos" & final_long$measurement_type == "rt", predict(lmer_ch_p_rt),
+                                                                   ifelse(final_long$block == "crit_neg" & final_long$measurement_type == "rt", predict(lmer_cr_n_rt),
+                                                                          ifelse(final_long$block == "crit_pos" & final_long$measurement_type == "rt", predict(lmer_cr_p_rt),
+                                                                                 ifelse(final_long$block == "chall_score" & final_long$measurement_type == "rt", predict(lmer_ch_sc_rt, re.form = NA), predict(lmer_cr_sc_rt))))))))))))
+    
+  )
+```
+
+```{r}
+pred %>% 
+  filter(measurement_type == "d") %>% 
+  ggplot(aes(measurement_round, value)) +
+  geom_point(alpha = 0.3) + 
+  theme_classic() + 
+  geom_line(aes(group = id), alpha = 0.3) +
+  facet_grid(cols = vars(block)) +
+  geom_line(colour = "grey", aes(y=pred1, group = id), alpha = 0.1) +
+  geom_line(colour = "red", aes(y=pred, group=id))
+
+```
+
+boxplot
+```{r}
+final_long %>% 
+  filter(measurement_type == "d") %>% 
+  ggplot(aes(block, value, fill = measurement_round)) + geom_boxplot(position = "dodge")
+
+```
+
