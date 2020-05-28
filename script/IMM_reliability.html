@@ -829,7 +829,7 @@ shapiro.test(words$mean_rt_1)</code></pre>
 </div>
 <div id="hypothesis-testing" class="section level2">
 <h2><span class="header-section-number">5.2</span> Hypothesis testing</h2>
-<p>D-score correlation between measures</p>
+<p>D-score difference correlation between measures for challenge and criticism</p>
 <pre class="r"><code>cor.test(final$challenge_d_1, final$challenge_d_2, method = &quot;pearson&quot;)</code></pre>
 <pre><code>## 
 ##  Pearson&#39;s product-moment correlation
@@ -852,79 +852,11 @@ shapiro.test(words$mean_rt_1)</code></pre>
 ## sample estimates:
 ##       rho 
 ## 0.2419191</code></pre>
-<p>D-score correlation by groups</p>
-<pre class="r"><code>final %&gt;% 
-  filter(group == 1) %&gt;% 
-  select(c(24:27)) %&gt;% 
-  corrr::correlate() %&gt;% 
-  corrr::focus(challenge_d_1, challenge_d_2, mirror = T)</code></pre>
-<pre><code>## 
-## Correlation method: &#39;pearson&#39;
-## Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>## # A tibble: 2 x 3
-##   rowname       challenge_d_1 challenge_d_2
-##   &lt;chr&gt;                 &lt;dbl&gt;         &lt;dbl&gt;
-## 1 challenge_d_1        NA             0.170
-## 2 challenge_d_2         0.170        NA</code></pre>
-<pre class="r"><code>final %&gt;% 
-  filter(group == 1) %&gt;% 
-  select(c(24:27)) %&gt;% 
-  corrr::correlate(method = &quot;spearman&quot;) %&gt;% 
-  corrr::focus(crit_d_1, crit_d_2, mirror = T)</code></pre>
-<pre><code>## 
-## Correlation method: &#39;spearman&#39;
-## Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>## # A tibble: 2 x 3
-##   rowname  crit_d_1 crit_d_2
-##   &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt;
-## 1 crit_d_1   NA        0.328
-## 2 crit_d_2    0.328   NA</code></pre>
-<pre class="r"><code>final %&gt;% 
-  filter(group == 0) %&gt;% 
-  select(c(24:27)) %&gt;% 
-  corrr::correlate() %&gt;% 
-  corrr::focus(challenge_d_1, challenge_d_2, mirror = T)</code></pre>
-<pre><code>## 
-## Correlation method: &#39;pearson&#39;
-## Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>## # A tibble: 2 x 3
-##   rowname       challenge_d_1 challenge_d_2
-##   &lt;chr&gt;                 &lt;dbl&gt;         &lt;dbl&gt;
-## 1 challenge_d_1       NA            -0.0873
-## 2 challenge_d_2       -0.0873       NA</code></pre>
-<pre class="r"><code>final %&gt;% 
-  filter(group == 0) %&gt;% 
-  select(c(24:27)) %&gt;% 
-  corrr::correlate(method = &quot;spearman&quot;) %&gt;% 
-  corrr::focus(crit_d_1, crit_d_2, mirror = T)</code></pre>
-<pre><code>## 
-## Correlation method: &#39;spearman&#39;
-## Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre><code>## # A tibble: 2 x 3
-##   rowname  crit_d_1 crit_d_2
-##   &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt;
-## 1 crit_d_1   NA        0.196
-## 2 crit_d_2    0.196   NA</code></pre>
+<p>Correlation matrix for explicit and d-scores</p>
 <pre class="r"><code>final %&gt;% 
   select(c(2:13, 16:27)) %&gt;% 
   corrr::correlate(method = &quot;spearman&quot;) %&gt;% 
   corrr::focus(matches(&quot;1$&quot;)) %&gt;% 
-  view()</code></pre>
-<pre><code>## 
-## Correlation method: &#39;spearman&#39;
-## Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre class="r"><code>final %&gt;% 
-  select(c(4:7, 12, 13, 16:27)) %&gt;% 
-  corrr::correlate(method = &quot;spearman&quot;) %&gt;% 
-  corrr::focus(matches(&quot;1$&quot;), mirror = T) %&gt;% 
-  view()</code></pre>
-<pre><code>## 
-## Correlation method: &#39;spearman&#39;
-## Missing treated using: &#39;pairwise.complete.obs&#39;</code></pre>
-<pre class="r"><code>final %&gt;% 
-  select(c(4:7, 12, 13, 16:27)) %&gt;% 
-  corrr::correlate(method = &quot;spearman&quot;) %&gt;% 
-  corrr::focus(matches(&quot;2$&quot;), mirror = T) %&gt;% 
   view()</code></pre>
 <pre><code>## 
 ## Correlation method: &#39;spearman&#39;
