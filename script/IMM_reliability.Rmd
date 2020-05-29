@@ -373,6 +373,34 @@ final %>%
   view()
 ```
 
+boxplot for d-scores
+```{r}
+final_long %>% 
+  mutate(measurement_round = ifelse(measurement_round == 1, "first", "second")) %>% 
+  filter(measurement_type == "d") %>% 
+  ggplot(aes(block, value, fill = measurement_round)) + 
+  geom_boxplot(position = "dodge") + 
+  scale_fill_manual("Measurement round", values=c("lightgreen", "darkgreen")) +
+  xlab("Target blocks") +
+  ylab("D-scores") +
+  labs(title = "Boxplot of d-scores by trial blocks and measurement rounds separately") +
+  theme_classic()
+```
+
+boxplot for rt
+```{r}
+final_long %>% 
+  mutate(measurement_round = ifelse(measurement_round == 1, "first", "second")) %>% 
+  filter(measurement_type == "rt") %>% 
+  ggplot(aes(block, value, fill = measurement_round)) + 
+  geom_boxplot(position = "dodge") + 
+  scale_fill_manual("Measurement round", values=c("lightgreen", "darkgreen")) +
+  xlab("Target blocks") +
+  ylab("RT(ms)") +
+  labs(title = "Boxplot of Reaction Times (RT) by trial blocks and measurement rounds separately") +
+  theme_classic()
+```
+
 
 ## Hypothesis testing
 
@@ -532,7 +560,7 @@ ggcorrplot(results_rt,
 ### Difference in effect size between groups
 
 Adding predictions
-```{r}
+```{r include=FALSE}
 pred <- final_long %>% 
   mutate(
     pred = ifelse(final_long$block == "chall_neg" & final_long$measurement_type == "d", predict(lmer_ch_n_d, re.form = NA),
@@ -609,15 +637,5 @@ pred %>%
     title = "Reaction Time (RT) difference between measures",
     subtitle = "Does the number of days between measures have an effect on the difference between reaction times?") +
   theme_classic() 
-```
-
-
-
-boxplot
-```{r}
-final_long %>% 
-  filter(measurement_type == "d") %>% 
-  ggplot(aes(block, value, fill = measurement_round)) + geom_boxplot(position = "dodge")
-
 ```
 
