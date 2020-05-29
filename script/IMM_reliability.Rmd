@@ -249,7 +249,7 @@ final <- left_join(explicit, implicit, by = c("id", "measurement")) %>%
 Long format for plots
 ```{r}
 final_long <- final %>% 
-  select(c(1, 14:37, 41)) %>% 
+  select(c(1, 14:37, 40, 41)) %>% 
   rename(chall_score_rt_1 = "challenge_rt_1",
          chall_score_rt_2 = "challenge_rt_2",
          crit_score_rt_1 = "crit_rt_1",
@@ -271,7 +271,7 @@ final_long <- final %>%
 Long format for glm
 ```{r}
 final_day_diff <- final %>% 
-  select(c(1, 14:37, 41)) %>% 
+  select(c(1, 14:37, 40, 41)) %>% 
   rename(chall_score_rt_1 = "challenge_rt_1",
          chall_score_rt_2 = "challenge_rt_2",
          crit_score_rt_1 = "crit_rt_1",
@@ -282,10 +282,10 @@ final_day_diff <- final %>%
          crit_score_d_2 = "crit_d_2",
          days = "time_end_diff",
          id = "neptun_1") %>% 
-  pivot_longer(cols = c(2:25), ) %>% 
+  pivot_longer(cols = c(2:25), ) %>%
   separate(name, c("block_1", "block_2", "measurement_type", "measurement_round")) %>% 
   unite(col = "block", c("block_1", "block_2"), sep = "_") %>% 
-  pivot_wider(id_cols = c(id, measurement_round, days), names_from = c(block, measurement_type), values_from = value) %>% 
+  pivot_wider(id_cols = c(id, measurement_round, days, group), names_from = c(block, measurement_type), values_from = value) %>% 
   mutate(
     days = ifelse(measurement_round == 2, days, 0)
   )
@@ -443,7 +443,9 @@ lmer_cr_n_rt <- lmer(crit_neg_rt ~ measurement_round + days + (1 | id), data = f
 lmer_cr_p_rt <- lmer(crit_pos_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
 lmer_ch_sc_rt <- lmer(chall_score_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
 lmer_cr_sc_rt <- lmer(crit_score_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
+```
 
+```{r}
 summary(lmer_ch_n_d)
 summary(lmer_ch_p_d)
 summary(lmer_cr_n_d)
@@ -457,6 +459,7 @@ summary(lmer_cr_n_rt)
 summary(lmer_cr_p_rt)
 summary(lmer_ch_sc_rt)
 summary(lmer_cr_sc_rt)
+
 ```
 
 ```{r}
@@ -560,18 +563,55 @@ pred <- final_long %>%
   )
 ```
 
+Difference in d-scores
 ```{r}
 pred %>% 
+  mutate(
+    measurement_round = ifelse(measurement_round == 1, "first", "second"),
+    group = as.factor(ifelse(group == 0, "2-week", "4-week"))
+  ) %>% 
   filter(measurement_type == "d") %>% 
-  ggplot(aes(measurement_round, value)) +
+  ggplot(aes(days, value, color = group)) +
   geom_point(alpha = 0.3) + 
-  theme_classic() + 
   geom_line(aes(group = id), alpha = 0.3) +
   facet_grid(cols = vars(block)) +
-  geom_line(colour = "grey", aes(y=pred1, group = id), alpha = 0.1) +
-  geom_line(colour = "red", aes(y=pred, group=id))
-
+  # individual prediction of changes
+  #geom_line(colour = "red", aes(y=pred1, group = id), alpha = 1) +
+  geom_line(colour = "red", aes(y=pred, group=id)) +
+  scale_color_manual("Groups", values=c("darkgreen", "blue")) +
+  xlab("Days between measures") + 
+  ylab("D-score") + 
+  labs( 
+    title = "D-score difference between measures",
+    subtitle = "Does the number of days between measures have an effect on the difference between d-scores?") +
+  theme_classic() 
 ```
+
+Difference in reaction times
+```{r}
+pred %>% 
+  mutate(
+    measurement_round = ifelse(measurement_round == 1, "first", "second"),
+    group = as.factor(ifelse(group == 0, "2-week", "4-week"))
+  ) %>% 
+  filter(measurement_type == "rt") %>% 
+  ggplot(aes(days, value, color = group)) +
+  geom_point(alpha = 0.3) + 
+  geom_line(aes(group = id), alpha = 0.3) +
+  facet_grid(cols = vars(block)) +
+  # individual prediction of changes
+  #geom_line(colour = "red", aes(y=pred1, group = id), alpha = 1) +
+  geom_line(colour = "red", aes(y=pred, group=id)) +
+  scale_color_manual("Groups", values=c("darkgreen", "blue")) +
+  xlab("Days between measures") + 
+  ylab("RT(ms)") + 
+  labs( 
+    title = "Reaction Time (RT) difference between measures",
+    subtitle = "Does the number of days between measures have an effect on the difference between reaction times?") +
+  theme_classic() 
+```
+
+
 
 boxplot
 ```{r}
