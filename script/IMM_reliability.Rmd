@@ -592,7 +592,7 @@ pred <- final_long %>%
 ```
 
 Difference in d-scores
-```{r}
+```{r fig.align = "center"}
 pred %>% 
   mutate(
     measurement_round = ifelse(measurement_round == 1, "first", "second"),
@@ -616,7 +616,7 @@ pred %>%
 ```
 
 Difference in reaction times
-```{r}
+```{r fig.align = "center"}
 pred %>% 
   mutate(
     measurement_round = ifelse(measurement_round == 1, "first", "second"),
