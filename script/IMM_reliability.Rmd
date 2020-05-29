@@ -457,20 +457,20 @@ cor.test(final$crit_pos_rt_1, final$crit_pos_rt_2, method = "spearman")
 ### Difference in effect size between groups
 ```{r}
 #d
-lmer_ch_n_d <- lmer(chall_neg_d ~ measurement_round + days + (1 | id), data = final_day_diff)
-lmer_ch_p_d <- lmer(chall_pos_d ~ measurement_round + days + (1 | id), data = final_day_diff)
-lmer_cr_n_d <- lmer(crit_neg_d ~ measurement_round + days + (1 | id), data = final_day_diff)
-lmer_cr_p_d <- lmer(crit_pos_d ~ measurement_round + days + (1 | id), data = final_day_diff)
-lmer_ch_sc_d <- lmer(chall_score_d ~ measurement_round + days + (1 | id), data = final_day_diff)
-lmer_cr_sc_d <- lmer(crit_score_d ~ measurement_round + days + (1 | id), data = final_day_diff)
+lmer_ch_n_d <- lmer(chall_neg_d ~ days + (1 | id), data = final_day_diff)
+lmer_ch_p_d <- lmer(chall_pos_d ~ days + (1 | id), data = final_day_diff)
+lmer_cr_n_d <- lmer(crit_neg_d ~ days + (1 | id), data = final_day_diff)
+lmer_cr_p_d <- lmer(crit_pos_d ~ days + (1 | id), data = final_day_diff)
+lmer_ch_sc_d <- lmer(chall_score_d ~ days + (1 | id), data = final_day_diff)
+lmer_cr_sc_d <- lmer(crit_score_d ~ days + (1 | id), data = final_day_diff)
 
 #rt
-lmer_ch_n_rt <- lmer(chall_neg_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
-lmer_ch_p_rt <- lmer(chall_pos_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
-lmer_cr_n_rt <- lmer(crit_neg_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
-lmer_cr_p_rt <- lmer(crit_pos_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
-lmer_ch_sc_rt <- lmer(chall_score_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
-lmer_cr_sc_rt <- lmer(crit_score_rt ~ measurement_round + days + (1 | id), data = final_day_diff)
+lmer_ch_n_rt <- lmer(chall_neg_rt ~ days + (1 | id), data = final_day_diff)
+lmer_ch_p_rt <- lmer(chall_pos_rt ~ days + (1 | id), data = final_day_diff)
+lmer_cr_n_rt <- lmer(crit_neg_rt ~ days + (1 | id), data = final_day_diff)
+lmer_cr_p_rt <- lmer(crit_pos_rt ~ days + (1 | id), data = final_day_diff)
+lmer_ch_sc_rt <- lmer(chall_score_rt ~ days + (1 | id), data = final_day_diff)
+lmer_cr_sc_rt <- lmer(crit_score_rt ~ days + (1 | id), data = final_day_diff)
 ```
 
 ```{r}
