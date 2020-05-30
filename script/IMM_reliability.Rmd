@@ -304,7 +304,7 @@ final_day_diff <- final %>%
 Normality test
 ```{r}
 final %>% 
-  select(c(14:33)) %>% 
+  select(c(14:37)) %>% 
   map(shapiro.test)
 ```
 
@@ -447,11 +447,17 @@ cor.test(final$chall_neg_d_1, final$chall_neg_d_2, method = "spearman")
 cor.test(final$chall_pos_d_1, final$chall_pos_d_2, method = "spearman")
 cor.test(final$crit_neg_d_1, final$crit_neg_d_2, method = "spearman")
 cor.test(final$crit_pos_d_1, final$crit_pos_d_2, method = "spearman")
+#needs assumption test
+cor.test(final$challenge_d_1, final$challenge_d_2, method = "pearson")
+cor.test(final$crit_d_1, final$crit_d_2, method = "spearman")
 
 cor.test(final$chall_neg_rt_1, final$chall_neg_rt_2, method = "spearman")
 cor.test(final$chall_pos_rt_1, final$chall_pos_rt_2, method = "spearman")
 cor.test(final$crit_neg_rt_1, final$crit_neg_rt_2, method = "spearman")
 cor.test(final$crit_pos_rt_1, final$crit_pos_rt_2, method = "spearman")
+#needs assumption test
+cor.test(final$challenge_rt_1, final$challenge_rt_2, method = "spearman")
+cor.test(final$crit_rt_1, final$crit_rt_2, method = "spearman")
 ```
 
 ### Difference in effect size between groups
