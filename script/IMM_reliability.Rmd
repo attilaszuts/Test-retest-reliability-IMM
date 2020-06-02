@@ -291,6 +291,47 @@ final_day_diff <- final %>%
   )
 ```
 
+dataframe for words plot
+```{r}
+word_plot <- gnat_raw %>% 
+  #filter only important trials and only go_trials 
+  filter(target %in%important_targets,
+         trial_type == 'go_trial') %>% 
+  #filtering out participants that didnt complete the second round
+  filter(!id %in% excluded_id) %>%
+  #checking for block error rate per participant
+  group_by(id, target) %>% 
+  mutate(correct_block = 1 - mean(error)) %>% 
+  ungroup() %>% 
+  # checking for overall error rate per participant
+  group_by(id) %>% 
+  mutate(correct_all = 1 - mean(error)) %>% 
+  ungroup() %>% 
+  # filter overall and block error rates, filter too quick and too slow responses
+  filter(correct_block > 0.6 & correct_all > 0.8 & error == 0,
+         rt > 300 & rt < 1399) %>%
+  select(c(id, word, word_category, rt, measurement)) %>% 
+  group_by(measurement, id, word_category) %>% 
+  arrange(measurement, id, word_category, word, .by_group = T) %>%
+  ungroup() %>% 
+  right_join(explicit, by = "id") %>% 
+  select(c(2:7)) %>% 
+  rename(
+    measurement = "measurement.x",
+    id = neptun_1
+  ) %>% 
+  group_by(measurement, id, word_category, word) %>% 
+  summarise(
+    mean_rt = mean(rt)
+  ) %>% 
+  pivot_wider(id_cols = c(id, word_category, word), names_from = measurement, values_from = mean_rt) %>% 
+  select(-6) %>% 
+  rename(
+    mean_rt_1 = 4,
+    mean_rt_2 = 5
+  ) 
+```
+
 
 # Analysis
 
@@ -359,6 +400,21 @@ final %>%
     gender
   )
 ```
+
+### Days between measures per group
+
+```{r}
+final_day_diff %>% 
+  filter(days != 0) %>% 
+  group_by(group) %>% 
+  summarise(
+    mean_days = mean(days),
+    min_days = min(days),
+    max_days = max(days),
+    range_days = max_days - min_days
+  )
+```
+
 
 ### D-score difference t-test
 
@@ -584,9 +640,9 @@ ggcorrplot(results_d,
            insig = "pch",
            show.legend = F,
            lab_size = 4,
-           pch = 0,
-           pch.cex = 13,
-           title = "fields without outline represent significant correlations")
+           pch = 4,
+           title = "Correlation matrix for individual blocks",
+           pch.cex = 13)#, 13)
 ```
 
 RT
@@ -606,7 +662,7 @@ ggcorrplot(results_rt,
            insig = "pch",
            show.legend = F,
            lab_size = 4,
-           pch = 0,
+           pch = 4,
            pch.cex = 13,
            title = "fields without outline represent significant correlations")
 ```
@@ -653,14 +709,14 @@ pred %>%
     group = as.factor(ifelse(group == 0, "2-week", "4-week"))
   ) %>% 
   filter(measurement_type == "d") %>% 
-  ggplot(aes(days, value, color = group)) +
+  ggplot(aes(days, value)) +
   geom_point(alpha = 0.3) + 
   geom_line(aes(group = id), alpha = 0.3) +
   facet_grid(cols = vars(block)) +
   # individual prediction of changes
-  #geom_line(colour = "red", aes(y=pred1, group = id), alpha = 1) +
-  geom_line(colour = "red", aes(y=pred, group=id)) +
-  scale_color_manual("Groups", values=c("darkgreen", "blue")) +
+  #geom_line(colour = "grey", aes(y=pred1, group = id), alpha = 1) +
+  #geom_line(colour = "red", aes(y=pred, group=id)) +
+  #scale_color_manual("Groups", values=c("darkgreen", "blue")) +
   xlab("Days between measures") + 
   ylab("D-score") + 
   labs( 
@@ -677,13 +733,13 @@ pred %>%
     group = as.factor(ifelse(group == 0, "2-week", "4-week"))
   ) %>% 
   filter(measurement_type == "rt") %>% 
-  ggplot(aes(days, value, color = group)) +
+  ggplot(aes(days, value)) +
   geom_point(alpha = 0.3) + 
   geom_line(aes(group = id), alpha = 0.3) +
   facet_grid(cols = vars(block)) +
   # individual prediction of changes
   #geom_line(colour = "red", aes(y=pred1, group = id), alpha = 1) +
-  geom_line(colour = "red", aes(y=pred, group=id)) +
+  #geom_line(colour = "red", aes(y=pred, group=id)) +
   scale_color_manual("Groups", values=c("darkgreen", "blue")) +
   xlab("Days between measures") + 
   ylab("RT(ms)") + 
@@ -691,5 +747,57 @@ pred %>%
     title = "Reaction Time (RT) difference between measures",
     subtitle = "Does the number of days between measures have an effect on the difference between reaction times?") +
   theme_classic() 
+```
+
+## Words RT correlation
+
+```{r}
+word_plot %>% 
+  filter(word_category == "challenge") %>% 
+  ggplot(aes(mean_rt_1,mean_rt_2)) + geom_point() + 
+  geom_smooth(method = "lm", se = F) +
+  xlab("Mean RT in the first round (ms)") +
+  ylab("Mean RT in the second round (ms)") +
+  labs(
+    title = "Mean reaction time between measurements, Challenge target",
+    subtitle = "average reaction time for the same word between the seperate administrations"
+  ) +
+  theme_classic()
+
+word_plot %>% 
+  filter(word_category == "criticism") %>%
+  ggplot(aes(mean_rt_1,mean_rt_2)) + geom_point() + 
+  geom_smooth(method = "lm", se = F)+
+  xlab("Mean RT in the first round (ms)") +
+  ylab("Mean RT in the second round (ms)") +
+  labs(
+    title = "Mean reaction time between measurements, Criticism target",
+    subtitle = "average reaction time for the same word between the seperate administrations"
+  ) +
+  theme_classic()
+
+word_plot %>% 
+  filter(word_category == "positive") %>%
+  ggplot(aes(mean_rt_1,mean_rt_2)) + geom_point() +
+  geom_smooth(method = "lm", se = F) +
+  xlab("Mean RT in the first round (ms)") +
+  ylab("Mean RT in the second round (ms)") +
+  labs(
+    title = "Mean reaction time between measurements, Positive attribute",
+    subtitle = "average reaction time for the same word between the seperate administrations"
+  ) +
+  theme_classic()
+
+word_plot %>% 
+  filter(word_category == "negative") %>%
+  ggplot(aes(mean_rt_1,mean_rt_2)) + geom_point() + 
+  geom_smooth(method = "lm", se = F) +
+  xlab("Mean RT in the first round (ms)") +
+  ylab("Mean RT in the second round (ms)") +
+  labs(
+    title = "Mean reaction time between measurements, Negative attribute",
+    subtitle = "average reaction time for the same word between the seperate administrations"
+  ) +
+  theme_classic()
 ```
 
