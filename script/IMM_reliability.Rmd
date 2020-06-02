@@ -332,6 +332,20 @@ word_plot <- gnat_raw %>%
   ) 
 ```
 
+dataframe for t-test plot
+```{r}
+t_test <- final %>% 
+  select(c("challenge_d_1", "challenge_d_2", "crit_d_1", "crit_d_2", "challenge_rt_1", "challenge_rt_2", "crit_rt_1", "crit_rt_2", "neptun_1")) %>%
+  pivot_longer(cols = c(1:8)) %>% 
+  separate(name, into = c("category", "type", "round"), sep = "_") %>% 
+  #pivot_wider(id_cols = c(neptun_1, category, type), names_from = round, values_from = value) %>% 
+  #rename(mean_score_1 = 4, mean_score_2 = 5) %>% 
+  mutate(
+    round = ifelse(round == 1, "First round", "Second round"),
+    category = ifelse(category == "crit", "criticism", category)
+  ) 
+```
+
 
 # Analysis
 
@@ -621,6 +635,35 @@ confint(lmer_cr_sc_rt, c("days"))
 
 ## Plots and figures
 
+### Difference between d-scores and reaction time differenes
+
+```{r}
+t_test %>% 
+  filter(type == "d") %>%
+  ggplot(aes(round, value)) + 
+  geom_boxplot() + 
+  theme_classic() +
+  facet_grid(cols = vars(category)) +
+  xlab("") + 
+  ylab("D-score difference") + 
+  labs( 
+    title = "D-score difference between data collection",
+    subtitle = "Is there a difference between d-scores within participants in challenge and criticism attitudes")
+
+t_test %>% 
+  filter(type == "rt") %>%
+  ggplot(aes(round, value)) + 
+  geom_boxplot() + 
+  theme_classic() +
+  facet_grid(cols = vars(category)) +
+  xlab("") + 
+  ylab("Reaction time difference (ms)") + 
+  labs( 
+    title = "Reaction time difference between data collection",
+    subtitle = "Is there a difference between reaction times within participants in challenge and criticism attitudes")
+```
+
+
 ### Correlation matrix for implicit results 
 
 d-scores
@@ -637,11 +680,11 @@ ggcorrplot(results_d,
            ggtheme = ggplot2::theme_classic(),
            lab = T,
            p.mat = results_d.p,
-           insig = "pch",
+           insig = "blank",
            show.legend = F,
            lab_size = 4,
            pch = 4,
-           title = "Correlation matrix for individual blocks",
+           title = "Correlation matrix for individual blocks (D-scores)",
            pch.cex = 13)#, 13)
 ```
 
@@ -659,12 +702,12 @@ ggcorrplot(results_rt,
            ggtheme = ggplot2::theme_classic(),
            lab = T,
            p.mat = results_rt.p,
-           insig = "pch",
+           insig = "blank",
            show.legend = F,
            lab_size = 4,
            pch = 4,
            pch.cex = 13,
-           title = "fields without outline represent significant correlations")
+           title = "Correlation matrix for individual blocks (Reaction Times)")
 ```
 
 ### Difference in effect size between groups
@@ -749,7 +792,7 @@ pred %>%
   theme_classic() 
 ```
 
-## Words RT correlation
+### Words RT correlation
 
 ```{r}
 word_plot %>% 
