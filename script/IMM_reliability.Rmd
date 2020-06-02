@@ -44,6 +44,7 @@ library(dotwhisker)
 ### Importing data
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+setwd("D:/Documents/Egyebek/Thesis")
 explicit_raw <-
   bind_rows(
     read_csv("data/Round 1/data.csv") %>% mutate(measurement = 1),
